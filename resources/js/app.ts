@@ -1,3 +1,4 @@
+import 'datatables.net';
 import 'vue-toastification/dist/index.css';
 import '../css/app.css';
 

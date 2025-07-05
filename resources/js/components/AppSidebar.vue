@@ -12,46 +12,43 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
+        isActive: true,
     },
     {
         title: 'Akademik',
         href: '/akademik',
         icon: CalendarDays,
+        isActive: false,
         children: [
-            { title: 'Jadwal Kuliah', href: '/akademik/jadwal' },
-            { title: 'Nilai Akademik', href: '/akademik/nilai' },
-            { title: 'Data Mahasiswa', href: '/akademik/siswa' },
+            { title: 'Absensi', href: '/akademik/absensi' },
+            { title: 'Kelas', href: '/akademik/kelas' },
+            { title: 'Jadwal Pelajaran', href: '/akademik/jadwal-pelajaran' },
+            { title: 'Mata Pelajaran', href: '/akademik/matpel' },
+            { title: 'Siswa', href: '/akademik/siswa' },
+            { title: 'Guru', href: '/akademik/guru' },
+            { title: 'Kurikulum', href: '/akademik/kurikulum' },
+            { title: 'Input Nilai', href: '/akademik/input-nilai' },
         ],
     },
     {
         title: 'Materi',
         href: '/materi',
         icon: BookOpen,
+        isActive: false,
     },
     {
         title: 'Adaptive Learning',
         href: '/adaptive-learning',
         icon: TrendingUp,
+        isActive: false,
     },
     {
         title: 'Forum Diskusi',
         href: '/forum-diskusi',
         icon: MessageCircle,
+        isActive: false,
     },
 ];
-
-// const footerNavItems: NavItem[] = [
-//     {
-//         title: 'Github Repo',
-//         href: 'https://github.com/laravel/vue-starter-kit',
-//         icon: Folder,
-//     },
-//     {
-//         title: 'Documentation',
-//         href: 'https://laravel.com/docs/starter-kits#vue',
-//         icon: BookOpen,
-//     },
-// ];
 </script>
 
 <template>
@@ -73,7 +70,6 @@ const mainNavItems: NavItem[] = [
         </SidebarContent>
 
         <SidebarFooter>
-            <!-- <NavFooter :items="footerNavItems" /> -->
             <NavUser />
         </SidebarFooter>
     </Sidebar>
