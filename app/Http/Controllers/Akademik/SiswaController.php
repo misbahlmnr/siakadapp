@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Akademik;
 use Inertia\Inertia;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Siswa\StoreRequest;
+use App\Http\Requests\Siswa\UpdateRequest;
 use App\Models\Siswa;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -57,8 +58,22 @@ class SiswaController extends Controller
         ]);
     }
 
-    public function update() {
-        // TODO: Handle update logic
+    public function update(UpdateRequest $request, $id)
+    {
+        $siswa = Siswa::findOrFail($id);
+        $siswa->update([
+            'nis' => $request->nis,
+            'nama' => $request->nama,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'kelas' => $request->kelas,
+            'tahun_masuk' => $request->tahun_masuk,
+            'ttl' => $request->ttl,
+            'alamat' => $request->alamat,
+            'kontak_ortu' => $request->kontak_ortu,
+            'status' => $request->status,
+        ]);
+
+        return to_route('akademik.siswa.index')->with('success', 'Data siswa berhasil diperbarui');
     }
 
     public function destroy($id)
