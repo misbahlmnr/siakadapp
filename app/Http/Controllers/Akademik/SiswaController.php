@@ -17,12 +17,12 @@ class SiswaController extends Controller
 
     public function index()
     {
-        return Inertia::render('akademik/siswas/Index');
+        return Inertia::render('akademik/siswa/Index');
     }
 
     public function create()
     {
-        return Inertia::render('akademik/siswas/Create');
+        return Inertia::render('akademik/siswa/Create');
     }
 
     public function store(StoreRequest $request)
@@ -40,5 +40,32 @@ class SiswaController extends Controller
         ]);
 
         return to_route('akademik.siswa.index')->with('success', 'Data siswa berhasil ditambahkan');
+    }
+
+    public function show($id)
+    {
+        $siswa = Siswa::findOrFail($id);
+        return Inertia::render('akademik/siswa/View', [
+            'siswa' => $siswa,
+        ]);
+    }
+
+    public function edit($id) {
+        $siswa = Siswa::findOrFail($id);
+        return Inertia::render('akademik/siswa/Edit', [
+            'siswa' => $siswa,
+        ]);
+    }
+
+    public function update() {
+        // TODO: Handle update logic
+    }
+
+    public function destroy($id)
+    {
+        $siswa = Siswa::findOrFail($id);
+        $siswa->delete();
+
+        return to_route('akademik.siswa.index')->with('success', 'Data siswa berhasil dihapus');
     }
 }

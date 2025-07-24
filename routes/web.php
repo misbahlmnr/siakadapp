@@ -14,12 +14,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::prefix('akademik')->name('akademik.')->group(function () {
-        Route::prefix('siswa')->name('siswa.')->group(function () {
-            Route::get('/', [SiswaController::class, 'index'])->name('index');
-            Route::get('get', [SiswaController::class, 'get'])->name('get');
-            Route::get('create', [SiswaController::class, 'create'])->name('create');
-            Route::post('store', [SiswaController::class, 'store'])->name('store');
-        });
+        Route::get('siswa/get', [SiswaController::class, 'get'])->name('siswa.get');
+        Route::resource('siswa', SiswaController::class)->names('siswa');
     });
 });
 

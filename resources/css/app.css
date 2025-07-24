@@ -166,6 +166,12 @@
     }
 }
 
+@layer components {
+    .bgap {
+        @apply grid gap-2;
+    }
+}
+
 table {
     @apply overflow-hidden rounded-sm bg-gray-900 text-sm;
 }

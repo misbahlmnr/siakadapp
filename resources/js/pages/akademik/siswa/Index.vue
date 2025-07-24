@@ -1,56 +1,37 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import $ from 'jquery';
-import { FileUp, Plus, SquarePen, Trash2 } from 'lucide-vue-next';
+import { Eye, FileUp, Plus, SquarePen, Trash2 } from 'lucide-vue-next';
 import { nextTick, onMounted, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Akademik',
-        href: '/akademik',
-    },
-    {
-        title: 'Siswa',
-        href: '/akademik/siswa',
-    },
+    { title: 'Akademik', href: '/akademik' },
+    { title: 'Siswa', href: '/akademik/siswa' },
 ];
 
 const page = usePage();
 const toast = useToast();
+const siswaList = ref<any[]>([]);
 
+// Flash message listener
 watch(
     () => page.props.flash,
-    (flash) => {
+    (flash: any) => {
         if (flash?.success) toast.success(flash.success);
         if (flash?.error) toast.error(flash.error);
     },
     { immediate: true },
 );
 
-const siswaList = ref<any[]>([]);
-
-const edit = (id: number) => {
-    console.log('Edit siswa id:', id);
-};
-
-const hapus = (id: number) => {
-    console.log('Hapus siswa id:', id);
-};
-
-onMounted(async () => {
-    const res = await axios.get(route('akademik.siswa.get'));
-    siswaList.value = res.data.data;
-
-    // Tunggu DOM render
-    await nextTick();
-
-    // Init DataTables
+// Fungsi inisialisasi DataTables
+const initDataTable = () => {
     $('#siswaTable').DataTable({
         pagingType: 'simple_numbers',
+        destroy: true,
         language: {
             lengthMenu: 'Tampilkan _MENU_ data per halaman',
             zeroRecords: 'Tidak ada data ditemukan',
@@ -74,7 +55,32 @@ onMounted(async () => {
             },
         ],
     });
-});
+};
+
+const fetchSiswa = async () => {
+    const res = await axios.get(route('akademik.siswa.get'));
+    siswaList.value = res.data.data;
+
+    await nextTick();
+    $('#siswaTable').DataTable().destroy();
+    initDataTable();
+};
+
+const hapus = async (id: number) => {
+    if (confirm('Yakin ingin menghapus data siswa ini?')) {
+        router.delete(route('akademik.siswa.destroy', id), {
+            preserveScroll: true,
+            onSuccess: async () => {
+                await fetchSiswa();
+            },
+            onError: () => {
+                toast.error('Gagal menghapus data siswa');
+            },
+        });
+    }
+};
+
+onMounted(fetchSiswa);
 </script>
 
 <template>
@@ -122,12 +128,18 @@ onMounted(async () => {
                             <td>{{ siswa.jenis_kelamin }}</td>
                             <td>{{ siswa.kelas }}</td>
                             <td>{{ siswa.tahun_masuk }}</td>
-                            <td>
-                                <button class="text-blue-600 hover:cursor-pointer hover:underline" @click="edit(siswa.id)">
-                                    <SquarePen :size="16" />
-                                </button>
-                                |
-                                <button class="text-red-600 hover:cursor-pointer hover:underline" @click="hapus(siswa.id)">
+                            <td class="flex items-center gap-2">
+                                <Link :href="route('akademik.siswa.edit', siswa.id)">
+                                    <button class="rounded-md bg-orange-500 p-2 text-white hover:cursor-pointer hover:underline">
+                                        <SquarePen :size="16" />
+                                    </button>
+                                </Link>
+                                <Link :href="route('akademik.siswa.show', siswa.id)">
+                                    <button class="rounded-md bg-blue-500 p-2 text-white hover:cursor-pointer hover:underline">
+                                        <Eye :size="16" />
+                                    </button>
+                                </Link>
+                                <button class="rounded-md bg-red-500 p-2 text-white hover:cursor-pointer hover:underline" @click="hapus(siswa.id)">
                                     <Trash2 :size="16" />
                                 </button>
                             </td>
