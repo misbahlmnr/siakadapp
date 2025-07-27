@@ -31,7 +31,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const submit = () => {
-    console.log('ok');
+    form.put(route('admin.users.update', { role: 'admin', id: props.user.id }));
 };
 </script>
 

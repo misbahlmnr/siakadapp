@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ManajemenUser\Admin\StoreRequest;
+use App\Http\Requests\ManajemenUser\Admin\UpdateRequest;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -66,5 +67,23 @@ class UserController extends Controller
             'role' => $role,
             'user' => $user
         ]);
+    }
+
+    public function update(UpdateRequest $request, string $role, string $id)
+    {
+        $user = User::findOrFail($id);
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            // if password is not filled, keep the old password
+            'password' => $request->filled('password') 
+                ? Hash::make($request->password) 
+                : $user->password,
+            'role' => $request->role,
+        ]);
+
+        return to_route('admin.users.index', $role)
+            ->with('success', 'Data ' . $role . ' berhasil diperbarui');
     }
 }

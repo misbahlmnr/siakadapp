@@ -22,5 +22,7 @@ Route::prefix('admin')
             ->name('users.edit');
 
         Route::post('/manajemen-user/{role}', [UserController::class, 'store'])->name('users.store');
+
+        Route::put('/manajemen-user/{role}/{id}', [UserController::class, 'update'])->name('users.update');
     });
 
