@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Akademik;
+namespace App\Http\Controllers\Admin;
 
 use Inertia\Inertia;
 use App\Http\Controllers\Controller;

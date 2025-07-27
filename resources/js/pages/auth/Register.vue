@@ -2,6 +2,14 @@
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
@@ -13,6 +21,7 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
+    role: '',
 });
 
 const submit = () => {
@@ -38,6 +47,29 @@ const submit = () => {
                     <Label for="email">Email address</Label>
                     <Input id="email" type="email" required :tabindex="2" autocomplete="email" v-model="form.email" placeholder="email@example.com" />
                     <InputError :message="form.errors.email" />
+                </div>
+
+                <div class="grid gap-2">
+                    <Label for="role">Role</Label>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger
+                            id="role"
+                            class="w-full rounded-md border px-3 py-2 text-left focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                        >
+                            {{ form.role ? form.role : 'Pilih Role' }}
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent class="w-full">
+                            <DropdownMenuLabel>Pilih role user</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem @click="form.role = 'admin'"> Admin </DropdownMenuItem>
+                            <DropdownMenuItem @click="form.role = 'guru'"> Guru </DropdownMenuItem>
+                            <DropdownMenuItem @click="form.role = 'siswa'"> Siswa </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <InputError :message="form.errors.role" />
                 </div>
 
                 <div class="grid gap-2">
@@ -68,7 +100,7 @@ const submit = () => {
                     <InputError :message="form.errors.password_confirmation" />
                 </div>
 
-                <Button type="submit" class="mt-2 w-full" tabindex="5" :disabled="form.processing">
+                <Button type="submit" class="mt-2 w-full" tabindex="6" :disabled="form.processing">
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                     Create account
                 </Button>
