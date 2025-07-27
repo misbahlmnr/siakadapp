@@ -9,7 +9,7 @@
         @apply border border-gray-800 px-5 py-5;
     }
     tbody tr:nth-child(even) {
-        @apply bg-gray-800;
+        @apply bg-[#262626];
     }
     .dt-container > .dt-layout-row:first-child {
         @apply flex items-center justify-between py-3;
