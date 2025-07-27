@@ -21,7 +21,7 @@ const goToEdit = (id: number) => {
 };
 
 onMounted(() => {
-    $('#user-table').DataTable({
+    const table = $('#user-table').DataTable({
         processing: true,
         serverSide: true,
         destroy: true,
@@ -37,17 +37,26 @@ onMounted(() => {
                 orderable: false,
                 searchable: false,
                 render: (data) => {
-                    return `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button>`;
+                    return `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button> | <button class="btn-delete text-red-500 cursor-pointer" data-id="${data}">Hapus</button>`;
                 },
             },
         ],
         drawCallback: function () {
-            $('.btn-edit')
-                .off('click')
-                .on('click', function () {
-                    const id = $(this).data('id');
-                    goToEdit(id);
-                });
+            $('.btn-edit').on('click', function () {
+                const id = $(this).data('id');
+                goToEdit(id);
+            });
+
+            $('.btn-delete').on('click', function () {
+                const id = $(this).data('id');
+                if (confirm('Yakin ingin menghapus data admin ini?')) {
+                    router.delete(route('admin.users.destroy', { role: 'admin', id: id }), {
+                        onSuccess: () => {
+                            table.ajax.reload();
+                        },
+                    });
+                }
+            });
         },
     });
 });
@@ -55,6 +64,7 @@ onMounted(() => {
 
 <template>
     <Head title="Data Admin" />
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl px-10 py-4">
             <div class="flex items-center justify-between">

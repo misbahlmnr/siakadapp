@@ -86,4 +86,13 @@ class UserController extends Controller
         return to_route('admin.users.index', $role)
             ->with('success', 'Data ' . $role . ' berhasil diperbarui');
     }
+
+    public function destroy(string $role, string $id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return to_route('admin.users.index', $role)
+            ->with('success', 'Data ' . $role . ' berhasil dihapus');
+    }
 }

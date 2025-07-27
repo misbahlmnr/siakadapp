@@ -24,5 +24,9 @@ Route::prefix('admin')
         Route::post('/manajemen-user/{role}', [UserController::class, 'store'])->name('users.store');
 
         Route::put('/manajemen-user/{role}/{id}', [UserController::class, 'update'])->name('users.update');
+
+        Route::delete('/manajemen-user/{role}/{id}', [UserController::class, 'destroy'])
+            ->whereNumber('id')
+            ->name('users.destroy');
     });
 
