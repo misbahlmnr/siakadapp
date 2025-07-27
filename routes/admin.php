@@ -13,4 +13,5 @@ Route::prefix('admin')
         Route::get('/manajemen-user/{role}', [UserController::class, 'index'])
             ->whereIn('role', ['admin', 'guru', 'siswa'])
             ->name('users.index');
+        Route::get('/manajemen-user/{role}/data', [UserController::class, 'get'])->name('users.data');
     });
