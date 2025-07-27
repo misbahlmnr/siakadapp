@@ -36,4 +36,13 @@ class UserController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
+
+    public function create(Request $request)
+    {
+        $role = $request->route('role');
+
+        return inertia('admin/manajemen-user/'.$role.'/Create', [
+            'role' => $role
+        ]);
+    }
 }

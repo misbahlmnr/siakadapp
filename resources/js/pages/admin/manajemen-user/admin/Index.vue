@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
-import { usePage } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import $ from 'jquery';
 import { Plus } from 'lucide-vue-next';
 import { onMounted, watch } from 'vue';
@@ -53,12 +54,14 @@ onMounted(() => {
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl px-10 py-4">
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-bold">Data Admin</h1>
-                <button
-                    class="flex items-center justify-center gap-2 rounded-md bg-white px-2 py-2.5 text-sm text-black hover:cursor-pointer hover:bg-white/90"
-                >
-                    <Plus :size="18" />
-                    Tambah Data
-                </button>
+                <Link :href="route('admin.users.create', 'admin')">
+                    <Button
+                        class="flex items-center justify-center gap-2 rounded-md bg-white px-2 py-2.5 text-sm text-black hover:cursor-pointer hover:bg-white/90"
+                    >
+                        <Plus :size="18" />
+                        Tambah Data
+                    </Button>
+                </Link>
             </div>
             <div>
                 <table id="user-table" class="display">
