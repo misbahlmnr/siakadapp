@@ -2,29 +2,15 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import $ from 'jquery';
 import { Plus } from 'lucide-vue-next';
-import { onMounted, watch } from 'vue';
-import { useToast } from 'vue-toastification';
+import { onMounted } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: route('admin.dashboard') },
     { title: 'Manajemen Data Admin', href: route('admin.users.index', 'admin') },
 ];
-
-const page = usePage();
-const toast = useToast();
-
-// Flash message listener
-watch(
-    () => page.props.flash,
-    (flash: any) => {
-        if (flash?.success) toast.success(flash.success);
-        if (flash?.error) toast.error(flash.error);
-    },
-    { immediate: true },
-);
 
 const props = defineProps({
     role: String,
