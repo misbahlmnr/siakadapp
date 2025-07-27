@@ -13,7 +13,14 @@ Route::prefix('admin')
         Route::get('/manajemen-user/{role}', [UserController::class, 'index'])
             ->whereIn('role', ['admin', 'guru', 'siswa'])
             ->name('users.index');
+
         Route::get('/manajemen-user/{role}/data', [UserController::class, 'get'])->name('users.data');
+
         Route::get('/manajemen-user/{role}/create', [UserController::class, 'create'])->name('users.create');
+        Route::get('/manajemen-user/{role}/{id}/edit', [UserController::class, 'edit'])
+            ->whereNumber('id')
+            ->name('users.edit');
+
         Route::post('/manajemen-user/{role}', [UserController::class, 'store'])->name('users.store');
     });
+

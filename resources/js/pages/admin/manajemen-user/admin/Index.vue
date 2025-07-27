@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import $ from 'jquery';
 import { Plus } from 'lucide-vue-next';
 import { onMounted } from 'vue';
@@ -16,6 +16,10 @@ const props = defineProps({
     role: String,
 });
 
+const goToEdit = (id: number) => {
+    router.visit(route('admin.users.edit', { role: props.role, id: id }));
+};
+
 onMounted(() => {
     $('#user-table').DataTable({
         processing: true,
@@ -28,8 +32,23 @@ onMounted(() => {
             { data: 'name', name: 'name' },
             { data: 'email', name: 'email' },
             { data: 'created_at', name: 'created_at', width: '15%' },
-            { data: 'action', name: 'action', orderable: false, width: '10%', searchable: false },
+            {
+                data: 'id',
+                orderable: false,
+                searchable: false,
+                render: (data) => {
+                    return `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button>`;
+                },
+            },
         ],
+        drawCallback: function () {
+            $('.btn-edit')
+                .off('click')
+                .on('click', function () {
+                    const id = $(this).data('id');
+                    goToEdit(id);
+                });
+        },
     });
 });
 </script>

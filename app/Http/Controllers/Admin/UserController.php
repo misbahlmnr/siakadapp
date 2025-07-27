@@ -32,9 +32,6 @@ class UserController extends Controller
                     ->setTimezone('Asia/Jakarta')
                     ->format('d-m-Y H:i');
             })
-            ->addColumn('action', function ($row) use ($role) {
-                return '<a href="/admin/manajemen-user/'.$role.'/'.$row->id.'/edit" class="text-blue-500">Edit</a>';
-            })
             ->rawColumns(['action'])
             ->make(true);
     }
@@ -59,5 +56,15 @@ class UserController extends Controller
 
         return to_route('admin.users.index', 'admin')
             ->with('success', 'Data '.$request->role.' berhasil ditambahkan');
+    }
+
+    public function edit(string $role, string $id)
+    {
+        $user = User::findOrFail($id);
+
+        return inertia('admin/manajemen-user/'.$role.'/Edit', [
+            'role' => $role,
+            'user' => $user
+        ]);
     }
 }
