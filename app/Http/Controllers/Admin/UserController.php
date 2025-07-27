@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ManajemenUser\Admin\StoreRequest;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
@@ -44,5 +46,18 @@ class UserController extends Controller
         return inertia('admin/manajemen-user/'.$role.'/Create', [
             'role' => $role
         ]);
+    }
+
+    public function store(StoreRequest $request)
+    {
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+        ]);
+
+        return to_route('admin.users.index', 'admin')
+            ->with('success', 'Data '.$request->role.' berhasil ditambahkan');
     }
 }

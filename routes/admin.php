@@ -15,4 +15,5 @@ Route::prefix('admin')
             ->name('users.index');
         Route::get('/manajemen-user/{role}/data', [UserController::class, 'get'])->name('users.data');
         Route::get('/manajemen-user/{role}/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('/manajemen-user/{role}', [UserController::class, 'store'])->name('users.store');
     });

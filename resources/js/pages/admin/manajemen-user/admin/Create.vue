@@ -22,7 +22,9 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Tambah Data Admin', href: route('admin.users.create', 'admin') },
 ];
 
-const submit = () => {};
+const submit = () => {
+    form.post(route('admin.users.store', 'admin'));
+};
 </script>
 
 <template>
