@@ -1,0 +1,58 @@
+@layer components {
+    table {
+        @apply overflow-hidden rounded-sm bg-[#1A1A1A] text-sm;
+    }
+    th {
+        @apply border border-gray-300 bg-white px-5 py-3 text-black;
+    }
+    td {
+        @apply border border-gray-800 px-5 py-5;
+    }
+    tbody tr:nth-child(even) {
+        @apply bg-gray-800;
+    }
+    .dt-container > .dt-layout-row:first-child {
+        @apply flex items-center justify-between py-3;
+    }
+    .dt-length select {
+        @apply mr-2 rounded-md bg-gray-100 p-1.5 dark:bg-[#1A1A1A];
+    }
+    .dt-search input {
+        @apply ml-2 rounded-md bg-gray-100 p-2 dark:bg-[#1A1A1A];
+    }
+    .dt-paging nav {
+        @apply flex items-center gap-2;
+    }
+    .dt-paging {
+        @apply mt-4 flex items-center justify-end gap-1;
+    }
+
+    .dt-paging .dt-paging-button {
+        @apply rounded-md bg-white px-3 py-1.5 text-sm text-black transition-all duration-150 ease-in-out;
+    }
+
+    .dt-paging .dt-paging-button.current {
+        @apply cursor-default bg-white font-semibold;
+    }
+
+    .dt-paging .dt-paging-button.disabled {
+        @apply cursor-not-allowed bg-gray-300 text-gray-500;
+    }
+
+    .dt-paging .dt-paging-button:not(.current):not(.disabled):hover {
+        @apply cursor-not-allowed bg-white opacity-50;
+    }
+
+    .dt-paging .dt-paging-button.previous,
+    .dt-paging .dt-paging-button.next {
+        @apply px-3;
+    }
+
+    .dark .dt-paging .dt-paging-button {
+        @apply bg-white text-black;
+    }
+
+    .dark .dt-paging .dt-paging-button:hover {
+        @apply bg-white;
+    }
+}

@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './override/dataTables.css';
 
 @import 'tw-animate-css';
 
@@ -170,62 +171,4 @@
     .bgap {
         @apply grid gap-2;
     }
-}
-
-table {
-    @apply overflow-hidden rounded-sm bg-gray-900 text-sm;
-}
-th {
-    @apply px-5 py-3;
-}
-td {
-    @apply px-5 py-5;
-}
-tbody tr:nth-child(even) {
-    @apply bg-gray-800;
-}
-#siswaTable_wrapper > .dt-layout-row:first-child,
-#siswaTable_wrapper > .dt-layout-row:nth-child(3) {
-    @apply flex items-center justify-between py-3;
-}
-.dt-length select {
-    @apply mr-2 rounded-md bg-gray-100 p-1.5 dark:bg-gray-900;
-}
-.dt-search input {
-    @apply ml-2 rounded-md bg-gray-100 p-2 dark:bg-gray-900;
-}
-.dt-paging nav {
-    @apply flex items-center gap-2;
-}
-.dt-paging {
-    @apply mt-4 flex items-center justify-end gap-1;
-}
-
-.dt-paging .dt-paging-button {
-    @apply rounded-md bg-purple-600 px-3 py-1.5 text-sm text-white transition-all duration-150 ease-in-out;
-}
-
-.dt-paging .dt-paging-button.current {
-    @apply cursor-default bg-purple-800 font-semibold;
-}
-
-.dt-paging .dt-paging-button.disabled {
-    @apply cursor-not-allowed bg-gray-300 text-gray-500;
-}
-
-.dt-paging .dt-paging-button:not(.current):not(.disabled):hover {
-    @apply bg-purple-500;
-}
-
-.dt-paging .dt-paging-button.previous,
-.dt-paging .dt-paging-button.next {
-    @apply px-3;
-}
-
-.dark .dt-paging .dt-paging-button {
-    @apply bg-purple-700 text-white;
-}
-
-.dark .dt-paging .dt-paging-button:hover {
-    @apply bg-purple-500;
 }
