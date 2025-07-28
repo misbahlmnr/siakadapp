@@ -22,18 +22,37 @@ class UserController extends Controller
         ]);
     }
 
-    public function get(Request $request, string $role)
+    public function get(string $role)
     {
-        $query = User::where('role', $role)->orderBy('name');
+        $query = User::where('role', $role)
+            ->with($role === "siswa" ? "siswaProfile" : "guruProfile")
+            ->orderBy('name');
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->addColumn('nip', function ($row) use ($role) {
+                return $role === 'guru' ? ($row->guruProfile->nip ?? '-') : '-';
+            })
+            ->addColumn('mapel', function ($row) use ($role) {
+                return $role === 'guru' ? ($row->guruProfile->mapel ?? '-') : '-';
+            })
+            ->addColumn('no_telp', function ($row) use ($role) {
+                return $role === 'guru' ? ($row->guruProfile->no_telp ?? '-') : '-';
+            })
+            ->addColumn('alamat', function ($row) use ($role) {
+                return $role === 'guru' ? ($row->guruProfile->alamat ?? '-') : '-';
+            })
+            ->addColumn('status_guru', function ($row) use ($role) {
+                return $role === 'guru' ? ($row->guruProfile->status_guru ?? '-') : '-';
+            })
+            ->addColumn('tanggal_masuk', function ($row) use ($role) {
+                return $role === 'guru' ? (Carbon::parse($row->guruProfile->tanggal_masuk)->setTimezone('Asia/Jakarta')->format('d-m-Y') ?? '-') : '-';
+            })
             ->editColumn('created_at', function ($row) {
                 return Carbon::parse($row->created_at)
                     ->setTimezone('Asia/Jakarta')
                     ->format('d-m-Y H:i');
             })
-            ->rawColumns(['action'])
             ->make(true);
     }
 

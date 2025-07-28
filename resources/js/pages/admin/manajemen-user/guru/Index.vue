@@ -1,0 +1,140 @@
+<script setup lang="ts">
+import { Button } from '@/components/ui/button';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { BreadcrumbItem } from '@/types';
+import { Link, router } from '@inertiajs/vue3';
+import $ from 'jquery';
+import { Plus } from 'lucide-vue-next';
+import { onMounted } from 'vue';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: route('admin.dashboard') },
+    { title: 'Manajemen Data User', href: route('admin.users.index', 'guru') },
+];
+
+const props = defineProps({
+    role: String,
+});
+
+const goToEdit = (id: number) => {
+    router.visit(route('admin.users.edit', { role: props.role, id: id }));
+};
+
+onMounted(() => {
+    const table = $('#user-table').DataTable({
+        processing: true,
+        serverSide: true,
+        destroy: true,
+        pagingType: 'simple_numbers',
+        ajax: route('admin.users.data', props.role),
+        columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', width: '4%', orderable: false, searchable: false },
+            {
+                data: 'name',
+                name: 'name',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'nip',
+                name: 'nip',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'mapel',
+                name: 'mapel',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'no_telp',
+                name: 'no_telp',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'alamat',
+                name: 'alamat',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'status_guru',
+                name: 'status_guru',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'tanggal_masuk',
+                name: 'tanggal_masuk',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'created_at',
+                name: 'created_at',
+                width: '15%',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'id',
+                orderable: false,
+                searchable: false,
+                render: (data) => {
+                    return `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button> | <button class="btn-delete text-red-500 cursor-pointer" data-id="${data}">Hapus</button>`;
+                },
+            },
+        ],
+
+        drawCallback: function () {
+            $('.btn-edit').on('click', function () {
+                const id = $(this).data('id');
+                goToEdit(id);
+            });
+
+            $('.btn-delete').on('click', function () {
+                const id = $(this).data('id');
+                if (confirm('Yakin ingin menghapus data admin ini?')) {
+                    router.delete(route('admin.users.destroy', { role: 'admin', id: id }), {
+                        onSuccess: () => {
+                            table.ajax.reload();
+                        },
+                    });
+                }
+            });
+        },
+    });
+});
+</script>
+
+<template>
+    <Head title="Data Guru" />
+
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl px-10 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold">Data Guru</h1>
+                <Link :href="route('admin.users.create', 'guru')">
+                    <Button
+                        class="flex items-center justify-center gap-2 rounded-md bg-white px-2 py-2.5 text-sm text-black hover:cursor-pointer hover:bg-white/90"
+                    >
+                        <Plus :size="18" />
+                        Tambah Data
+                    </Button>
+                </Link>
+            </div>
+            <div>
+                <table id="user-table" class="display">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Nip</th>
+                            <th>Mapel</th>
+                            <th>No Telp</th>
+                            <th>Alamat</th>
+                            <th>Status Guru</th>
+                            <th>Tanggal Masuk</th>
+                            <th>Created At</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </AppLayout>
+</template>
