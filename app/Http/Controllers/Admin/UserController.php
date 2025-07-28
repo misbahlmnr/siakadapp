@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ManajemenUser\Admin\StoreRequest;
 use App\Http\Requests\ManajemenUser\Admin\UpdateRequest;
+use App\Models\GuruProfile;
+use App\Models\SiswaProfile;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -65,14 +67,51 @@ class UserController extends Controller
         ]);
     }
 
-    public function store(StoreRequest $request)
+    public function store(StoreRequest $request, string $role)
     {
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-        ]);
+        switch ($role) {
+            case 'guru': 
+                User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'role' => $request->role,
+                ]);
+
+                GuruProfile::create([
+                    'user_id' => User::latest()->first()->id,
+                    'nip' => $request->nip,
+                    'mapel' => $request->mapel,
+                    'no_telp' => $request->no_telp,
+                    'alamat' => $request->alamat,
+                    'status_guru' => $request->status_guru,
+                    'tanggal_masuk' => $request->tanggal_masuk,
+                ]);
+
+                break;
+
+            case 'siswa':
+                User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'role' => $request->role,
+                ]);
+
+                // SiswaProfile::create([
+
+                // ]);
+
+                break;
+
+            default: 
+                User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'role' => $request->role,
+                ]);
+        }
 
         return to_route('admin.users.index', 'admin')
             ->with('success', 'Data '.$request->role.' berhasil ditambahkan');
