@@ -18,8 +18,11 @@ return new class extends Migration
             $table->string('kelas')->nullable();
             $table->year('tahun_masuk')->nullable();
             $table->text('alamat')->nullable();
+            $table->string('kontak_ortu')->nullable();
+            $table->enum('status', ['aktif', 'tidak_aktif'])->default('aktif');
             $table->timestamps();
         });
+
     }
 
     /**
