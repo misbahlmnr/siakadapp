@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ManajemenUser\Admin\StoreRequest;
 use App\Http\Requests\ManajemenUser\Admin\UpdateRequest;
 use App\Models\GuruProfile;
-use App\Models\SiswaProfile;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -119,7 +118,26 @@ class UserController extends Controller
 
     public function edit(string $role, string $id)
     {
-        $user = User::findOrFail($id);
+        $relation = self::getRelation($role);
+        $query = User::query();
+
+        if ($relation) {
+            $query->with($relation);
+        }
+
+
+        $user = $query->findOrFail($id);
+
+        // Inject data relasi ke property dinamis
+        if ($role === 'siswa' && $user->siswaProfile) {
+            foreach ($user->siswaProfile->getAttributes() as $key => $value) {
+                $user->setAttribute($key, $value);
+            }
+        } elseif ($role === 'guru' && $user->guruProfile) {
+            foreach ($user->guruProfile->getAttributes() as $key => $value) {
+                $user->setAttribute($key, $value);
+            }
+        }
 
         return inertia('admin/manajemen-user/'.$role.'/Edit', [
             'role' => $role,
@@ -152,5 +170,26 @@ class UserController extends Controller
 
         return to_route('admin.users.index', $role)
             ->with('success', 'Data ' . $role . ' berhasil dihapus');
+    }
+
+    /**
+     * Determine the relationship name based on the user's role.
+     *
+     * @param string $role The role of the user.
+     * @return string|null The related profile name or null if the role is unrecognized.
+     */
+
+    public function getRelation(string $role)
+    {
+        switch ($role) {
+            case 'guru':
+                return 'guruProfile';
+                break;
+            case 'siswa':
+                return 'siswaProfile';
+                break;
+            default:
+                return null;
+        }
     }
 }
