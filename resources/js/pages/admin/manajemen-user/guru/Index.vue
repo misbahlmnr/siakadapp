@@ -75,7 +75,7 @@ onMounted(() => {
                 orderable: false,
                 searchable: false,
                 render: (data) => {
-                    return `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button> | <button class="btn-delete text-red-500 cursor-pointer" data-id="${data}">Hapus</button>`;
+                    return `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button> | <button class="btn-detail text-green-500 cursor-pointer" data-id="${data}">Detail</button> | <button class="btn-delete text-red-500 cursor-pointer" data-id="${data}">Hapus</button>`;
                 },
             },
         ],
@@ -84,6 +84,11 @@ onMounted(() => {
             $('.btn-edit').on('click', function () {
                 const id = $(this).data('id');
                 goToEdit(id);
+            });
+
+            $('.btn-detail').on('click', function () {
+                const id = $(this).data('id');
+                router.visit(route('admin.users.show', { role: 'guru', id: id }));
             });
 
             $('.btn-delete').on('click', function () {

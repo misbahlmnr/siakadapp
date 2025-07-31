@@ -21,6 +21,10 @@ Route::prefix('admin')
             ->whereNumber('id')
             ->name('users.edit');
 
+        Route::get('/manajemen-user/{role}/{id}', [UserController::class, 'show'])
+            ->whereNumber('id')
+            ->name('users.show');
+
         Route::post('/manajemen-user/{role}', [UserController::class, 'store'])->name('users.store');
 
         Route::put('/manajemen-user/{role}/{id}', [UserController::class, 'update'])->name('users.update');

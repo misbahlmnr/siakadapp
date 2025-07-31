@@ -66,6 +66,35 @@ class UserController extends Controller
         ]);
     }
 
+    public function show(string $role, string $id)
+    {
+        $relation = self::getRelation($role);
+        $query = User::query();
+
+        if ($relation) {
+            $query->with($relation);
+        }
+
+
+        $user = $query->findOrFail($id);
+
+        // Inject data relasi ke property dinamis
+        if ($role === 'siswa' && $user->siswaProfile) {
+            foreach ($user->siswaProfile->getAttributes() as $key => $value) {
+                $user->setAttribute($key, $value);
+            }
+        } elseif ($role === 'guru' && $user->guruProfile) {
+            foreach ($user->guruProfile->getAttributes() as $key => $value) {
+                $user->setAttribute($key, $value);
+            }
+        }
+
+        return inertia('admin/manajemen-user/'.$role.'/View', [
+            'role' => $role,
+            'user' => $user
+        ]);
+    }
+
     public function store(StoreRequest $request, string $role)
     {
         switch ($role) {
