@@ -1,150 +1,149 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import axios from 'axios';
+import { Link, router } from '@inertiajs/vue3';
 import $ from 'jquery';
-import { Eye, FileUp, Plus, SquarePen, Trash2 } from 'lucide-vue-next';
-import { nextTick, onMounted, ref, watch } from 'vue';
-import { useToast } from 'vue-toastification';
+import { Plus } from 'lucide-vue-next';
+import { onMounted } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Akademik', href: '/akademik' },
-    { title: 'Siswa', href: '/akademik/siswa' },
+    { title: 'Dashboard', href: route('admin.dashboard') },
+    { title: 'Manajemen Data User', href: route('admin.users.index', 'siswa') },
 ];
 
-const page = usePage();
-const toast = useToast();
-const siswaList = ref<any[]>([]);
+const props = defineProps({
+    role: String,
+});
 
-// Flash message listener
-watch(
-    () => page.props.flash,
-    (flash: any) => {
-        if (flash?.success) toast.success(flash.success);
-        if (flash?.error) toast.error(flash.error);
-    },
-    { immediate: true },
-);
+const goToEdit = (id: number) => {
+    router.visit(route('admin.users.edit', { role: props.role, id: id }));
+};
 
-// Fungsi inisialisasi DataTables
-const initDataTable = () => {
-    $('#siswaTable').DataTable({
-        pagingType: 'simple_numbers',
+onMounted(() => {
+    const table = $('#user-table').DataTable({
+        processing: true,
+        serverSide: true,
         destroy: true,
-        language: {
-            lengthMenu: 'Tampilkan _MENU_ data per halaman',
-            zeroRecords: 'Tidak ada data ditemukan',
-            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
-            infoEmpty: 'Menampilkan 0 sampai 0 dari 0 data',
-            infoFiltered: '(disaring dari _MAX_ total data)',
-            search: 'Cari:',
-            paginate: {
-                previous: '‹',
-                next: '›',
-            },
-        },
-        columnDefs: [
+        pagingType: 'simple_numbers',
+        ajax: route('admin.users.data', props.role),
+        columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', width: '4%', orderable: false, searchable: false },
             {
-                targets: 0,
-                searchable: false,
+                data: 'name',
+                name: 'name',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'nisn',
+                name: 'nisn',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'kelas',
+                name: 'kelas',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'tahun_masuk',
+                name: 'tahun_masuk',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'alamat',
+                name: 'alamat',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'kontak_ortu',
+                name: 'kontak_ortu',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'status',
+                name: 'status',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'email',
+                name: 'email',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'created_at',
+                name: 'created_at',
+                width: '15%',
+                render: (data) => data ?? '-',
+            },
+            {
+                data: 'id',
                 orderable: false,
-                render: function (data, type, row, meta) {
-                    return meta.row + meta.settings._iDisplayStart + 1;
+                searchable: false,
+                render: (data) => {
+                    return `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button> | <button class="btn-detail text-green-500 cursor-pointer" data-id="${data}">Detail</button> | <button class="btn-delete text-red-500 cursor-pointer" data-id="${data}">Hapus</button>`;
                 },
             },
         ],
+
+        drawCallback: function () {
+            $('.btn-edit').on('click', function () {
+                const id = $(this).data('id');
+                goToEdit(id);
+            });
+
+            $('.btn-detail').on('click', function () {
+                const id = $(this).data('id');
+                router.visit(route('admin.users.show', { role: 'siswa', id: id }));
+            });
+
+            $('.btn-delete').on('click', function () {
+                const id = $(this).data('id');
+                if (confirm('Yakin ingin menghapus data siswa ini?')) {
+                    router.delete(route('admin.users.destroy', { role: 'siswa', id: id }), {
+                        onSuccess: () => {
+                            table.ajax.reload();
+                        },
+                    });
+                }
+            });
+        },
     });
-};
-
-const fetchSiswa = async () => {
-    const res = await axios.get(route('akademik.siswa.get'));
-    siswaList.value = res.data.data;
-
-    await nextTick();
-    $('#siswaTable').DataTable().destroy();
-    initDataTable();
-};
-
-const hapus = async (id: number) => {
-    if (confirm('Yakin ingin menghapus data siswa ini?')) {
-        router.delete(route('akademik.siswa.destroy', id), {
-            preserveScroll: true,
-            onSuccess: async () => {
-                await fetchSiswa();
-            },
-            onError: () => {
-                toast.error('Gagal menghapus data siswa');
-            },
-        });
-    }
-};
-
-onMounted(fetchSiswa);
+});
 </script>
 
 <template>
     <Head title="Data Siswa" />
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl px-10 py-4">
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-bold">Data Siswa</h1>
-                <div class="grid grid-cols-2 gap-3">
-                    <button
-                        class="flex cursor-pointer items-center justify-center gap-2 rounded-md bg-cyan-600 px-4 py-2.5 text-sm text-white hover:bg-cyan-500"
+                <Link :href="route('admin.users.create', 'siswa')">
+                    <Button
+                        class="flex items-center justify-center gap-2 rounded-md bg-white px-2 py-2.5 text-sm text-black hover:cursor-pointer hover:bg-white/90"
                     >
-                        <FileUp :size="18" />
-                        Upload
-                    </button>
-                    <Link :href="route('akademik.siswa.create')">
-                        <button
-                            class="flex items-center justify-center gap-2 rounded-md bg-purple-600 px-2 py-2.5 text-sm text-white hover:cursor-pointer hover:bg-purple-500"
-                        >
-                            <Plus :size="18" />
-                            Tambah Data
-                        </button>
-                    </Link>
-                </div>
+                        <Plus :size="18" />
+                        Tambah Data
+                    </Button>
+                </Link>
             </div>
-
-            <div class="mt-4 overflow-x-auto">
-                <table id="siswaTable" class="table-bordered table-striped table w-full">
-                    <thead class="table-head bg-purple-500">
+            <div>
+                <table id="user-table" class="display">
+                    <thead>
                         <tr>
-                            <th>NO</th>
-                            <th>NIS</th>
+                            <th>No</th>
                             <th>Nama</th>
-                            <th>Jenis Kelamin</th>
+                            <th>NISN</th>
                             <th>Kelas</th>
                             <th>Tahun Masuk</th>
+                            <th>Alamat</th>
+                            <th>Kontak Ortu</th>
+                            <th>Status</th>
+                            <th>Email</th>
+                            <th>Created At</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="table-body">
-                        <tr v-for="siswa in siswaList" :key="siswa.id">
-                            <td></td>
-                            <td>{{ siswa.nis }}</td>
-                            <td>{{ siswa.nama }}</td>
-                            <td>{{ siswa.jenis_kelamin }}</td>
-                            <td>{{ siswa.kelas }}</td>
-                            <td>{{ siswa.tahun_masuk }}</td>
-                            <td class="flex items-center gap-2">
-                                <Link :href="route('akademik.siswa.edit', siswa.id)">
-                                    <button class="rounded-md bg-orange-500 p-2 text-white hover:cursor-pointer hover:underline">
-                                        <SquarePen :size="16" />
-                                    </button>
-                                </Link>
-                                <Link :href="route('akademik.siswa.show', siswa.id)">
-                                    <button class="rounded-md bg-blue-500 p-2 text-white hover:cursor-pointer hover:underline">
-                                        <Eye :size="16" />
-                                    </button>
-                                </Link>
-                                <button class="rounded-md bg-red-500 p-2 text-white hover:cursor-pointer hover:underline" @click="hapus(siswa.id)">
-                                    <Trash2 :size="16" />
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
                 </table>
             </div>
         </div>

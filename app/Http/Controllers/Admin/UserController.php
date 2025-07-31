@@ -31,6 +31,33 @@ class UserController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
+
+            // Kolom untuk siswa
+            ->addColumn('nisn', function ($row) use ($role) {
+                return $role === 'siswa' ? ($row->siswaProfile->nisn ?? '-') : '-';
+            })
+            ->addColumn('kelas', function ($row) use ($role) {
+                return $role === 'siswa' ? ($row->siswaProfile->kelas ?? '-') : '-';
+            })
+            ->addColumn('tahun_masuk', function ($row) use ($role) {
+                return $role === 'siswa' ? ($row->siswaProfile->tahun_masuk ?? '-') : '-';
+            })
+            ->addColumn('alamat', function ($row) use ($role) {
+                if ($role === 'siswa') {
+                    return $row->siswaProfile->alamat ?? '-';
+                } elseif ($role === 'guru') {
+                    return $row->guruProfile->alamat ?? '-';
+                }
+                return '-';
+            })
+            ->addColumn('kontak_ortu', function ($row) use ($role) {
+                return $role === 'siswa' ? ($row->siswaProfile->kontak_ortu ?? '-') : '-';
+            })
+            ->addColumn('status', function ($row) use ($role) {
+                return $role === 'siswa' ? ($row->siswaProfile->status ?? '-') : '-';
+            })
+
+            // Kolom untuk guru
             ->addColumn('nip', function ($row) use ($role) {
                 return $role === 'guru' ? ($row->guruProfile->nip ?? '-') : '-';
             })
@@ -40,15 +67,20 @@ class UserController extends Controller
             ->addColumn('no_telp', function ($row) use ($role) {
                 return $role === 'guru' ? ($row->guruProfile->no_telp ?? '-') : '-';
             })
-            ->addColumn('alamat', function ($row) use ($role) {
-                return $role === 'guru' ? ($row->guruProfile->alamat ?? '-') : '-';
-            })
             ->addColumn('status_guru', function ($row) use ($role) {
                 return $role === 'guru' ? ($row->guruProfile->status_guru ?? '-') : '-';
             })
             ->addColumn('tanggal_masuk', function ($row) use ($role) {
-                return $role === 'guru' ? (Carbon::parse($row->guruProfile->tanggal_masuk)->setTimezone('Asia/Jakarta')->format('d-m-Y') ?? '-') : '-';
+                return $role === 'guru'
+                    ? (isset($row->guruProfile->tanggal_masuk)
+                        ? Carbon::parse($row->guruProfile->tanggal_masuk)
+                            ->setTimezone('Asia/Jakarta')
+                            ->format('d-m-Y')
+                        : '-')
+                    : '-';
             })
+
+            // Created at
             ->editColumn('created_at', function ($row) {
                 return Carbon::parse($row->created_at)
                     ->setTimezone('Asia/Jakarta')
