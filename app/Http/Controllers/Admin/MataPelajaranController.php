@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MataPelajaran;
+use App\Models\User;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use Yajra\DataTables\Facades\DataTables;
@@ -29,4 +30,12 @@ class MataPelajaranController extends Controller
         return Inertia::render('admin/mata-pelajaran/Index');
     }
     
+    public function create()
+    {
+        $dataGuru = User::where('role', 'guru')->select('id', 'name')->get();
+        
+        return Inertia::render('admin/mata-pelajaran/Create', [
+            'guruOptions' => $dataGuru
+        ]);
+    }
 }

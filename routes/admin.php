@@ -39,6 +39,7 @@ Route::prefix('admin')
             ->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/data', 'get')->name('data');
+                Route::get('/create', 'create')->name('create');
             });
     });
 
