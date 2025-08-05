@@ -40,6 +40,7 @@ Route::prefix('admin')
                 Route::get('/', 'index')->name('index');
                 Route::get('/data', 'get')->name('data');
                 Route::get('/create', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
             });
     });
 

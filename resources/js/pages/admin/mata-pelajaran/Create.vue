@@ -10,11 +10,18 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
-const form = useForm({
+type Form = {
+    kode_mapel: string;
+    nama_mapel: string;
+    deskripsi: string;
+    guru_id: string | null;
+};
+
+const form = useForm<Form>({
     kode_mapel: '',
     nama_mapel: '',
     deskripsi: '',
-    guru_id: '',
+    guru_id: null,
 });
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -38,7 +45,9 @@ watch(
     },
 );
 
-const submit = () => {};
+const submit = () => {
+    form.post(route('admin.mata-pelajaran.store'));
+};
 </script>
 
 <template>
