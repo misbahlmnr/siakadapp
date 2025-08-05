@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MataPelajaran\StoreRequest;
+use App\Http\Requests\MataPelajaran\UpdateRequest;
 use App\Models\MataPelajaran;
 use App\Models\User;
 use Carbon\Carbon;
@@ -62,5 +63,19 @@ class MataPelajaranController extends Controller
             'mataPelajaran' => $mataPelajaran,
             'guruOptions' => $dataGuru
         ]);
+    }
+
+    public function update(UpdateRequest $request, string $id)
+    {
+        $mataPelajaran = MataPelajaran::findOrFail($id);
+        $mataPelajaran->update([
+            'kode_mapel' => $request->kode_mapel,
+            'nama_mapel' => $request->nama_mapel,
+            'deskripsi' => $request->deskripsi,
+            'guru_id' => $request->guru_id,
+        ]);
+
+        return to_route('admin.mata-pelajaran.index')
+            ->with('success', 'Mata pelajaran ' . $request->nama_mapel . ' berhasil diubah');
     }
 }

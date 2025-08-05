@@ -3,6 +3,7 @@
 namespace App\Http\Requests\MataPelajaran;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +22,13 @@ class UpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $matpelId = $this->route('id');
+
         return [
-            //
+            'kode_mapel' => ['required', 'string', 'max:255', Rule::unique('mata_pelajaran', 'kode_mapel')->ignore($matpelId)],
+            'nama_mapel' => ['required', 'string', 'max:255', Rule::unique('mata_pelajaran', 'nama_mapel')->ignore($matpelId)],
+            'deskripsi' => ['nullable', 'string', 'max:255'],
+            'guru_id' => ['nullable', 'exists:users,id'],
         ];
     }
 }
