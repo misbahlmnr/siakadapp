@@ -40,10 +40,15 @@ onMounted(() => {
                 router.visit(route('admin.mata-pelajaran.edit', id));
             });
 
+            $('.btn-detail').on('click', function () {
+                const id = $(this).data('id');
+                router.visit(route('admin.mata-pelajaran.show', id));
+            });
+
             $('.btn-delete').on('click', function () {
                 const id = $(this).data('id');
                 if (confirm('Yakin ingin menghapus data admin ini?')) {
-                    router.delete(route('admin.users.destroy', { role: 'admin', id: id }), {
+                    router.delete(route('admin.mata-pelajaran.destroy', id), {
                         onSuccess: () => {
                             table.ajax.reload();
                         },

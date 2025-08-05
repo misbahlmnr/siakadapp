@@ -54,6 +54,28 @@ class MataPelajaranController extends Controller
             ->with('success', 'Mata pelajaran ' . $request->nama_mapel . ' berhasil ditambahkan');
     }
 
+    public function show(string $id)
+    {
+        $mataPelajaran = MataPelajaran::with('guru')->findOrFail($id);
+
+        $formatMatapelajaran = [
+            'id' => $mataPelajaran->id,
+            'kode_mapel' => $mataPelajaran->kode_mapel,
+            'nama_mapel' => $mataPelajaran->nama_mapel,
+            'deskripsi' => $mataPelajaran->deskripsi,
+            'guru' => $mataPelajaran->guru ? [
+                'id' => $mataPelajaran->guru->id,
+                'name' => $mataPelajaran->guru->name,
+            ] : null,
+            'created_at' => $mataPelajaran->created_at->toDateTimeString(),
+            'updated_at' => $mataPelajaran->updated_at->toDateTimeString(),
+        ];
+
+        return Inertia::render('admin/mata-pelajaran/View', [
+            'mataPelajaran' => $formatMatapelajaran,
+        ]);
+    }
+
     public function edit(string $id)
     {
         $mataPelajaran = MataPelajaran::findOrFail($id);
@@ -77,5 +99,14 @@ class MataPelajaranController extends Controller
 
         return to_route('admin.mata-pelajaran.index')
             ->with('success', 'Mata pelajaran ' . $request->nama_mapel . ' berhasil diubah');
+    }
+
+    public function destroy(string $id)
+    {
+        $mataPelajaran = MataPelajaran::findOrFail($id);
+        $mataPelajaran->delete();
+
+        return to_route('admin.mata-pelajaran.index')
+            ->with('success', 'Mata pelajaran ' . $mataPelajaran->nama_mapel . ' berhasil dihapus');
     }
 }

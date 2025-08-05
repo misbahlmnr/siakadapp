@@ -40,9 +40,11 @@ Route::prefix('admin')
                 Route::get('/', 'index')->name('index');
                 Route::get('/data', 'get')->name('data');
                 Route::get('/create', 'create')->name('create');
+                Route::get('/{id}', 'show')->name('show');
                 Route::post('/', 'store')->name('store');
                 Route::get('/{id}/edit', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
             });
     });
 
