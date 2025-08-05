@@ -37,7 +37,7 @@ onMounted(() => {
         drawCallback: function () {
             $('.btn-edit').on('click', function () {
                 const id = $(this).data('id');
-                router.visit(route('admin.users.edit', { role: 'admin', id: id }));
+                router.visit(route('admin.mata-pelajaran.edit', id));
             });
 
             $('.btn-delete').on('click', function () {

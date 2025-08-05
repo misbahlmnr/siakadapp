@@ -41,6 +41,7 @@ Route::prefix('admin')
                 Route::get('/data', 'get')->name('data');
                 Route::get('/create', 'create')->name('create');
                 Route::post('/', 'store')->name('store');
+                Route::get('/{id}/edit', 'edit')->name('edit');
             });
     });
 

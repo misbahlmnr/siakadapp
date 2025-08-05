@@ -52,4 +52,15 @@ class MataPelajaranController extends Controller
         return to_route('admin.mata-pelajaran.index')
             ->with('success', 'Mata pelajaran ' . $request->nama_mapel . ' berhasil ditambahkan');
     }
+
+    public function edit(string $id)
+    {
+        $mataPelajaran = MataPelajaran::findOrFail($id);
+        $dataGuru = User::where('role', 'guru')->select('id', 'name')->get();
+
+        return Inertia::render('admin/mata-pelajaran/Edit', [
+            'mataPelajaran' => $mataPelajaran,
+            'guruOptions' => $dataGuru
+        ]);
+    }
 }

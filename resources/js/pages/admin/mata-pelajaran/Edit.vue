@@ -14,25 +14,32 @@ type Form = {
     kode_mapel: string;
     nama_mapel: string;
     deskripsi: string;
-    guru_id: string | null;
+    guru_id: number | null;
 };
 
+const props = defineProps<{
+    mataPelajaran: {
+        id: number;
+        kode_mapel: string;
+        nama_mapel: string;
+        deskripsi: string | null;
+        guru_id: number | null;
+    };
+    guruOptions: { id: number; name: string }[];
+}>();
+
 const form = useForm<Form>({
-    kode_mapel: '',
-    nama_mapel: '',
-    deskripsi: '',
-    guru_id: null,
+    kode_mapel: props.mataPelajaran.kode_mapel,
+    nama_mapel: props.mataPelajaran.nama_mapel,
+    deskripsi: props.mataPelajaran.deskripsi ?? '',
+    guru_id: props.mataPelajaran.guru_id,
 });
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Beranda', href: route('admin.dashboard') },
     { title: 'Mata Pelajaran', href: route('admin.mata-pelajaran.index') },
-    { title: 'Tambah Mata Pelajaran', href: route('admin.mata-pelajaran.create') },
+    { title: 'Edit Mata Pelajaran', href: route('admin.mata-pelajaran.edit', props.mataPelajaran.id) },
 ];
-
-const props = defineProps<{
-    guruOptions: { id: string; name: string }[];
-}>();
 
 const selectedGuruLabel = ref('Pilih Guru');
 
@@ -41,40 +48,43 @@ watch(
     () => form.guru_id,
     (val) => {
         const selected = props.guruOptions.find((g) => g.id === val);
+        console.log('guru options', props.guruOptions);
         selectedGuruLabel.value = selected ? selected.name : 'Pilih Guru';
     },
+    { immediate: true },
 );
 
 const submit = () => {
-    console.log('data form', form);
-    form.post(route('admin.mata-pelajaran.store'));
+    form.put(route('admin.mata-pelajaran.update', props.mataPelajaran.id));
 };
+console.log(props.guruOptions);
+console.log(props.mataPelajaran);
 </script>
 
 <template>
-    <Head title="Tambah Mata Pelajaran" />
+    <Head title="Edit Mata Pelajaran" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-4 px-10 py-6">
-            <h1 class="text-2xl font-bold">Tambah Mata Pelajaran</h1>
+            <h1 class="text-2xl font-bold">Edit Mata Pelajaran</h1>
 
             <form class="grid grid-cols-1 gap-4 md:grid-cols-2" @submit.prevent="submit">
                 <!-- Kode Mapel -->
                 <div class="flex flex-col gap-3">
                     <Label for="kode_mapel">Kode Mapel</Label>
-                    <Input id="kode_mapel" v-model="form.kode_mapel" placeholder="Contoh: MTK01" />
+                    <Input id="kode_mapel" v-model="form.kode_mapel" />
                     <InputError :message="form.errors.kode_mapel" />
                 </div>
 
                 <!-- Nama Mapel -->
                 <div class="flex flex-col gap-3">
                     <Label for="nama_mapel">Nama Mata Pelajaran</Label>
-                    <Input id="nama_mapel" v-model="form.nama_mapel" placeholder="Contoh: Matematika" />
+                    <Input id="nama_mapel" v-model="form.nama_mapel" />
                     <InputError :message="form.errors.nama_mapel" />
                 </div>
 
                 <!-- Deskripsi -->
                 <div class="flex flex-col gap-3 md:col-span-2">
-                    <Label for="deskripsi">Deskripsi (Opsional)</Label>
+                    <Label for="deskripsi">Deskripsi</Label>
                     <textarea
                         id="deskripsi"
                         v-model="form.deskripsi"
@@ -115,7 +125,7 @@ const submit = () => {
                 <div class="mt-4 md:col-span-2">
                     <Button :disabled="form.processing">
                         <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                        Simpan
+                        Simpan Perubahan
                     </Button>
                 </div>
             </form>
