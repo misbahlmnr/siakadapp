@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\{UserController};
+use App\Http\Controllers\Admin\{MataPelajaranController, UserController};
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 
@@ -32,5 +32,13 @@ Route::prefix('admin')
         Route::delete('/manajemen-user/{role}/{id}', [UserController::class, 'destroy'])
             ->whereNumber('id')
             ->name('users.destroy');
+
+        Route::prefix('mata-pelajaran')
+            ->name('mata-pelajaran.')
+            ->controller(MataPelajaranController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/data', 'get')->name('data');
+            });
     });
 

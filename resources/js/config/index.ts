@@ -20,7 +20,7 @@ export const GlobalConfig = {
             },
             {
                 title: 'Mata Pelajaran',
-                href: '/admin/subjects',
+                href: '/admin/mata-pelajaran',
                 icon: BookOpen,
             },
             {
