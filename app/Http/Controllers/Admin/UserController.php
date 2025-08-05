@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ManajemenUser\Admin\StoreRequest;
 use App\Http\Requests\ManajemenUser\Admin\UpdateRequest;
 use App\Models\GuruProfile;
+use App\Models\SiswaProfile;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -158,9 +159,15 @@ class UserController extends Controller
                     'role' => $request->role,
                 ]);
 
-                // SiswaProfile::create([
-
-                // ]);
+                SiswaProfile::create([
+                    'user_id' => User::latest()->first()->id,
+                    'nisn' => $request->nisn,
+                    'kelas' => $request->kelas,
+                    'tahun_masuk' => $request->tahun_masuk,
+                    'alamat' => $request->alamat,
+                    'kontak_ortu' => $request->kontak_ortu,
+                    'status' => $request->status,
+                ]);
 
                 break;
 
@@ -173,8 +180,8 @@ class UserController extends Controller
                 ]);
         }
 
-        return to_route('admin.users.index', 'admin')
-            ->with('success', 'Data '.$request->role.' berhasil ditambahkan');
+        return to_route('admin.users.index', $role)
+            ->with('success', 'Data '.$role.' berhasil ditambahkan');
     }
 
     public function edit(string $role, string $id)
@@ -213,16 +220,43 @@ class UserController extends Controller
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            // if password is not filled, keep the old password
             'password' => $request->filled('password') 
                 ? Hash::make($request->password) 
                 : $user->password,
             'role' => $request->role,
         ]);
 
+        switch ($role) {
+            case 'guru':
+                $user->guruProfile()->update([
+                    'nip' => $request->nip,
+                    'mapel' => $request->mapel,
+                    'no_telp' => $request->no_telp,
+                    'alamat' => $request->alamat,
+                    'status_guru' => $request->status_guru,
+                    'tanggal_masuk' => $request->tanggal_masuk,
+                ]);
+                break;
+
+            case 'siswa':
+                $user->siswaProfile()->update([
+                    'nisn' => $request->nisn,
+                    'kelas' => $request->kelas,
+                    'tahun_masuk' => $request->tahun_masuk,
+                    'alamat' => $request->alamat,
+                    'kontak_ortu' => $request->kontak_ortu,
+                    'status' => $request->status,
+                ]);
+                break;
+
+            default:
+                break;
+        }
+
         return to_route('admin.users.index', $role)
             ->with('success', 'Data ' . $role . ' berhasil diperbarui');
     }
+
 
     public function destroy(string $role, string $id)
     {

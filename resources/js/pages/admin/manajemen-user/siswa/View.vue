@@ -1,85 +1,72 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
-defineProps<{
-    siswa: {
-        nis: string;
-        nama: string;
-        jenis_kelamin: string;
-        kelas: string;
-        tahun_masuk: string;
-        ttl: string;
-        alamat: string;
-        kontak_ortu: string;
-        status: string;
-    };
-}>();
+const props = defineProps({
+    user: {
+        type: Object,
+        required: true,
+    },
+    role: {
+        type: String,
+        required: true,
+    },
+});
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Akademik', href: '#' },
-    { title: 'Siswa', href: '/akademik/siswa' },
-    { title: 'Detail Data Siswa', href: '#' },
+    { title: 'Beranda', href: route('admin.dashboard') },
+    { title: 'Manajemen Data Siswa', href: route('admin.users.index', 'siswa') },
+    { title: `Detail ${props.user.name}`, href: route('admin.users.show', { role: props.role, id: props.user.id }) },
 ];
 </script>
 
 <template>
-    <Head title="Detail Data Siswa" />
+    <Head :title="`Detail Siswa ${user.name}`" />
+
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="px-10 py-6">
-            <h1 class="mb-6 text-2xl font-bold">Detail Data Siswa</h1>
+        <div class="flex flex-col gap-6 px-10 py-6">
+            <h1 class="text-2xl font-bold">Detail Data Siswa</h1>
 
-            <div class="grid grid-cols-1 gap-6 rounded-xl border p-6 shadow md:grid-cols-2 dark:bg-[#121212]">
-                <div class="bgap">
-                    <p class="text-sm text-gray-600">NIS</p>
-                    <p class="text-base font-medium">{{ siswa.nis }}</p>
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div>
+                    <p class="text-sm text-gray-500">Nama Lengkap</p>
+                    <p class="font-semibold">{{ user.name }}</p>
                 </div>
+                <div>
+                    <p class="text-sm text-gray-500">Email</p>
+                    <p class="font-semibold">{{ user.email }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">NISN</p>
+                    <p class="font-semibold">{{ user.siswa_profile?.nisn ?? '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Kelas</p>
+                    <p class="font-semibold">{{ user.siswa_profile?.kelas ?? '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Tahun Masuk</p>
+                    <p class="font-semibold">{{ user.siswa_profile?.tahun_masuk ?? '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Kontak Orang Tua</p>
+                    <p class="font-semibold">{{ user.siswa_profile?.kontak_ortu ?? '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Status</p>
+                    <p class="font-semibold capitalize">{{ user.siswa_profile?.status ?? '-' }}</p>
+                </div>
+                <div class="md:col-span-2">
+                    <p class="text-sm text-gray-500">Alamat</p>
+                    <p class="font-semibold">{{ user.siswa_profile?.alamat ?? '-' }}</p>
+                </div>
+            </div>
 
-                <div class="bgap">
-                    <p class="text-sm text-gray-600">Nama Lengkap</p>
-                    <p class="text-base font-medium">{{ siswa.nama }}</p>
-                </div>
-
-                <div class="bgap">
-                    <p class="text-sm text-gray-600">Jenis Kelamin</p>
-                    <p class="text-base font-medium capitalize">{{ siswa.jenis_kelamin }}</p>
-                </div>
-
-                <div class="bgap">
-                    <p class="text-sm text-gray-600">Kelas</p>
-                    <p class="text-base font-medium">{{ siswa.kelas }}</p>
-                </div>
-
-                <div class="bgap">
-                    <p class="text-sm text-gray-600">Tahun Masuk</p>
-                    <p class="text-base font-medium">{{ siswa.tahun_masuk }}</p>
-                </div>
-
-                <div class="bgap">
-                    <p class="text-sm text-gray-600">Tempat, Tanggal Lahir</p>
-                    <p class="text-base font-medium">{{ siswa.ttl }}</p>
-                </div>
-
-                <div class="bgap md:col-span-2">
-                    <p class="text-sm text-gray-600">Alamat</p>
-                    <p class="text-base font-medium whitespace-pre-line">{{ siswa.alamat }}</p>
-                </div>
-
-                <div class="bgap">
-                    <p class="text-sm text-gray-600">Kontak Orang Tua</p>
-                    <p class="text-lg font-medium">{{ siswa.kontak_ortu }}</p>
-                </div>
-
-                <div class="bgap">
-                    <p class="text-sm text-gray-600">Status</p>
-                    <p
-                        class="inline-block max-w-max rounded-full px-3 py-1 text-sm font-semibold"
-                        :class="siswa.status === 'aktif' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
-                    >
-                        {{ siswa.status === 'aktif' ? 'Aktif' : 'Tidak Aktif' }}
-                    </p>
-                </div>
+            <div class="mt-6 flex gap-4">
+                <Button variant="outline" @click="$inertia.visit(route('admin.users.index', 'siswa'))">Kembali</Button>
+                <Button @click="$inertia.visit(route('admin.users.edit', { role: 'siswa', id: user.id }))">Edit Data</Button>
             </div>
         </div>
     </AppLayout>

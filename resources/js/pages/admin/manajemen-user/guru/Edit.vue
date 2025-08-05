@@ -38,11 +38,11 @@ const statusGuruLabel = ref(props.user.status_guru === 'honorer' ? 'Honorer' : '
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Beranda', href: route('admin.dashboard') },
     { title: 'Manajemen Data Guru', href: route('admin.users.index', 'guru') },
-    { title: 'Edit Data Guru', href: route('admin.users.edit', { role: 'guru', id: props.user.id }) },
+    { title: 'Edit Data Guru', href: route('admin.users.edit', { role: 'guru', id: props.user.user_id }) },
 ];
 
 const submit = () => {
-    form.put(route('admin.users.update', { role: 'guru', id: props.user.id }));
+    form.put(route('admin.users.update', { role: 'guru', id: props.user.user_id }));
 };
 </script>
 
@@ -69,9 +69,10 @@ const submit = () => {
 
                 <!-- Password -->
                 <div class="flex flex-col gap-3">
-                    <Label for="password">Password (Kosongkan jika tidak ingin diubah)</Label>
+                    <Label for="password">Password</Label>
                     <Input id="password" type="password" v-model="form.password" placeholder="Minimal 8 karakter" />
                     <InputError :message="form.errors.password" />
+                    <span class="text-xs text-yellow-500 italic">Note: Kosongkan jika tidak ingin diubah</span>
                 </div>
 
                 <!-- Konfirmasi Password -->
@@ -79,6 +80,7 @@ const submit = () => {
                     <Label for="password_confirmation">Konfirmasi Password</Label>
                     <Input id="password_confirmation" type="password" v-model="form.password_confirmation" placeholder="Ulangi password" />
                     <InputError :message="form.errors.password_confirmation" />
+                    <span class="text-xs text-yellow-500 italic">Note: Kosongkan jika tidak ingin diubah</span>
                 </div>
 
                 <!-- NIP -->
@@ -112,7 +114,13 @@ const submit = () => {
                 <!-- Alamat -->
                 <div class="flex flex-col gap-3 md:col-span-2">
                     <Label for="alamat">Alamat</Label>
-                    <textarea id="alamat" v-model="form.alamat" placeholder="Masukkan alamat" class="w-full rounded border p-2" rows="3"></textarea>
+                    <textarea
+                        id="alamat"
+                        v-model="form.alamat"
+                        placeholder="Masukkan alamat"
+                        class="w-full rounded border p-2 text-sm"
+                        rows="3"
+                    ></textarea>
                     <InputError :message="form.errors.alamat" />
                 </div>
 
@@ -122,7 +130,7 @@ const submit = () => {
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
                             <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
-                                <span>{{ statusGuruLabel }}</span>
+                                <span class="text-sm">{{ statusGuruLabel }}</span>
                                 <ChevronDown class="h-4 w-4 text-gray-500" />
                             </button>
                         </DropdownMenuTrigger>

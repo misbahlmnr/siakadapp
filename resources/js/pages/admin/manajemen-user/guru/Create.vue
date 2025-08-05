@@ -104,7 +104,13 @@ const submit = () => {
                 <!-- Alamat -->
                 <div class="flex flex-col gap-3 md:col-span-2">
                     <Label for="alamat">Alamat</Label>
-                    <textarea id="alamat" v-model="form.alamat" placeholder="Masukkan alamat" class="w-full rounded border p-2" rows="3"></textarea>
+                    <textarea
+                        id="alamat"
+                        v-model="form.alamat"
+                        placeholder="Masukkan alamat"
+                        class="w-full rounded border p-2 text-sm"
+                        rows="3"
+                    ></textarea>
                     <InputError :message="form.errors.alamat" />
                 </div>
 
@@ -114,7 +120,7 @@ const submit = () => {
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
                             <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
-                                <span>{{ statusGuruLabel }}</span>
+                                <span class="text-sm">{{ statusGuruLabel }}</span>
                                 <ChevronDown class="h-4 w-4 text-gray-500" />
                             </button>
                         </DropdownMenuTrigger>

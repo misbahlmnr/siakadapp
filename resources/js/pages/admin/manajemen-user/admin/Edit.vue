@@ -61,6 +61,7 @@ const submit = () => {
                     <Label for="password">Password</Label>
                     <Input id="password" type="password" v-model="form.password" placeholder="Minimal 8 karakter" />
                     <InputError :message="form.errors.password" />
+                    <span class="text-xs text-yellow-500 italic">Note: Kosongkan jika tidak ingin diubah</span>
                 </div>
 
                 <!-- Konfirmasi Password -->
@@ -68,6 +69,7 @@ const submit = () => {
                     <Label for="password_confirmation">Konfirmasi Password</Label>
                     <Input id="password_confirmation" type="password" v-model="form.password_confirmation" placeholder="Ulangi password" />
                     <InputError :message="form.errors.password_confirmation" />
+                    <span class="text-xs text-yellow-500 italic">Note: Kosongkan jika tidak ingin diubah</span>
                 </div>
 
                 <!-- Submit -->

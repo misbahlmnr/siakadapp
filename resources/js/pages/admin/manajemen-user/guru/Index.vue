@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
-import { Link, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import $ from 'jquery';
 import { Plus } from 'lucide-vue-next';
 import { onMounted } from 'vue';
@@ -50,18 +50,8 @@ onMounted(() => {
                 render: (data) => data ?? '-',
             },
             {
-                data: 'alamat',
-                name: 'alamat',
-                render: (data) => data ?? '-',
-            },
-            {
                 data: 'status_guru',
                 name: 'status_guru',
-                render: (data) => data ?? '-',
-            },
-            {
-                data: 'tanggal_masuk',
-                name: 'tanggal_masuk',
                 render: (data) => data ?? '-',
             },
             {
@@ -94,7 +84,7 @@ onMounted(() => {
             $('.btn-delete').on('click', function () {
                 const id = $(this).data('id');
                 if (confirm('Yakin ingin menghapus data admin ini?')) {
-                    router.delete(route('admin.users.destroy', { role: 'admin', id: id }), {
+                    router.delete(route('admin.users.destroy', { role: 'guru', id: id }), {
                         onSuccess: () => {
                             table.ajax.reload();
                         },
@@ -107,7 +97,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Data Guru" />
+    <Head title="Manajemen Data Guru" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl px-10 py-4">
@@ -131,9 +121,7 @@ onMounted(() => {
                             <th>Nip</th>
                             <th>Mapel</th>
                             <th>No Telp</th>
-                            <th>Alamat</th>
                             <th>Status Guru</th>
-                            <th>Tanggal Masuk</th>
                             <th>Created At</th>
                             <th>Aksi</th>
                         </tr>

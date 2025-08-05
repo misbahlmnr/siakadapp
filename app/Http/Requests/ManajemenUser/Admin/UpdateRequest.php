@@ -22,19 +22,54 @@ class UpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $userId = $this->route('id'); // Ambil ID user dari route parameter
+        $role = $this->route('role');
+        $userId = $this->route('id');
 
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => [
-                'required', 
-                'email', 
+                'required',
+                'email',
                 'max:255',
-                Rule::unique('users')->ignore($userId),
+                Rule::unique('users', 'email')->ignore($userId), // Kolom 'id' default
             ],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'password_confirmation' => ['nullable', 'string', 'min:8'],
             'role' => ['required', Rule::in(['admin', 'guru', 'siswa'])],
         ];
+
+        // Tambahan jika role == guru
+        if ($role === 'guru') {
+            $rules = array_merge($rules, [
+                'nip' => [
+                    'nullable',
+                    'string',
+                    Rule::unique('guru_profiles', 'nip')->ignore($userId, 'user_id'), // ignore berdasarkan user_id
+                ],
+                'mapel' => ['nullable', 'string', 'max:255'],
+                'no_telp' => ['nullable', 'string', 'max:20'],
+                'alamat' => ['nullable', 'string', 'max:255'],
+                'status_guru' => ['required', Rule::in(['pns', 'honorer'])],
+                'tanggal_masuk' => ['nullable', 'date'],
+            ]);
+        }
+
+        // Tambahan jika role == siswa
+        if ($role === 'siswa') {
+            $rules = array_merge($rules, [
+                'nisn' => [
+                    'required',
+                    'string',
+                    Rule::unique('siswa_profiles', 'nisn')->ignore($userId, 'user_id'), // ignore berdasarkan user_id
+                ],
+                'kelas' => ['nullable', 'string', 'max:50'],
+                'tahun_masuk' => ['nullable', 'digits:4'],
+                'alamat' => ['nullable', 'string', 'max:255'],
+                'kontak_ortu' => ['nullable', 'string', 'max:20'],
+                'status' => ['required', Rule::in(['aktif', 'tidak_aktif'])],
+            ]);
+        }
+
+        return $rules;
     }
 }

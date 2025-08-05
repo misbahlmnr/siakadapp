@@ -1,6 +1,6 @@
 @layer components {
     table {
-        @apply w-full overflow-hidden rounded-sm bg-[#1A1A1A] text-sm;
+        @apply w-full overflow-hidden overflow-x-auto rounded-sm bg-[#1A1A1A] text-sm;
     }
     th {
         @apply border border-gray-300 bg-white px-5 py-3 text-black;

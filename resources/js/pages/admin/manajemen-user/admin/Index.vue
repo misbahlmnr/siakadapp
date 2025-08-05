@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
-import { Link, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import $ from 'jquery';
 import { Plus } from 'lucide-vue-next';
 import { onMounted } from 'vue';
@@ -63,7 +63,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Data Admin" />
+    <Head title="Manajemen Data Admin" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl px-10 py-4">

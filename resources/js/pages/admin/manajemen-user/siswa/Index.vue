@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
-import { Link, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import $ from 'jquery';
 import { Plus } from 'lucide-vue-next';
 import { onMounted } from 'vue';
@@ -50,23 +50,8 @@ onMounted(() => {
                 render: (data) => data ?? '-',
             },
             {
-                data: 'alamat',
-                name: 'alamat',
-                render: (data) => data ?? '-',
-            },
-            {
-                data: 'kontak_ortu',
-                name: 'kontak_ortu',
-                render: (data) => data ?? '-',
-            },
-            {
                 data: 'status',
                 name: 'status',
-                render: (data) => data ?? '-',
-            },
-            {
-                data: 'email',
-                name: 'email',
                 render: (data) => data ?? '-',
             },
             {
@@ -112,7 +97,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Data Siswa" />
+    <Head title="Manajemen Data Siswa" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl px-10 py-4">
@@ -136,10 +121,7 @@ onMounted(() => {
                             <th>NISN</th>
                             <th>Kelas</th>
                             <th>Tahun Masuk</th>
-                            <th>Alamat</th>
-                            <th>Kontak Ortu</th>
                             <th>Status</th>
-                            <th>Email</th>
                             <th>Created At</th>
                             <th>Aksi</th>
                         </tr>

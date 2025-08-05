@@ -10,128 +10,126 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
 import { ref } from 'vue';
 
-const form = useForm({
-    nis: '',
-    nama: '',
-    jenis_kelamin: 'L',
-    kelas: '',
-    tahun_masuk: '',
-    ttl: '',
-    alamat: '',
-    kontak_ortu: '',
-    status: 'Aktif',
+const props = defineProps({
+    role: {
+        type: String,
+        default: 'siswa',
+    },
 });
 
+// Form
+const form = useForm({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+    nisn: '',
+    kelas: '',
+    tahun_masuk: '',
+    alamat: '',
+    kontak_ortu: '',
+    status: 'aktif',
+    role: 'siswa',
+});
+
+// Dropdown Status
+const statusLabel = ref('Aktif');
+
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Akademik', href: '#' },
-    { title: 'Siswa', href: '/akademik/siswa' },
-    { title: 'Tambah Data Siswa', href: '/akademik/siswa/create' },
+    { title: 'Beranda', href: route('admin.dashboard') },
+    { title: 'Manajemen Data Siswa', href: route('admin.users.index', 'siswa') },
+    { title: 'Tambah Data Siswa', href: route('admin.users.create', 'siswa') },
 ];
 
 const submit = () => {
-    form.post(route('akademik.siswa.store'));
+    form.post(route('admin.users.store', props.role));
 };
-
-const jenisKelaminLabel = ref('Laki-laki');
-const statusLabel = ref('Aktif');
 </script>
 
 <template>
     <Head title="Tambah Data Siswa" />
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-4 px-10 py-6">
             <h1 class="text-2xl font-bold">Tambah Data Siswa</h1>
 
             <form class="grid grid-cols-1 gap-4 md:grid-cols-2" @submit.prevent="submit">
-                <!-- NIS -->
-                <div class="flex flex-col gap-3">
-                    <Label for="nis">NIS</Label>
-                    <Input id="nis" v-model="form.nis" placeholder="Masukkan NIS" />
-                    <InputError :message="form.errors.nis" />
-                </div>
-
                 <!-- Nama -->
                 <div class="flex flex-col gap-3">
-                    <Label for="nama">Nama</Label>
-                    <Input id="nama" v-model="form.nama" placeholder="Masukkan nama lengkap" />
-                    <InputError :message="form.errors.nama" />
+                    <Label for="name">Nama</Label>
+                    <Input id="name" v-model="form.name" placeholder="Masukkan nama lengkap" />
+                    <InputError :message="form.errors.name" />
                 </div>
 
-                <!-- Jenis Kelamin (Dropdown) -->
-                <!-- Jenis Kelamin -->
+                <!-- Email -->
                 <div class="flex flex-col gap-3">
-                    <Label>Jenis Kelamin</Label>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger as-child>
-                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
-                                <span>{{ jenisKelaminLabel }}</span>
-                                <ChevronDown class="h-4 w-4 text-gray-500" />
-                            </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent class="min-w-[200px]">
-                            <DropdownMenuItem
-                                @click="
-                                    form.jenis_kelamin = 'L';
-                                    jenisKelaminLabel = 'Laki-laki';
-                                "
-                            >
-                                Laki-laki
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                @click="
-                                    form.jenis_kelamin = 'P';
-                                    jenisKelaminLabel = 'Perempuan';
-                                "
-                            >
-                                Perempuan
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <InputError :message="form.errors.jenis_kelamin" />
+                    <Label for="email">Email</Label>
+                    <Input id="email" type="email" v-model="form.email" placeholder="Masukkan email" />
+                    <InputError :message="form.errors.email" />
+                </div>
+
+                <!-- Password -->
+                <div class="flex flex-col gap-3">
+                    <Label for="password">Password</Label>
+                    <Input id="password" type="password" v-model="form.password" placeholder="Minimal 8 karakter" />
+                    <InputError :message="form.errors.password" />
+                </div>
+
+                <!-- Konfirmasi Password -->
+                <div class="flex flex-col gap-3">
+                    <Label for="password_confirmation">Konfirmasi Password</Label>
+                    <Input id="password_confirmation" type="password" v-model="form.password_confirmation" placeholder="Ulangi password" />
+                    <InputError :message="form.errors.password_confirmation" />
+                </div>
+
+                <!-- NISN -->
+                <div class="flex flex-col gap-3">
+                    <Label for="nisn">NISN</Label>
+                    <Input id="nisn" v-model="form.nisn" placeholder="Masukkan NISN" />
+                    <InputError :message="form.errors.nisn" />
                 </div>
 
                 <!-- Kelas -->
                 <div class="flex flex-col gap-3">
                     <Label for="kelas">Kelas</Label>
-                    <Input id="kelas" v-model="form.kelas" placeholder="Contoh: 8B" />
+                    <Input id="kelas" v-model="form.kelas" placeholder="Misal: XII RPL 1" />
                     <InputError :message="form.errors.kelas" />
                 </div>
 
                 <!-- Tahun Masuk -->
                 <div class="flex flex-col gap-3">
                     <Label for="tahun_masuk">Tahun Masuk</Label>
-                    <Input id="tahun_masuk" v-model="form.tahun_masuk" placeholder="Masukan tahun masuk" />
+                    <Input id="tahun_masuk" v-model="form.tahun_masuk" placeholder="Misal: 2022" />
                     <InputError :message="form.errors.tahun_masuk" />
                 </div>
 
-                <!-- TTL -->
+                <!-- Kontak Ortu -->
                 <div class="flex flex-col gap-3">
-                    <Label for="ttl">Tempat, Tanggal Lahir</Label>
-                    <Input id="ttl" v-model="form.ttl" placeholder="Masukan tempat, tanggal lahir" />
-                    <InputError :message="form.errors.ttl" />
+                    <Label for="kontak_ortu">Kontak Orang Tua</Label>
+                    <Input id="kontak_ortu" v-model="form.kontak_ortu" placeholder="Masukkan No. HP Orang Tua" />
+                    <InputError :message="form.errors.kontak_ortu" />
                 </div>
 
                 <!-- Alamat -->
                 <div class="flex flex-col gap-3 md:col-span-2">
                     <Label for="alamat">Alamat</Label>
-                    <textarea id="alamat" v-model="form.alamat" placeholder="Masukan alamat" class="w-full rounded border p-2" rows="3" />
+                    <textarea
+                        id="alamat"
+                        v-model="form.alamat"
+                        placeholder="Masukkan alamat"
+                        class="w-full rounded border p-2 text-sm"
+                        rows="3"
+                    ></textarea>
                     <InputError :message="form.errors.alamat" />
-                </div>
-
-                <!-- Kontak Orang Tua -->
-                <div class="flex flex-col gap-3">
-                    <Label for="kontak_ortu">Kontak Orang Tua</Label>
-                    <Input id="kontak_ortu" v-model="form.kontak_ortu" placeholder="08xxxxxxx" />
-                    <InputError :message="form.errors.kontak_ortu" />
                 </div>
 
                 <!-- Status -->
                 <div class="flex flex-col gap-3">
-                    <Label>Status</Label>
+                    <Label for="status">Status</Label>
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
                             <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
-                                <span>{{ statusLabel }}</span>
+                                <span class="text-sm">{{ statusLabel }}</span>
                                 <ChevronDown class="h-4 w-4 text-gray-500" />
                             </button>
                         </DropdownMenuTrigger>
@@ -141,15 +139,17 @@ const statusLabel = ref('Aktif');
                                     form.status = 'aktif';
                                     statusLabel = 'Aktif';
                                 "
-                                >Aktif</DropdownMenuItem
                             >
+                                Aktif
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                                 @click="
                                     form.status = 'tidak_aktif';
                                     statusLabel = 'Tidak Aktif';
                                 "
-                                >Tidak Aktif</DropdownMenuItem
                             >
+                                Tidak Aktif
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <InputError :message="form.errors.status" />
