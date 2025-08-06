@@ -7,7 +7,6 @@ use App\Http\Requests\MataPelajaran\StoreRequest;
 use App\Http\Requests\MataPelajaran\UpdateRequest;
 use App\Models\GuruProfile;
 use App\Models\MataPelajaran;
-use App\Models\User;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use Yajra\DataTables\Facades\DataTables;
@@ -20,6 +19,9 @@ class MataPelajaranController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->addColumn('nama_guru', function ($row) {
+                return $row->guru->user->name;
+            })
             ->editColumn('created_at', function ($row) {
                 return Carbon::parse($row->created_at)
                     ->setTimezone('Asia/Jakarta')

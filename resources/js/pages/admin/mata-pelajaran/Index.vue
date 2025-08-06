@@ -24,7 +24,7 @@ onMounted(() => {
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', width: '4%', orderable: false, searchable: false },
             { data: 'nama_mapel', name: 'nama_mapel' },
-            // { data: 'nama_guru', name: 'nama_guru' },
+            { data: 'nama_guru', name: 'nama_guru' },
             { data: 'created_at', name: 'created_at', width: '15%' },
             {
                 data: 'id',
@@ -94,7 +94,7 @@ onMounted(() => {
                         <tr>
                             <th>No</th>
                             <th>Nama Pelajaran</th>
-                            <!-- <th>Nama Guru</th> -->
+                            <th>Nama Guru</th>
                             <th>Created At</th>
                             <th>Aksi</th>
                         </tr>

@@ -27,7 +27,7 @@ class UserController extends Controller
     public function get(string $role)
     {
         $query = User::where('role', $role)
-            ->with($role === "siswa" ? "siswaProfile" : "guruProfile")
+            ->with($role === "siswa" ? "siswaProfile" : "guruProfile.mataPelajaran")
             ->orderBy('name');
 
         return DataTables::of($query)
@@ -63,7 +63,10 @@ class UserController extends Controller
                 return $role === 'guru' ? ($row->guruProfile->nip ?? '-') : '-';
             })
             ->addColumn('mapel', function ($row) use ($role) {
-                return $role === 'guru' ? ($row->guruProfile->mapel ?? '-') : '-';
+                if ($role === 'guru' && $row->guruProfile?->mataPelajaran) {
+                    return $row->guruProfile->mataPelajaran->pluck('nama_mapel')->implode(', ');
+                }
+                return "-";
             })
             ->addColumn('no_telp', function ($row) use ($role) {
                 return $role === 'guru' ? ($row->guruProfile->no_telp ?? '-') : '-';
