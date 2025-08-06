@@ -5,6 +5,8 @@ import { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import $ from 'jquery';
 import { Plus } from 'lucide-vue-next';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 import { onMounted } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -83,13 +85,23 @@ onMounted(() => {
 
             $('.btn-delete').on('click', function () {
                 const id = $(this).data('id');
-                if (confirm('Yakin ingin menghapus data siswa ini?')) {
-                    router.delete(route('admin.users.destroy', { role: 'siswa', id: id }), {
-                        onSuccess: () => {
-                            table.ajax.reload();
-                        },
-                    });
-                }
+                Swal.fire({
+                    title: 'Yakin ingin menghapus?',
+                    text: 'Data akan dihapus secara permanen!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#ff0000',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        router.delete(route('admin.users.destroy', { role: 'siswa', id: id }), {
+                            onSuccess: () => {
+                                table.ajax.reload();
+                            },
+                        });
+                    }
+                });
             });
         },
     });
