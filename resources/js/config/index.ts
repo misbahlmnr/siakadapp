@@ -24,9 +24,9 @@ export const GlobalConfig = {
                 icon: BookOpen,
             },
             {
-                title: 'Kelas & Jurusan',
-                href: '/admin/classes',
-                icon: Calendar, // kalau mau icon lain ganti saja
+                title: 'Kelas',
+                href: '/admin/kelas',
+                icon: Book,
             },
             {
                 title: 'Jadwal Pelajaran',
