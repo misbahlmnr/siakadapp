@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
             'kode_mapel' => ['required', 'string', 'max:255', 'unique:mata_pelajaran'],
             'nama_mapel' => ['required', 'string', 'max:255', 'unique:mata_pelajaran'],
             'deskripsi' => ['nullable', 'string', 'max:255'],
-            'guru_id' => ['nullable', 'exists:users,id'],
+            'guru_id' => ['nullable', 'exists:guru_profiles,id'],
         ];
     }
 }

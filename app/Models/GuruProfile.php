@@ -9,7 +9,6 @@ class GuruProfile extends Model
     protected $fillable = [
         'user_id',
         'nip',
-        'mapel',
         'email',
         'no_telp',
         'alamat',
@@ -20,5 +19,10 @@ class GuruProfile extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function mataPelajaran()
+    {
+        return $this->hasMany(MataPelajaran::class, 'guru_id');
     }
 }

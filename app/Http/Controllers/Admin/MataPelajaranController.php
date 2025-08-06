@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MataPelajaran\StoreRequest;
 use App\Http\Requests\MataPelajaran\UpdateRequest;
+use App\Models\GuruProfile;
 use App\Models\MataPelajaran;
 use App\Models\User;
 use Carbon\Carbon;
@@ -34,7 +35,14 @@ class MataPelajaranController extends Controller
     
     public function create()
     {
-        $dataGuru = User::where('role', 'guru')->select('id', 'name')->get();
+        $dataGuru = GuruProfile::with('user:id,name')
+            ->get()
+            ->map(function ($guru) {
+                return [
+                    'id' => $guru->id,
+                    'name' => $guru->user->name
+                ];
+            });
         
         return Inertia::render('admin/mata-pelajaran/Create', [
             'guruOptions' => $dataGuru
@@ -56,30 +64,37 @@ class MataPelajaranController extends Controller
 
     public function show(string $id)
     {
-        $mataPelajaran = MataPelajaran::with('guru')->findOrFail($id);
-
-        $formatMatapelajaran = [
-            'id' => $mataPelajaran->id,
-            'kode_mapel' => $mataPelajaran->kode_mapel,
-            'nama_mapel' => $mataPelajaran->nama_mapel,
-            'deskripsi' => $mataPelajaran->deskripsi,
-            'guru' => $mataPelajaran->guru ? [
-                'id' => $mataPelajaran->guru->id,
-                'name' => $mataPelajaran->guru->name,
-            ] : null,
-            'created_at' => $mataPelajaran->created_at->toDateTimeString(),
-            'updated_at' => $mataPelajaran->updated_at->toDateTimeString(),
-        ];
+        $mataPelajaran = MataPelajaran::with('guru.user')->findOrFail($id);
 
         return Inertia::render('admin/mata-pelajaran/View', [
-            'mataPelajaran' => $formatMatapelajaran,
+            'mataPelajaran' => [
+                'id' => $mataPelajaran->id,
+                'kode_mapel' => $mataPelajaran->kode_mapel,
+                'nama_mapel' => $mataPelajaran->nama_mapel,
+                'deskripsi' => $mataPelajaran->deskripsi,
+                'guru' => $mataPelajaran->guru ? [
+                    'id' => $mataPelajaran->guru->id,
+                    'name' => $mataPelajaran->guru->user->name,
+                ] : null,
+                'created_at' => $mataPelajaran->created_at->toDateTimeString(),
+                'updated_at' => $mataPelajaran->updated_at->toDateTimeString(),
+            ],
         ]);
     }
 
     public function edit(string $id)
     {
         $mataPelajaran = MataPelajaran::findOrFail($id);
-        $dataGuru = User::where('role', 'guru')->select('id', 'name')->get();
+
+        $dataGuru = GuruProfile::with('user:id,name')
+            ->select('id', 'user_id')
+            ->get()
+            ->map(function ($guru) {
+                return [
+                    'id' => $guru->id,
+                    'name' => $guru->user->name,
+                ];
+            });
 
         return Inertia::render('admin/mata-pelajaran/Edit', [
             'mataPelajaran' => $mataPelajaran,

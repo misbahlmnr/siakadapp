@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('nip')->unique()->nullable();
-            $table->string('mapel')->nullable();
             $table->string('no_telp')->nullable();
             $table->text('alamat')->nullable();
             $table->enum('status_guru', ['pns', 'honorer'])->default('pns');

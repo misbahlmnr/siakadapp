@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('kode_mapel')->unique();
             $table->string('nama_mapel');
             $table->text('deskripsi')->nullable();
-            $table->foreignId('guru_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('guru_id')->nullable()->constrained('guru_profiles')->onDelete('set null');
             $table->timestamps();
         });
     }

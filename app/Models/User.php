@@ -56,9 +56,4 @@ class User extends Authenticatable
     {
         return $this->hasOne(GuruProfile::class);
     }
-
-    public function mataPelajaran()
-    {
-        return $this->hasMany(MataPelajaran::class, 'guru_id');
-    }
 }
