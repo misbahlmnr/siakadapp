@@ -44,7 +44,7 @@ class StoreRequest extends FormRequest
         if ($role === 'siswa') {
             $rules = array_merge($rules, [
                 'nisn' => 'required|string|unique:siswa_profiles,nisn',
-                'kelas' => 'nullable|string|max:50',
+                'kelas_id' => 'nullable|exists:kelas,id',
                 'tahun_masuk' => 'nullable|digits:4',
                 'alamat' => 'nullable|string|max:255',
                 'kontak_ortu' => 'nullable|string|max:20',

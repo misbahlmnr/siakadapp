@@ -5,41 +5,74 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, Kelas } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
-const props = defineProps({
-    role: {
-        type: String,
-        required: true,
-    },
+const props = defineProps<{
+    role: string;
     user: {
-        type: Object,
-        required: true,
-    },
-});
+        id: number;
+        user_id: number;
+        name: string;
+        email: string;
+        nisn: string;
+        kelas_id: number | null;
+        tahun_masuk: string;
+        alamat: string;
+        kontak_ortu: string;
+        status: string;
+    };
+    kelas: Kelas[];
+}>();
+
+type Form = {
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+    nisn: string;
+    kelas_id: number | null;
+    tahun_masuk: string;
+    alamat: string;
+    kontak_ortu: string;
+    status: string;
+    role: string;
+};
 
 // Form init
-const form = useForm({
+const form = useForm<Form>({
     name: props.user.name,
     email: props.user.email,
     password: '',
     password_confirmation: '',
-    nisn: props.user.siswa_profile?.nisn ?? '',
-    kelas: props.user.siswa_profile?.kelas ?? '',
-    tahun_masuk: props.user.siswa_profile?.tahun_masuk ?? '',
-    alamat: props.user.siswa_profile?.alamat ?? '',
-    kontak_ortu: props.user.siswa_profile?.kontak_ortu ?? '',
-    status: props.user.siswa_profile?.status ?? 'aktif',
+    nisn: props.user.nisn ?? '',
+    kelas_id: props.kelas.find((kelas) => kelas.id === props.user.kelas_id)?.id ?? null,
+    tahun_masuk: props.user.tahun_masuk ?? '',
+    alamat: props.user.alamat ?? '',
+    kontak_ortu: props.user.kontak_ortu ?? '',
+    status: props.user.status ?? 'aktif',
     role: props.role,
 });
 
-console.log(props.user);
-
 // Dropdown Status
 const statusLabel = ref(form.status === 'aktif' ? 'Aktif' : 'Tidak Aktif');
+
+const selectedKelasLabel = ref('Pilih Kelas');
+
+watch(
+    () => props.user.kelas_id,
+    (newVal) => {
+        if (newVal) {
+            const selected = props.kelas.find((kelas) => kelas.id === newVal);
+            if (selected) {
+                selectedKelasLabel.value = selected.nama_kelas;
+            }
+        }
+    },
+    { immediate: true },
+);
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Beranda', href: route('admin.dashboard') },
@@ -77,15 +110,17 @@ const submit = () => {
                 <!-- Password -->
                 <div class="flex flex-col gap-3">
                     <Label for="password">Password</Label>
-                    <Input id="password" type="password" v-model="form.password" placeholder="Biarkan kosong jika tidak ingin diubah" />
+                    <Input id="password" type="password" v-model="form.password" placeholder="Minimal 8 karakter" />
                     <InputError :message="form.errors.password" />
+                    <span class="text-xs text-yellow-500 italic">Note: Kosongkan jika tidak ingin diubah</span>
                 </div>
 
                 <!-- Konfirmasi Password -->
                 <div class="flex flex-col gap-3">
                     <Label for="password_confirmation">Konfirmasi Password</Label>
-                    <Input id="password_confirmation" type="password" v-model="form.password_confirmation" />
+                    <Input id="password_confirmation" type="password" v-model="form.password_confirmation" placeholder="Ulangi password" />
                     <InputError :message="form.errors.password_confirmation" />
+                    <span class="text-xs text-yellow-500 italic">Note: Kosongkan jika tidak ingin diubah</span>
                 </div>
 
                 <!-- NISN -->
@@ -98,8 +133,29 @@ const submit = () => {
                 <!-- Kelas -->
                 <div class="flex flex-col gap-3">
                     <Label for="kelas">Kelas</Label>
-                    <Input id="kelas" v-model="form.kelas" />
-                    <InputError :message="form.errors.kelas" />
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
+                                <span class="text-sm">
+                                    {{ selectedKelasLabel }}
+                                </span>
+                                <ChevronDown class="h-4 w-4 text-gray-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
+                            <DropdownMenuItem
+                                v-for="kelas in props.kelas"
+                                :key="kelas.id"
+                                @click="
+                                    form.kelas_id = kelas.id;
+                                    selectedKelasLabel = kelas.nama_kelas;
+                                "
+                            >
+                                {{ kelas.nama_kelas }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <InputError :message="form.errors.kelas_id" />
                 </div>
 
                 <!-- Tahun Masuk -->

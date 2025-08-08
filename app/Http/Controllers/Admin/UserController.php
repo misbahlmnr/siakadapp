@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ManajemenUser\Admin\StoreRequest;
 use App\Http\Requests\ManajemenUser\Admin\UpdateRequest;
 use App\Models\GuruProfile;
+use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\SiswaProfile;
 use App\Models\User;
@@ -39,7 +40,10 @@ class UserController extends Controller
                 return $role === 'siswa' ? ($row->siswaProfile->nisn ?? '-') : '-';
             })
             ->addColumn('kelas', function ($row) use ($role) {
-                return $role === 'siswa' ? ($row->siswaProfile->kelas ?? '-') : '-';
+                if ($role === 'siswa' && $row->siswaProfile?->kelas) {
+                    return $row->siswaProfile->kelas->nama_kelas ?? '-';
+                }
+                return "-";
             })
             ->addColumn('tahun_masuk', function ($row) use ($role) {
                 return $role === 'siswa' ? ($row->siswaProfile->tahun_masuk ?? '-') : '-';
@@ -96,18 +100,19 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
-        $role = $request->route('role');
+        $roleName = $request->route('role');
 
-        if ($role === "guru") {
-            return inertia('admin/manajemen-user/guru/Create', [
-                'role' => $role,
-                'mataPelajaran' => MataPelajaran::all()
-            ]);
+        $viewData = [
+            'role' => $roleName
+        ];
+
+        if ($roleName === 'guru') {
+            $viewData['mataPelajaran'] = MataPelajaran::all();
+        } elseif ($roleName === 'siswa') {
+            $viewData['kelas'] = Kelas::all();
         }
 
-        return inertia('admin/manajemen-user/'.$role.'/Create', [
-            'role' => $role
-        ]);
+        return inertia("admin/manajemen-user/{$roleName}/Create", $viewData);
     }
 
     public function show(string $role, string $id)
@@ -172,8 +177,8 @@ class UserController extends Controller
 
                 SiswaProfile::create([
                     'user_id' => User::latest()->first()->id,
+                    'kelas_id' => $request->kelas_id,
                     'nisn' => $request->nisn,
-                    'kelas' => $request->kelas,
                     'tahun_masuk' => $request->tahun_masuk,
                     'alamat' => $request->alamat,
                     'kontak_ortu' => $request->kontak_ortu,
@@ -212,6 +217,12 @@ class UserController extends Controller
             foreach ($user->siswaProfile->getAttributes() as $key => $value) {
                 $user->setAttribute($key, $value);
             }
+
+            return inertia('admin/manajemen-user/siswa/Edit', [
+                'role' => $role,
+                'user' => $user,
+                'kelas' => Kelas::all()
+            ]);
         } elseif ($role === 'guru' && $user->guruProfile) {
             foreach ($user->guruProfile->getAttributes() as $key => $value) {
                 $user->setAttribute($key, $value);
@@ -230,47 +241,38 @@ class UserController extends Controller
         ]);
     }
 
-    public function update(UpdateRequest $request, string $role, string $id)
+    public function update(UpdateRequest $request, string $role, int $userId)
     {
-        $user = User::findOrFail($id);
+        $user = User::findOrFail($userId);
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->filled('password') 
-                ? Hash::make($request->password) 
-                : $user->password,
+            'password' => $request->password ? Hash::make($request->password) : $user->password,
             'role' => $request->role,
         ]);
 
-        switch ($role) {
-            case 'guru':
-                $user->guruProfile()->update([
-                    'nip' => $request->nip,
-                    'no_telp' => $request->no_telp,
-                    'alamat' => $request->alamat,
-                    'status_guru' => $request->status_guru,
-                    'tanggal_masuk' => $request->tanggal_masuk,
-                ]);
-                break;
-
-            case 'siswa':
-                $user->siswaProfile()->update([
-                    'nisn' => $request->nisn,
-                    'kelas' => $request->kelas,
-                    'tahun_masuk' => $request->tahun_masuk,
-                    'alamat' => $request->alamat,
-                    'kontak_ortu' => $request->kontak_ortu,
-                    'status' => $request->status,
-                ]);
-                break;
-
-            default:
-                break;
-        }
+        match ($role) {
+            'guru' => $user->guruProfile()->update([
+                'nip' => $request->nip,
+                'no_telp' => $request->no_telp,
+                'alamat' => $request->alamat,
+                'status_guru' => $request->status_guru,
+                'tanggal_masuk' => $request->tanggal_masuk,
+            ]),
+            'siswa' => $user->siswaProfile()->update([
+                'nisn' => $request->nisn,
+                'kelas_id' => $request->kelas_id,
+                'tahun_masuk' => $request->tahun_masuk,
+                'alamat' => $request->alamat,
+                'kontak_ortu' => $request->kontak_ortu,
+                'status' => $request->status,
+            ]),
+            default => null,
+        };
 
         return to_route('admin.users.index', $role)
-            ->with('success', 'Data ' . $role . ' berhasil diperbarui');
+            ->with('success', "Data {$role} berhasil diperbarui");
     }
 
 

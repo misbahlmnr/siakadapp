@@ -5,26 +5,38 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, Kelas } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
 import { ref } from 'vue';
 
-const props = defineProps({
-    role: {
-        type: String,
-        default: 'siswa',
-    },
-});
+const props = defineProps<{
+    role: string;
+    kelas: Kelas[];
+}>();
+
+type Form = {
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+    nisn: string;
+    kelas_id: number | null;
+    tahun_masuk: string;
+    alamat: string;
+    kontak_ortu: string;
+    status: string;
+    role: string;
+};
 
 // Form
-const form = useForm({
+const form = useForm<Form>({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
     nisn: '',
-    kelas: '',
+    kelas_id: null,
     tahun_masuk: '',
     alamat: '',
     kontak_ortu: '',
@@ -40,6 +52,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Manajemen Data Siswa', href: route('admin.users.index', 'siswa') },
     { title: 'Tambah Data Siswa', href: route('admin.users.create', 'siswa') },
 ];
+
+const selectedKelasLabel = ref('Pilih Kelas');
 
 const submit = () => {
     form.post(route('admin.users.store', props.role));
@@ -92,8 +106,29 @@ const submit = () => {
                 <!-- Kelas -->
                 <div class="flex flex-col gap-3">
                     <Label for="kelas">Kelas</Label>
-                    <Input id="kelas" v-model="form.kelas" placeholder="Misal: XII RPL 1" />
-                    <InputError :message="form.errors.kelas" />
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
+                                <span class="text-sm">
+                                    {{ selectedKelasLabel }}
+                                </span>
+                                <ChevronDown class="h-4 w-4 text-gray-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
+                            <DropdownMenuItem
+                                v-for="kelas in props.kelas"
+                                :key="kelas.id"
+                                @click="
+                                    form.kelas_id = kelas.id;
+                                    selectedKelasLabel = kelas.nama_kelas;
+                                "
+                            >
+                                {{ kelas.nama_kelas }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <InputError :message="form.errors.kelas_id" />
                 </div>
 
                 <!-- Tahun Masuk -->

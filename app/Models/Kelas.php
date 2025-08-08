@@ -10,4 +10,9 @@ class Kelas extends Model
         'nama_kelas',
         'tingkat_kelas'
     ];
+
+    public function siswa()
+    {
+        return $this->hasMany(SiswaProfile::class);
+    }
 }

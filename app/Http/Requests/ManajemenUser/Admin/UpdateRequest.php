@@ -62,7 +62,7 @@ class UpdateRequest extends FormRequest
                     'string',
                     Rule::unique('siswa_profiles', 'nisn')->ignore($userId, 'user_id'), // ignore berdasarkan user_id
                 ],
-                'kelas' => ['nullable', 'string', 'max:50'],
+                'kelas_id' => ['nullable', 'exists:kelas,id'],
                 'tahun_masuk' => ['nullable', 'digits:4'],
                 'alamat' => ['nullable', 'string', 'max:255'],
                 'kontak_ortu' => ['nullable', 'string', 'max:20'],

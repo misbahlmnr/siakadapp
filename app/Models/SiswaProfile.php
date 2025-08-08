@@ -8,8 +8,8 @@ class SiswaProfile extends Model
 {
     protected $fillable = [
         'user_id',
+        'kelas_id',
         'nisn',
-        'kelas',
         'tahun_masuk',
         'alamat',
         'kontak_ortu',
@@ -19,5 +19,10 @@ class SiswaProfile extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class);
     }
 }

@@ -36,4 +36,12 @@ export interface User {
     updated_at: string;
 }
 
+export interface Kelas {
+    id: number;
+    nama_kelas: string;
+    tingkat_kelas: string;
+    created_at: string;
+    updated_at: string;
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;
