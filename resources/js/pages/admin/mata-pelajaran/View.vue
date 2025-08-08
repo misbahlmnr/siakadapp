@@ -1,18 +1,11 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, MatPel } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
 const props = defineProps<{
-    mataPelajaran: {
-        id: number;
-        kode_mapel: string;
-        nama_mapel: string;
-        deskripsi: string | null;
-        created_at: string;
-        updated_at: string;
-    };
+    mataPelajaran: MatPel;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [

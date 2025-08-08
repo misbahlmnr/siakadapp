@@ -165,6 +165,9 @@
     body {
         @apply bg-background text-foreground;
     }
+    select {
+        @apply text-gray-800 dark:text-gray-50;
+    }
 }
 
 @layer components {

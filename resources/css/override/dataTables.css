@@ -1,15 +1,15 @@
 @layer components {
     table {
-        @apply w-full overflow-hidden overflow-x-auto rounded-sm bg-[#1A1A1A] text-sm;
+        @apply w-full overflow-hidden overflow-x-auto rounded-sm bg-gray-50 text-sm dark:bg-[#1A1A1A];
     }
     th {
         @apply border border-gray-300 bg-white px-5 py-3 text-black uppercase;
     }
     td {
-        @apply border border-gray-800 px-5 py-5;
+        @apply border border-gray-300 px-5 py-5 dark:border-gray-800;
     }
     tbody tr:nth-child(even) {
-        @apply bg-[#262626];
+        @apply bg-gray-100 dark:bg-[#262626];
     }
     .dt-container > .dt-layout-row:first-child {
         @apply flex items-center justify-between py-3;
@@ -28,7 +28,7 @@
     }
 
     .dt-paging .dt-paging-button {
-        @apply rounded-md bg-white px-3 py-1.5 text-sm text-black transition-all duration-150 ease-in-out;
+        @apply rounded-md bg-white px-3 py-1.5 text-sm text-black shadow-md transition-all duration-150 ease-in-out;
     }
 
     .dt-paging .dt-paging-button.current {

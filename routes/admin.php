@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\{KelasController, MataPelajaranController, UserController};
+use App\Http\Controllers\Admin\{JadwalPelajaranController, KelasController, MataPelajaranController, UserController};
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 
@@ -50,6 +50,19 @@ Route::prefix('admin')
         Route::prefix('kelas')
             ->name('kelas.')
             ->controller(KelasController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/data', 'get')->name('data');
+                Route::get('/create', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{id}/edit', 'edit')->name('edit');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+            });
+
+        Route::prefix('jadwal-pelajaran')
+            ->name('jadwal-pelajaran.')
+            ->controller(JadwalPelajaranController::class)
             ->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/data', 'get')->name('data');

@@ -21,4 +21,9 @@ class MataPelajaran extends Model
     {
         return $this->belongsTo(GuruProfile::class);
     }
+
+    public function jadwalPelajaran()
+    {
+        return $this->hasMany(JadwalPelajaran::class);
+    }
 }

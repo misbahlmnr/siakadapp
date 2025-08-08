@@ -30,7 +30,7 @@ export const GlobalConfig = {
             },
             {
                 title: 'Jadwal Pelajaran',
-                href: '/admin/schedules',
+                href: '/admin/jadwal-pelajaran',
                 icon: Calendar,
             },
             {

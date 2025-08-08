@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, MatPel } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
 
@@ -15,14 +15,7 @@ type Form = {
 };
 
 const props = defineProps<{
-    mataPelajaran: {
-        id: number;
-        kode_mapel: string;
-        nama_mapel: string;
-        deskripsi: string | null;
-        created_at: string;
-        updated_at: string;
-    };
+    mataPelajaran: MatPel;
 }>();
 
 const form = useForm<Form>({
