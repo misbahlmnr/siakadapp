@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ManajemenUser\Admin\StoreRequest;
 use App\Http\Requests\ManajemenUser\Admin\UpdateRequest;
-use App\Models\GuruProfile;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
-use App\Models\SiswaProfile;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -19,81 +17,69 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $role = $request->route('role');
+        $userRole = $request->route('role');
 
-        return inertia('admin/manajemen-user/'.$role.'/Index', [
-            'role' => $role
+        return inertia("admin/manajemen-user/{$userRole}/Index", [
+            'role' => $userRole,
         ]);
     }
 
     public function get(string $role)
     {
         $query = User::where('role', $role)
-            ->with($role === "siswa" ? "siswaProfile" : "guruProfile")
+            ->with($role === 'siswa' ? 'siswaProfile' : 'guruProfile')
             ->orderBy('name');
 
         return DataTables::of($query)
             ->addIndexColumn()
-
-            // Kolom untuk siswa
-            ->addColumn('nisn', function ($row) use ($role) {
-                return $role === 'siswa' ? ($row->siswaProfile->nisn ?? '-') : '-';
+            
+            // Columns for students
+            ->addColumn('nisn', function ($user) use ($role) {
+                return $role === 'siswa' ? ($user->siswaProfile->nisn ?? '-') : '-';
             })
-            ->addColumn('kelas', function ($row) use ($role) {
-                if ($role === 'siswa' && $row->siswaProfile?->kelas) {
-                    return $row->siswaProfile->kelas->nama_kelas ?? '-';
-                }
-                return "-";
+            ->addColumn('kelas', function ($user) use ($role) {
+                return $role === 'siswa' && $user->siswaProfile?->kelas ? $user->siswaProfile->kelas->nama_kelas ?? '-' : '-';
             })
-            ->addColumn('tahun_masuk', function ($row) use ($role) {
-                return $role === 'siswa' ? ($row->siswaProfile->tahun_masuk ?? '-') : '-';
+            ->addColumn('tahun_masuk', function ($user) use ($role) {
+                return $role === 'siswa' ? ($user->siswaProfile->tahun_masuk ?? '-') : '-';
             })
-            ->addColumn('alamat', function ($row) use ($role) {
-                if ($role === 'siswa') {
-                    return $row->siswaProfile->alamat ?? '-';
-                } elseif ($role === 'guru') {
-                    return $row->guruProfile->alamat ?? '-';
+            ->addColumn('alamat', function ($user) {
+                if ($user->role === 'siswa') {
+                    return $user->siswaProfile->alamat ?? '-';
+                } elseif ($user->role === 'guru') {
+                    return $user->guruProfile->alamat ?? '-';
                 }
                 return '-';
             })
-            ->addColumn('kontak_ortu', function ($row) use ($role) {
-                return $role === 'siswa' ? ($row->siswaProfile->kontak_ortu ?? '-') : '-';
+            ->addColumn('kontak_ortu', function ($user) use ($role) {
+                return $role === 'siswa' ? ($user->siswaProfile->kontak_ortu ?? '-') : '-';
             })
-            ->addColumn('status', function ($row) use ($role) {
-                return $role === 'siswa' ? ($row->siswaProfile->status ?? '-') : '-';
+            ->addColumn('status', function ($user) use ($role) {
+                return $role === 'siswa' ? ($user->siswaProfile->status ?? '-') : '-';
             })
 
-            // Kolom untuk guru
-            ->addColumn('nip', function ($row) use ($role) {
-                return $role === 'guru' ? ($row->guruProfile->nip ?? '-') : '-';
+            // Columns for teachers
+            ->addColumn('nip', function ($user) use ($role) {
+                return $role === 'guru' ? ($user->guruProfile->nip ?? '-') : '-';
             })
-            ->addColumn('mapel', function ($row) use ($role) {
-                if ($role === 'guru' && $row->guruProfile?->mataPelajaran) {
-                    return $row->guruProfile->mataPelajaran->nama_mapel ?? '-';
-                }
-                return "-";
+            ->addColumn('mapel', function ($user) use ($role) {
+                return $role === 'guru' && $user->guruProfile?->mataPelajaran ? $user->guruProfile->mataPelajaran->nama_mapel ?? '-' : '-';
             })
-            ->addColumn('no_telp', function ($row) use ($role) {
-                return $role === 'guru' ? ($row->guruProfile->no_telp ?? '-') : '-';
+            ->addColumn('no_telp', function ($user) use ($role) {
+                return $role === 'guru' ? ($user->guruProfile->no_telp ?? '-') : '-';
             })
-            ->addColumn('status_guru', function ($row) use ($role) {
-                return $role === 'guru' ? ($row->guruProfile->status_guru ?? '-') : '-';
+            ->addColumn('status_guru', function ($user) use ($role) {
+                return $role === 'guru' ? ($user->guruProfile->status_guru ?? '-') : '-';
             })
-            ->addColumn('tanggal_masuk', function ($row) use ($role) {
-                return $role === 'guru'
-                    ? (isset($row->guruProfile->tanggal_masuk)
-                        ? Carbon::parse($row->guruProfile->tanggal_masuk)
-                            ->setTimezone('Asia/Jakarta')
-                            ->format('d-m-Y')
-                        : '-')
+            ->addColumn('tanggal_masuk', function ($user) use ($role) {
+                return $role === 'guru' && isset($user->guruProfile->tanggal_masuk)
+                    ? Carbon::parse($user->guruProfile->tanggal_masuk)->setTimezone('Asia/Jakarta')->format('d-m-Y')
                     : '-';
             })
 
             // Created at
-            ->editColumn('created_at', function ($row) {
-                return Carbon::parse($row->created_at)
-                    ->setTimezone('Asia/Jakarta')
-                    ->format('d-m-Y H:i');
+            ->editColumn('created_at', function ($user) {
+                return Carbon::parse($user->created_at)->setTimezone('Asia/Jakarta')->format('d-m-Y H:i');
             })
             ->make(true);
     }
@@ -144,60 +130,36 @@ class UserController extends Controller
         ]);
     }
 
-    public function store(StoreRequest $request, string $role)
+    public function store(StoreRequest $request, string $roleName)
     {
-        switch ($role) {
-            case 'guru': 
-                User::create([
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'password' => Hash::make($request->password),
-                    'role' => $request->role,
-                ]);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $roleName,
+        ]);
 
-                GuruProfile::create([
-                    'user_id' => User::latest()->first()->id,
-                    'nip' => $request->nip,
-                    'no_telp' => $request->no_telp,
-                    'alamat' => $request->alamat,
-                    'status_guru' => $request->status_guru,
-                    'tanggal_masuk' => $request->tanggal_masuk,
-                    'matpel_id' => $request->matpel_id
-                ]);
+        match ($roleName) {
+            'guru' => $user->guruProfile()->create([
+                'nip' => $request->nip,
+                'no_telp' => $request->no_telp,
+                'alamat' => $request->alamat,
+                'status_guru' => $request->status_guru,
+                'tanggal_masuk' => $request->tanggal_masuk,
+                'matpel_id' => $request->matpel_id,
+            ]),
+            'siswa' => $user->siswaProfile()->create([
+                'kelas_id' => $request->kelas_id,
+                'nisn' => $request->nisn,
+                'tahun_masuk' => $request->tahun_masuk,
+                'alamat' => $request->alamat,
+                'kontak_ortu' => $request->kontak_ortu,
+                'status' => $request->status,
+            ]),
+        };
 
-                break;
-
-            case 'siswa':
-                User::create([
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'password' => Hash::make($request->password),
-                    'role' => $request->role,
-                ]);
-
-                SiswaProfile::create([
-                    'user_id' => User::latest()->first()->id,
-                    'kelas_id' => $request->kelas_id,
-                    'nisn' => $request->nisn,
-                    'tahun_masuk' => $request->tahun_masuk,
-                    'alamat' => $request->alamat,
-                    'kontak_ortu' => $request->kontak_ortu,
-                    'status' => $request->status,
-                ]);
-
-                break;
-
-            default: 
-                User::create([
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'password' => Hash::make($request->password),
-                    'role' => $request->role,
-                ]);
-        }
-
-        return to_route('admin.users.index', $role)
-            ->with('success', 'Data '.$role.' berhasil ditambahkan');
+        return to_route('admin.users.index', $roleName)
+            ->with('success', 'Data '.$roleName.' berhasil ditambahkan');
     }
 
     public function edit(string $role, string $id)
