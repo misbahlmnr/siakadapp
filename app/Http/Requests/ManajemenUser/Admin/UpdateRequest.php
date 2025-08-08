@@ -46,11 +46,11 @@ class UpdateRequest extends FormRequest
                     'string',
                     Rule::unique('guru_profiles', 'nip')->ignore($userId, 'user_id'), // ignore berdasarkan user_id
                 ],
-                'mapel' => ['nullable', 'string', 'max:255'],
                 'no_telp' => ['nullable', 'string', 'max:20'],
                 'alamat' => ['nullable', 'string', 'max:255'],
                 'status_guru' => ['required', Rule::in(['pns', 'honorer'])],
                 'tanggal_masuk' => ['nullable', 'date'],
+                'matpel_id' => ['required', 'exists:mata_pelajaran,id'],
             ]);
         }
 

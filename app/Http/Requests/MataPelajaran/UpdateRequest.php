@@ -28,7 +28,6 @@ class UpdateRequest extends FormRequest
             'kode_mapel' => ['required', 'string', 'max:255', Rule::unique('mata_pelajaran', 'kode_mapel')->ignore($matpelId)],
             'nama_mapel' => ['required', 'string', 'max:255', Rule::unique('mata_pelajaran', 'nama_mapel')->ignore($matpelId)],
             'deskripsi' => ['nullable', 'string', 'max:255'],
-            'guru_id' => ['nullable', 'exists:guru_profiles,id'],
         ];
     }
 }

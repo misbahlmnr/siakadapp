@@ -14,6 +14,7 @@ class GuruProfile extends Model
         'alamat',
         'status_guru',
         'tanggal_masuk',
+        'matpel_id',
     ];
 
     public function user()
@@ -23,6 +24,6 @@ class GuruProfile extends Model
 
     public function mataPelajaran()
     {
-        return $this->hasMany(MataPelajaran::class, 'guru_id');
+        return $this->belongsTo(MataPelajaran::class, 'matpel_id');
     }
 }

@@ -8,14 +8,31 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
-const props = defineProps({
+const props = defineProps<{
     user: {
-        type: Object,
-        required: true,
-    },
-});
+        id: number;
+        user_id: number;
+        name: string;
+        email: string;
+        nip: string;
+        matpel_id: number | null;
+        no_telp: string;
+        alamat: string;
+        status_guru: string;
+        tanggal_masuk: string;
+    };
+    role: string;
+    mataPelajaran: {
+        id: number;
+        kode_mapel: string;
+        nama_mapel: string;
+        deskripsi: string | null;
+        created_at: string;
+        updated_at: string;
+    }[];
+}>();
 
 // Prefill form dari props.user
 const form = useForm({
@@ -24,8 +41,7 @@ const form = useForm({
     password: '',
     password_confirmation: '',
     nip: props.user.nip || '',
-    mapel: props.user.mapel || '',
-    golongan: props.user.golongan || '',
+    matpel_id: props.user.matpel_id || null,
     no_telp: props.user.no_telp || '',
     alamat: props.user.alamat || '',
     status_guru: props.user.status_guru || 'pns',
@@ -37,9 +53,24 @@ const statusGuruLabel = ref(props.user.status_guru === 'honorer' ? 'Honorer' : '
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Beranda', href: route('admin.dashboard') },
-    { title: 'Manajemen Data Guru', href: route('admin.users.index', 'guru') },
-    { title: 'Edit Data Guru', href: route('admin.users.edit', { role: 'guru', id: props.user.user_id }) },
+    { title: 'Manajemen Data Guru', href: route('admin.users.index', props.role) },
+    { title: 'Edit Data Guru', href: route('admin.users.edit', { role: props.role, id: props.user.user_id }) },
 ];
+
+const selectedMatpelLabel = ref('Pilih Mata Pelajaran');
+
+watch(
+    () => props.user.matpel_id,
+    (newVal) => {
+        if (newVal) {
+            const selected = props.mataPelajaran.find((matpel) => matpel.id === newVal);
+            if (selected) {
+                selectedMatpelLabel.value = selected.nama_mapel;
+            }
+        }
+    },
+    { immediate: true },
+);
 
 const submit = () => {
     form.put(route('admin.users.update', { role: 'guru', id: props.user.user_id }));
@@ -90,26 +121,42 @@ const submit = () => {
                     <InputError :message="form.errors.nip" />
                 </div>
 
-                <!-- Mata Pelajaran -->
-                <div class="flex flex-col gap-3">
-                    <Label for="mapel">Mata Pelajaran</Label>
-                    <Input id="mapel" v-model="form.mapel" placeholder="Contoh: Matematika" />
-                    <InputError :message="form.errors.mapel" />
-                </div>
-
-                <!-- Golongan -->
-                <div class="flex flex-col gap-3">
-                    <Label for="golongan">Golongan</Label>
-                    <Input id="golongan" v-model="form.golongan" placeholder="Contoh: III/A" />
-                    <InputError :message="form.errors.golongan" />
-                </div>
-
                 <!-- No Telp -->
                 <div class="flex flex-col gap-3">
                     <Label for="no_telp">No Telepon</Label>
                     <Input id="no_telp" v-model="form.no_telp" placeholder="08xxxx" />
                     <InputError :message="form.errors.no_telp" />
                 </div>
+
+                <!-- Mata Pelajaran -->
+                <div class="flex flex-col gap-3">
+                    <Label for="mapel">Mata Pelajaran</Label>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
+                                <span class="text-sm">
+                                    {{ selectedMatpelLabel }}
+                                </span>
+                                <ChevronDown class="h-4 w-4 text-gray-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
+                            <DropdownMenuItem
+                                v-for="matpel in props.mataPelajaran"
+                                :key="matpel.id"
+                                @click="
+                                    form.matpel_id = matpel.id;
+                                    selectedMatpelLabel = matpel.nama_mapel;
+                                "
+                            >
+                                {{ matpel.nama_mapel }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <InputError :message="form.errors.matpel_id" />
+                </div>
+
+                <div />
 
                 <!-- Alamat -->
                 <div class="flex flex-col gap-3 md:col-span-2">

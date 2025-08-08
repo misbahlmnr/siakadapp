@@ -10,10 +10,6 @@ const props = defineProps<{
         kode_mapel: string;
         nama_mapel: string;
         deskripsi: string | null;
-        guru: {
-            id: number;
-            name: string;
-        } | null;
         created_at: string;
         updated_at: string;
     };
@@ -42,13 +38,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <div>
                     <p class="text-sm text-gray-500">Nama Mapel</p>
                     <p class="font-semibold">{{ mataPelajaran.nama_mapel }}</p>
-                </div>
-
-                <div>
-                    <p class="text-sm text-gray-500">Guru Pengampu</p>
-                    <p class="font-semibold">
-                        {{ mataPelajaran.guru?.name ?? '-' }}
-                    </p>
                 </div>
 
                 <div class="md:col-span-2">

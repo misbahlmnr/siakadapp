@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ManajemenUser\Admin\StoreRequest;
 use App\Http\Requests\ManajemenUser\Admin\UpdateRequest;
 use App\Models\GuruProfile;
+use App\Models\MataPelajaran;
 use App\Models\SiswaProfile;
 use App\Models\User;
 use Carbon\Carbon;
@@ -27,7 +28,7 @@ class UserController extends Controller
     public function get(string $role)
     {
         $query = User::where('role', $role)
-            ->with($role === "siswa" ? "siswaProfile" : "guruProfile.mataPelajaran")
+            ->with($role === "siswa" ? "siswaProfile" : "guruProfile")
             ->orderBy('name');
 
         return DataTables::of($query)
@@ -64,7 +65,7 @@ class UserController extends Controller
             })
             ->addColumn('mapel', function ($row) use ($role) {
                 if ($role === 'guru' && $row->guruProfile?->mataPelajaran) {
-                    return $row->guruProfile->mataPelajaran->pluck('nama_mapel')->implode(', ');
+                    return $row->guruProfile->mataPelajaran->nama_mapel ?? '-';
                 }
                 return "-";
             })
@@ -96,6 +97,13 @@ class UserController extends Controller
     public function create(Request $request)
     {
         $role = $request->route('role');
+
+        if ($role === "guru") {
+            return inertia('admin/manajemen-user/guru/Create', [
+                'role' => $role,
+                'mataPelajaran' => MataPelajaran::all()
+            ]);
+        }
 
         return inertia('admin/manajemen-user/'.$role.'/Create', [
             'role' => $role
@@ -145,11 +153,11 @@ class UserController extends Controller
                 GuruProfile::create([
                     'user_id' => User::latest()->first()->id,
                     'nip' => $request->nip,
-                    'mapel' => $request->mapel,
                     'no_telp' => $request->no_telp,
                     'alamat' => $request->alamat,
                     'status_guru' => $request->status_guru,
                     'tanggal_masuk' => $request->tanggal_masuk,
+                    'matpel_id' => $request->matpel_id
                 ]);
 
                 break;
@@ -208,6 +216,12 @@ class UserController extends Controller
             foreach ($user->guruProfile->getAttributes() as $key => $value) {
                 $user->setAttribute($key, $value);
             }
+            
+            return inertia('admin/manajemen-user/guru/Edit', [
+                'role' => $role,
+                'user' => $user,
+                'mataPelajaran' => MataPelajaran::all()
+            ]);
         }
 
         return inertia('admin/manajemen-user/'.$role.'/Edit', [
@@ -233,7 +247,6 @@ class UserController extends Controller
             case 'guru':
                 $user->guruProfile()->update([
                     'nip' => $request->nip,
-                    'mapel' => $request->mapel,
                     'no_telp' => $request->no_telp,
                     'alamat' => $request->alamat,
                     'status_guru' => $request->status_guru,

@@ -33,11 +33,11 @@ class StoreRequest extends FormRequest
         if ($role === 'guru') {
             $rules = array_merge($rules, [
                 'nip' => 'nullable|string|unique:guru_profiles,nip',
-                'mapel' => 'nullable|string|max:255',
                 'no_telp' => 'nullable|string|max:20',
                 'alamat' => 'nullable|string|max:255',
                 'status_guru' => 'required|in:pns,honorer',
                 'tanggal_masuk' => 'nullable|date',
+                'matpel_id' => 'required|exists:mata_pelajaran,id',
             ]);
         }
 

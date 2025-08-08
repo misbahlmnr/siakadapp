@@ -15,11 +15,10 @@ class MataPelajaran extends Model
         'kode_mapel',
         'nama_mapel',
         'deskripsi',
-        'guru_id',
     ];
 
     public function guru()
     {
-        return $this->belongsTo(GuruProfile::class, 'guru_id');
+        return $this->belongsTo(GuruProfile::class);
     }
 }
