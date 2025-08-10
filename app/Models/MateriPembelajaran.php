@@ -20,4 +20,9 @@ class MateriPembelajaran extends Model
     {
         return $this->belongsTo(JadwalPelajaran::class, 'jadwal_id');
     }
+
+    public function guru()
+    {
+        return $this->belongsTo(GuruProfile::class);
+    }
 }

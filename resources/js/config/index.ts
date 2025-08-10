@@ -1,4 +1,18 @@
-import { Activity, BarChart, Book, BookOpen, Calendar, CheckCircle, FileText, Home, List, Pencil, Settings, Sparkles, Users } from 'lucide-vue-next';
+import {
+    Activity,
+    BarChart,
+    Book,
+    BookOpen,
+    Calendar,
+    CheckCircle,
+    ClipboardList,
+    FileText,
+    Home,
+    Pencil,
+    Settings,
+    Sparkles,
+    Users,
+} from 'lucide-vue-next';
 
 export const GlobalConfig = {
     menuByRole: {
@@ -51,19 +65,29 @@ export const GlobalConfig = {
                 icon: Home,
             },
             {
-                title: 'Materi Saya',
+                title: 'Jadwal Mengajar',
+                href: '/guru/jadwal-mengajar',
+                icon: Calendar,
+            },
+            {
+                title: 'Materi Pembelajaran',
                 href: '/guru/materi',
                 icon: FileText,
             },
             {
-                title: 'Bank Soal',
-                href: '/guru/soal',
-                icon: List,
+                title: 'Tugas & Ujian',
+                href: '/guru/tugas-ujian',
+                icon: ClipboardList,
             },
             {
-                title: 'Penilaian',
+                title: 'Penilaian Siswa',
                 href: '/guru/nilai',
                 icon: CheckCircle,
+            },
+            {
+                title: 'Absensi Siswa',
+                href: '/guru/absensi',
+                icon: Users,
             },
             {
                 title: 'Adaptive Tracker',

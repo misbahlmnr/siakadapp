@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('nilai_siswa', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tugas_ujian_id')->constrained('tugas_ujian')->onDelete('cascade');
+            $table->foreignId('guru_id')->constrained('guru_profiles')->onDelete('cascade');
             $table->foreignId('siswa_id')->constrained('users')->onDelete('cascade');
             $table->decimal('nilai', 5, 2)->nullable();
             $table->text('catatan')->nullable();

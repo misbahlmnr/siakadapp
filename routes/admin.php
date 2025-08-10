@@ -1,8 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\{JadwalPelajaranController, KelasController, MataPelajaranController, UserController};
+use App\Http\Controllers\Admin\{DashboardController, JadwalPelajaranController, KelasController, MataPelajaranController, UserController};
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
 
 Route::prefix('admin')
     ->name('admin.')

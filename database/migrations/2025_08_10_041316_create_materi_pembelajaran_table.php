@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('materi_pembelajaran', function (Blueprint $table) {
             $table->id();
             $table->foreignId('jadwal_id')->constrained('jadwal_pelajaran')->onDelete('cascade');
+            $table->foreignId('guru_id')->constrained('guru_profiles')->onDelete('cascade');
             $table->string('judul');
             $table->text('deskripsi')->nullable();
             $table->string('file_path')->nullable();
-            $table->string('link')->nullable();
+            $table->string('link_file')->nullable();
             $table->timestamps();
         });
     }

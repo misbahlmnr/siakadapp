@@ -20,6 +20,11 @@ class NilaiSiswa extends Model
         return $this->belongsTo(TugasUjian::class);
     }
 
+    public function guru()
+    {
+        return $this->belongsTo(GuruProfile::class);
+    }
+
     public function siswa()
     {
         return $this->belongsTo(User::class, 'siswa_id');
