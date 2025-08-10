@@ -31,4 +31,14 @@ class JadwalPelajaran extends Model
     {
         return $this->belongsTo(GuruProfile::class);
     }
+
+    public function materiPembelajaran()
+    {
+        return $this->hasMany(MateriPembelajaran::class);
+    }
+
+    public function tugasUjian()
+    {
+        return $this->hasMany(TugasUjian::class);
+    }
 }

@@ -56,4 +56,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(GuruProfile::class);
     }
+
+    public function nilaiSiswa()
+    {
+        return $this->hasMany(NilaiSiswa::class);
+    }
 }
