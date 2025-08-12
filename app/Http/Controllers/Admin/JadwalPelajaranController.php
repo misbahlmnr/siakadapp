@@ -65,11 +65,29 @@ class JadwalPelajaranController extends Controller
 
     public function store(StoreRequest $request)
     {
+        // Cek apakah jadwal bentrok
+        $isBentrok = JadwalPelajaran::where('hari', $request->hari)
+            ->where('guru_id', $request->guru_id)
+            ->where(function($query) use ($request) {
+                $query->whereBetween('jam_mulai', [$request->jam_mulai, $request->jam_selesai])
+                    ->orWhereBetween('jam_selesai', [$request->jam_mulai, $request->jam_selesai])
+                    ->orWhere(function($q) use ($request) {
+                        $q->where('jam_mulai', '<=', $request->jam_mulai)
+                            ->where('jam_selesai', '>=', $request->jam_selesai);
+                    });
+            })
+            ->exists();
+
+        if ($isBentrok) {
+            return back()->with('error', 'Jadwal bentrok dengan jadwal lain untuk guru ini.');
+        }
+
         JadwalPelajaran::create($request->all());
 
         return to_route('admin.jadwal-pelajaran.index')
             ->with('success', 'Jadwal pelajaran berhasil ditambahkan');
     }
+
 
     public function edit(string $id)
     {
@@ -88,6 +106,24 @@ class JadwalPelajaranController extends Controller
 
     public function update(UpdateRequest $request, int $id)
     {
+        // Cek bentrok jadwal (kecuali jadwal yang sedang diupdate)
+        $bentrok = JadwalPelajaran::where('hari', $request->hari)
+            ->where('kelas_id', $request->kelas_id)
+            ->where('id', '!=', $id)
+            ->where(function ($query) use ($request) {
+                $query->whereBetween('jam_mulai', [$request->jam_mulai, $request->jam_selesai])
+                    ->orWhereBetween('jam_selesai', [$request->jam_mulai, $request->jam_selesai])
+                    ->orWhere(function ($q) use ($request) {
+                        $q->where('jam_mulai', '<=', $request->jam_mulai)
+                            ->where('jam_selesai', '>=', $request->jam_selesai);
+                    });
+            })
+            ->exists();
+
+        if ($bentrok) {
+            return back()->with('error', 'Jadwal bentrok dengan jadwal lain untuk guru ini.')->withInput();
+        }
+
         JadwalPelajaran::find($id)->update($request->all());
 
         return to_route('admin.jadwal-pelajaran.index')
