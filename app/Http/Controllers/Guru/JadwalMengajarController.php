@@ -41,4 +41,30 @@ class JadwalMengajarController extends Controller
     {
         return Inertia::render('guru/jadwal-mengajar/Index');
     }
+
+    public function show(string $id)
+    {
+        $jadwal = JadwalPelajaran::with(['kelas', 'mataPelajaran', 'materi'])
+            ->findOrFail($id);
+
+        return Inertia::render('guru/jadwal-mengajar/View', [
+            'jadwal' => [
+                'id' => $jadwal->id,
+                'hari' => $jadwal->hari,
+                'waktu' => formatStartEndTime($jadwal->jam_mulai, $jadwal->jam_selesai),
+                'kelas' => $jadwal->kelas->nama_kelas,
+                'mapel' => $jadwal->mataPelajaran->nama_mapel,
+                'materi' => $jadwal->materi->map(function ($m) {
+                    return [
+                        'id' => $m->id,
+                        'judul' => $m->judul,
+                        'edit_url' => $m->id
+                            ? route('guru.dashboard')
+                            : null,
+                    ];
+                })
+            ]
+        ]);
+    }
+
 }

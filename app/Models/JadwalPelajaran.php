@@ -32,9 +32,9 @@ class JadwalPelajaran extends Model
         return $this->belongsTo(GuruProfile::class);
     }
 
-    public function materiPembelajaran()
+    public function materi()
     {
-        return $this->hasMany(MateriPembelajaran::class);
+        return $this->hasMany(MateriPembelajaran::class, 'jadwal_id');
     }
 
     public function tugasUjian()

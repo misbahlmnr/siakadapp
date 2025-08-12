@@ -20,7 +20,6 @@ class DashboardController extends Controller
 
         $jadwalHariIni = JadwalPelajaran::where('guru_id', $guruId)
             ->where('hari', $hariIni)
-            ->with('mataPelajaran', 'kelas')
             ->get()
             ->map(function ($jadwal) {
                 return [

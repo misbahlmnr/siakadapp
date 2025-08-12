@@ -14,7 +14,8 @@ Route::prefix('guru')
             ->controller(JadwalMengajarController::class)
             ->group(function () {
                Route::get('/', 'index')->name('index');
-               Route::get('/data', 'get')->name('data'); 
+               Route::get('/data', 'get')->name('data');
+               Route::get('/{id}', 'show')->name('show');
             });
     });
 

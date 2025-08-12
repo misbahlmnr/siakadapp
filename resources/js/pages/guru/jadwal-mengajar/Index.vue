@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import $ from 'jquery';
-import 'sweetalert2/dist/sweetalert2.min.css';
 import { onMounted } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -22,16 +21,17 @@ onMounted(() => {
             { data: 'DT_RowIndex', name: 'DT_RowIndex', width: '4%', orderable: false, searchable: false },
             { data: 'hari', name: 'hari' },
             { data: 'waktu', name: 'waktu' },
-            { data: 'nama_kelas', name: 'nama_kelas' },
+            { data: 'nama_kelas', name: 'nama_kelas', searchable: true },
             { data: 'mata_pelajaran', name: 'mata_pelajaran' },
             {
                 data: 'id',
                 orderable: false,
                 searchable: false,
                 width: '20%',
+                className: 'flex items-center justify-center',
                 render: (data) => {
                     return `
-                        <button class="btn-siswa text-green-500 cursor-pointer" data-id="${data}">Detail</button>
+                        <button class="btn-detail text-green-500 cursor-pointer" data-id="${data}">Detail</button>
                     `;
                 },
             },
@@ -39,7 +39,7 @@ onMounted(() => {
         drawCallback: function () {
             $('.btn-detail').on('click', function () {
                 const id = $(this).data('id');
-                // router.visit(route('guru.materi.index', { jadwal_id: id }));
+                router.visit(route('guru.jadwal-mengajar.show', id));
             });
         },
     });
