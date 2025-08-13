@@ -34,6 +34,7 @@ onMounted(() => {
                 data: 'id',
                 orderable: false,
                 searchable: false,
+                className: 'flex items-center justify-center gap-1',
                 render: (data) => {
                     return `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button> | <button class="btn-delete text-red-500 cursor-pointer" data-id="${data}">Hapus</button>`;
                 },
