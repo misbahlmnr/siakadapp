@@ -28,15 +28,21 @@ onMounted(() => {
                 orderable: false,
                 searchable: false,
                 width: '20%',
-                className: 'flex items-center justify-center',
+                className: 'flex items-center justify-center gap-1',
                 render: (data) => {
                     return `
+                        <button class="btn-materi text-blue-500 cursor-pointer" data-id="${data}">Materi</button> |
                         <button class="btn-detail text-green-500 cursor-pointer" data-id="${data}">Detail</button>
                     `;
                 },
             },
         ],
         drawCallback: function () {
+            $('.btn-materi').on('click', function () {
+                const id = $(this).data('id');
+                router.visit(route('guru.jadwal-mengajar.materi.index', { jadwal_id: id }));
+            });
+
             $('.btn-detail').on('click', function () {
                 const id = $(this).data('id');
                 router.visit(route('guru.jadwal-mengajar.show', id));

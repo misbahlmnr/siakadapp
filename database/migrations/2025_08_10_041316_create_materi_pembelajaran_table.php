@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('jadwal_id')->constrained('jadwal_pelajaran')->onDelete('cascade');
             $table->foreignId('guru_id')->constrained('guru_profiles')->onDelete('cascade');
+            $table->unsignedInteger('pertemuan_ke');
             $table->string('judul');
             $table->text('deskripsi')->nullable();
             $table->string('file_path')->nullable();

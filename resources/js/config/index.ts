@@ -70,11 +70,6 @@ export const GlobalConfig = {
                 icon: Calendar,
             },
             {
-                title: 'Materi Pembelajaran',
-                href: '/guru/materi',
-                icon: FileText,
-            },
-            {
                 title: 'Tugas & Ujian',
                 href: '/guru/tugas-ujian',
                 icon: ClipboardList,

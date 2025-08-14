@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class MateriPembelajaran extends Model
 {
@@ -10,10 +11,12 @@ class MateriPembelajaran extends Model
 
     protected $fillable = [
         'jadwal_id',
+        'guru_id',
+        'pertemuan_ke',
         'judul',
         'deskripsi',
         'file_path',
-        'link',
+        'link_file',
     ];
 
     public function jadwal()
@@ -24,5 +27,13 @@ class MateriPembelajaran extends Model
     public function guru()
     {
         return $this->belongsTo(GuruProfile::class);
+    }
+
+    public function getFilePathAttribute($value)
+    {
+        if ($value) {
+            return Storage::url($value);
+        }
+        return null;
     }
 }

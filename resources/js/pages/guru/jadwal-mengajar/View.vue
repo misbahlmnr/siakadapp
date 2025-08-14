@@ -36,19 +36,19 @@ const breadcrumbs: BreadcrumbItem[] = [
             <h1 class="text-2xl font-bold">Detail Jadwal Mengajar</h1>
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                    <p class="text-sm text-gray-500">Hari</p>
+                    <p class="text-sm text-gray-300">Hari</p>
                     <p class="font-semibold">{{ jadwal.hari }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Waktu</p>
+                    <p class="text-sm text-gray-300">Waktu</p>
                     <p class="font-semibold">{{ jadwal.waktu }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Kelas</p>
+                    <p class="text-sm text-gray-300">Kelas</p>
                     <p class="font-semibold">{{ jadwal.kelas }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Mata Pelajaran</p>
+                    <p class="text-sm text-gray-300">Mata Pelajaran</p>
                     <p class="font-semibold">{{ jadwal.mapel }}</p>
                 </div>
             </div>
@@ -60,7 +60,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <div
                         v-for="materi in jadwal.materi"
                         :key="materi.id"
-                        class="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md"
+                        class="flex items-center justify-between rounded-lg border border-dashed border-gray-600 p-4 shadow-sm transition hover:shadow-md"
                     >
                         <h3 class="text-lg font-semibold text-gray-800">{{ materi.judul }}</h3>
                         <Link v-if="materi.edit_url" href="{jadwal.materi.edit_url}">
@@ -69,7 +69,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </div>
                 </div>
 
-                <div v-else class="rounded-lg border border-dashed border-gray-300 bg-gray-50 py-8 text-center text-gray-500">
+                <div v-else class="rounded-lg border border-dashed border-gray-600 py-8 text-center text-gray-300">
                     Belum ada materi untuk jadwal ini.<br />
                     <Button class="mt-4" @click="router.visit(route('guru.materi.create', { jadwal_id: jadwal.id }))"> Upload Materi </Button>
                 </div>
