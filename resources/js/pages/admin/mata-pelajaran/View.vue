@@ -22,19 +22,19 @@ const breadcrumbs: BreadcrumbItem[] = [
         <div class="flex flex-col gap-6 px-10 py-6">
             <h1 class="text-2xl font-bold">Detail Mata Pelajaran</h1>
 
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div class="grid max-w-full grid-cols-1 gap-6 md:max-w-2xl md:grid-cols-2">
                 <div>
-                    <p class="text-sm text-gray-500">Kode Mapel</p>
+                    <p class="text-sm text-gray-400">Kode Mapel</p>
                     <p class="font-semibold">{{ mataPelajaran.kode_mapel }}</p>
                 </div>
 
                 <div>
-                    <p class="text-sm text-gray-500">Nama Mapel</p>
+                    <p class="text-sm text-gray-400">Nama Mapel</p>
                     <p class="font-semibold">{{ mataPelajaran.nama_mapel }}</p>
                 </div>
 
                 <div class="md:col-span-2">
-                    <p class="text-sm text-gray-500">Deskripsi</p>
+                    <p class="text-sm text-gray-400">Deskripsi</p>
                     <p class="font-semibold whitespace-pre-line">
                         {{ mataPelajaran.deskripsi || '-' }}
                     </p>

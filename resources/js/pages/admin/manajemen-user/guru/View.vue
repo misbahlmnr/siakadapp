@@ -29,41 +29,41 @@ const breadcrumbs: BreadcrumbItem[] = [
         <div class="flex flex-col gap-6 px-10 py-6">
             <h1 class="text-2xl font-bold">Detail Data Guru</h1>
 
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div class="grid max-w-full grid-cols-1 gap-6 md:max-w-2xl md:grid-cols-2">
                 <div>
-                    <p class="text-sm text-gray-500">Nama Lengkap</p>
+                    <p class="text-sm text-gray-400">Nama Lengkap</p>
                     <p class="font-semibold">{{ user.name }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Email</p>
+                    <p class="text-sm text-gray-400">Email</p>
                     <p class="font-semibold">{{ user.email }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">NIP</p>
+                    <p class="text-sm text-gray-400">NIP</p>
                     <p class="font-semibold">{{ user.guru_profile?.nip ?? '-' }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Mata Pelajaran</p>
+                    <p class="text-sm text-gray-400">Mata Pelajaran</p>
                     <p class="font-semibold">{{ user.guru_profile?.mapel ?? '-' }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Status Guru</p>
+                    <p class="text-sm text-gray-400">Status Guru</p>
                     <p class="font-semibold capitalize">{{ user.guru_profile?.status_guru ?? '-' }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Tanggal Masuk</p>
+                    <p class="text-sm text-gray-400">Tanggal Masuk</p>
                     <p class="font-semibold">{{ user.guru_profile?.tanggal_masuk ?? '-' }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Golongan</p>
+                    <p class="text-sm text-gray-400">Golongan</p>
                     <p class="font-semibold">{{ user.guru_profile?.golongan ?? '-' }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">No. Telepon</p>
+                    <p class="text-sm text-gray-400">No. Telepon</p>
                     <p class="font-semibold">{{ user.guru_profile?.no_telp ?? '-' }}</p>
                 </div>
                 <div class="md:col-span-2">
-                    <p class="text-sm text-gray-500">Alamat</p>
+                    <p class="text-sm text-gray-400">Alamat</p>
                     <p class="font-semibold">{{ user.guru_profile?.alamat ?? '-' }}</p>
                 </div>
             </div>

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Kelas } from '@/types';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
@@ -92,7 +92,7 @@ const submit = () => {
         <div class="flex flex-col gap-4 px-10 py-6">
             <h1 class="text-2xl font-bold">Edit Data Siswa</h1>
 
-            <form class="grid grid-cols-1 gap-4 md:grid-cols-2" @submit.prevent="submit">
+            <form class="grid max-w-full grid-cols-1 gap-4 md:max-w-2xl md:grid-cols-2" @submit.prevent="submit">
                 <!-- Nama -->
                 <div class="flex flex-col gap-3">
                     <Label for="name">Nama</Label>
@@ -213,9 +213,12 @@ const submit = () => {
 
                 <!-- Submit -->
                 <div class="mt-4 md:col-span-2">
+                    <Link :href="route('admin.users.index', 'siswa')" class="mr-2">
+                        <Button variant="outline">Batal</Button>
+                    </Link>
                     <Button :disabled="form.processing">
                         <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                        Perbarui
+                        Simpan
                     </Button>
                 </div>
             </form>

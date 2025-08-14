@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, MatPel } from '@/types';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
 
 type Form = {
@@ -41,7 +41,7 @@ const submit = () => {
         <div class="flex flex-col gap-4 px-10 py-6">
             <h1 class="text-2xl font-bold">Edit Mata Pelajaran</h1>
 
-            <form class="grid grid-cols-1 gap-4 md:grid-cols-2" @submit.prevent="submit">
+            <form class="grid max-w-full grid-cols-1 gap-4 md:max-w-2xl md:grid-cols-2" @submit.prevent="submit">
                 <!-- Kode Mapel -->
                 <div class="flex flex-col gap-3">
                     <Label for="kode_mapel">Kode Mapel</Label>
@@ -71,9 +71,12 @@ const submit = () => {
 
                 <!-- Submit -->
                 <div class="mt-4 md:col-span-2">
+                    <Link :href="route('admin.mata-pelajaran.index')" class="mr-2">
+                        <Button variant="outline">Batal</Button>
+                    </Link>
                     <Button :disabled="form.processing">
                         <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                        Simpan Perubahan
+                        Simpan
                     </Button>
                 </div>
             </form>

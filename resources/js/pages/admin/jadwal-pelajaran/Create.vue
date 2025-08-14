@@ -58,7 +58,7 @@ const submit = () => {
         <div class="flex flex-col gap-4 px-10 py-6">
             <h1 class="text-2xl font-bold">Tambah Jadwal Pelajaran</h1>
 
-            <form class="grid grid-cols-1 gap-4 md:grid-cols-2" @submit.prevent="submit">
+            <form class="grid max-w-full grid-cols-1 gap-4 md:max-w-2xl md:grid-cols-2" @submit.prevent="submit">
                 <!-- Kelas -->
                 <div class="flex flex-col gap-3">
                     <Label for="kelas_id">Kelas</Label>

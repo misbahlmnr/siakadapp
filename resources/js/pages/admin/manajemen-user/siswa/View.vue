@@ -29,37 +29,37 @@ const breadcrumbs: BreadcrumbItem[] = [
         <div class="flex flex-col gap-6 px-10 py-6">
             <h1 class="text-2xl font-bold">Detail Data Siswa</h1>
 
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div class="grid max-w-full grid-cols-1 gap-6 md:max-w-2xl md:grid-cols-2">
                 <div>
-                    <p class="text-sm text-gray-500">Nama Lengkap</p>
+                    <p class="text-sm text-gray-400">Nama Lengkap</p>
                     <p class="font-semibold">{{ user.name }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Email</p>
+                    <p class="text-sm text-gray-400">Email</p>
                     <p class="font-semibold">{{ user.email }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">NISN</p>
+                    <p class="text-sm text-gray-400">NISN</p>
                     <p class="font-semibold">{{ user.siswa_profile?.nisn ?? '-' }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Kelas</p>
+                    <p class="text-sm text-gray-400">Kelas</p>
                     <p class="font-semibold">{{ user.siswa_profile?.kelas ?? '-' }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Tahun Masuk</p>
+                    <p class="text-sm text-gray-400">Tahun Masuk</p>
                     <p class="font-semibold">{{ user.siswa_profile?.tahun_masuk ?? '-' }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Kontak Orang Tua</p>
+                    <p class="text-sm text-gray-400">Kontak Orang Tua</p>
                     <p class="font-semibold">{{ user.siswa_profile?.kontak_ortu ?? '-' }}</p>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Status</p>
+                    <p class="text-sm text-gray-400">Status</p>
                     <p class="font-semibold capitalize">{{ user.siswa_profile?.status ?? '-' }}</p>
                 </div>
                 <div class="md:col-span-2">
-                    <p class="text-sm text-gray-500">Alamat</p>
+                    <p class="text-sm text-gray-400">Alamat</p>
                     <p class="font-semibold">{{ user.siswa_profile?.alamat ?? '-' }}</p>
                 </div>
             </div>
