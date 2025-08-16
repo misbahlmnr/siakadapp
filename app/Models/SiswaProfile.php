@@ -9,11 +9,16 @@ class SiswaProfile extends Model
     protected $fillable = [
         'user_id',
         'kelas_id',
+        'nis',
         'nisn',
-        'tahun_masuk',
-        'alamat',
-        'kontak_ortu',
+        'jenis_kelamin',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'no_hp',
+        'angkatan',
         'status',
+        'nama_ortu',
+        'kontak_ortu',
     ];
 
     public function user()
@@ -24,5 +29,30 @@ class SiswaProfile extends Model
     public function kelas()
     {
         return $this->belongsTo(Kelas::class);
+    }
+
+    public function pengumpulanTugas()
+    {
+        return $this->hasMany(PengumpulanTugas::class);
+    }
+
+    public function nilai()
+    {
+        return $this->hasMany(Nilai::class);
+    }
+
+    public function absensi()
+    {
+        return $this->hasMany(Absensi::class);
+    }
+
+    public function rekomendasiMateri()
+    {
+        return $this->hasMany(RekomendasiMateri::class);
+    }
+
+    public function rekomendasiMateriManual()
+    {
+        return $this->hasMany(RekomendasiMateriManual::class);
     }
 }

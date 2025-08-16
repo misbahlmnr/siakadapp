@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Guru\{DashboardController, JadwalMengajarController, MateriPembelajaranController};
+use App\Http\Controllers\Guru\{DashboardController, JadwalMengajarController, MateriPembelajaranController, TugasUjianController};
 
 Route::prefix('guru')
     ->name('guru.')
@@ -31,6 +31,14 @@ Route::prefix('guru')
                         Route::put('/{materi_id}', 'update')->name('update');
                         Route::delete('/{materi_id}', 'destroy')->name('destroy');
                     });
+            });
+
+        Route::prefix('tugas-ujian')
+            ->name('tugas-ujian.')
+            ->controller(TugasUjianController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/data', 'get')->name('data');
             });
     });
 

@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tugas_ujian', function (Blueprint $table) {
+        Schema::create('absensi', function (Blueprint $table) {
             $table->id();
             $table->foreignId('jadwal_id')->constrained('jadwal_pelajaran')->onDelete('cascade');
-            $table->enum('jenis', ['tugas', 'ujian']);
-            $table->string('judul');
-            $table->text('deskripsi')->nullable();
-            $table->dateTime('deadline')->nullable();
-            $table->string('file_path')->nullable();
+            $table->foreignId('siswa_id')->constrained('siswa_profiles')->onDelete('cascade');
+            $table->string('pertemuan_ke');
+            $table->date('tanggal');
+            $table->enum('status', ['hadir', 'izin', 'sakit', 'alpha'])->default('hadir');
+            $table->string('semester')->nullable();
+            $table->string('tahun_ajaran')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tugas_ujian');
+        Schema::dropIfExists('absensi');
     }
 };

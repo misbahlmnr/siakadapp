@@ -1,18 +1,4 @@
-import {
-    Activity,
-    BarChart,
-    Book,
-    BookOpen,
-    Calendar,
-    CheckCircle,
-    ClipboardList,
-    FileText,
-    Home,
-    Pencil,
-    Settings,
-    Sparkles,
-    Users,
-} from 'lucide-vue-next';
+import { Activity, BarChart, Book, BookOpen, Calendar, CheckCircle, ClipboardList, Home, Pencil, Settings, Sparkles, Users } from 'lucide-vue-next';
 
 export const GlobalConfig = {
     menuByRole: {

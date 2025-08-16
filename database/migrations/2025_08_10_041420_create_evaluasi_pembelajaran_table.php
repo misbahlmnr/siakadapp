@@ -11,15 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('materi_pembelajaran', function (Blueprint $table) {
+        Schema::create('evaluasi_pembelajaran', function (Blueprint $table) {
             $table->id();
             $table->foreignId('jadwal_id')->constrained('jadwal_pelajaran')->onDelete('cascade');
             $table->foreignId('guru_id')->constrained('guru_profiles')->onDelete('cascade');
-            $table->unsignedInteger('pertemuan_ke');
             $table->string('judul');
             $table->text('deskripsi')->nullable();
-            $table->string('file_path')->nullable();
-            $table->string('link_file')->nullable();
+            $table->enum('jenis', ['tugas', 'kuis', 'ujian'])->default('tugas');
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai');
+            $table->string('link_soal')->nullable();
+            $table->string('file_soal')->nullable();
+            $table->string('semester')->nullable();
+            $table->string('tahun_ajaran')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('materi_pembelajaran');
+        Schema::dropIfExists('evaluasi_pembelajaran');
     }
 };

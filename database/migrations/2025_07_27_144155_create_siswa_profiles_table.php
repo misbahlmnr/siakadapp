@@ -15,11 +15,16 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
+            $table->string('nis')->unique();
             $table->string('nisn')->unique();
-            $table->year('tahun_masuk')->nullable();
-            $table->text('alamat')->nullable();
+            $table->string('jenis_kelamin')->nullable();
+            $table->string('tempat_lahir')->nullable();
+            $table->date('tanggal_lahir')->nullable();
+            $table->string('no_hp')->nullable();
+            $table->string('angkatan')->nullable();
+            $table->enum('status', ['aktif', 'lulus', 'pindah', 'tidak_aktif'])->default('aktif');
+            $table->string('nama_ortu')->nullable();
             $table->string('kontak_ortu')->nullable();
-            $table->enum('status', ['aktif', 'tidak_aktif'])->default('aktif');
             $table->timestamps();
         });
 

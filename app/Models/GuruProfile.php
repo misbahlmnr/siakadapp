@@ -9,12 +9,12 @@ class GuruProfile extends Model
     protected $fillable = [
         'user_id',
         'nip',
-        'email',
-        'no_telp',
+        'jenis_kelamin',
+        'tempat_lahir',
+        'tanggal_lahir',
         'alamat',
-        'status_guru',
-        'tanggal_masuk',
-        'matpel_id',
+        'no_hp',
+        'status_kepegawaian',
     ];
 
     public function user()
@@ -24,11 +24,21 @@ class GuruProfile extends Model
 
     public function mataPelajaran()
     {
-        return $this->belongsTo(MataPelajaran::class, 'matpel_id');
+        return $this->hasMany(MataPelajaran::class, 'matpel_id');
     }
 
     public function jadwalPelajaran()
     {
         return $this->hasMany(JadwalPelajaran::class);
+    }
+
+    public function evaluasiPembelajaran()
+    {
+        return $this->hasMany(EvaluasiPembelajaran::class);
+    }
+
+    public function nilai()
+    {
+        return $this->hasMany(Nilai::class);
     }
 }

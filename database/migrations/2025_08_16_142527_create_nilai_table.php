@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jadwal_pelajaran', function (Blueprint $table) {
+        Schema::create('nilai', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
-            $table->foreignId('matpel_id')->constrained('mata_pelajaran')->onDelete('cascade');
+            $table->foreignId('siswa_id')->constrained('siswa_profiles')->onDelete('cascade');
+            $table->foreignId('jadwal_id')->constrained('jadwal_pelajaran')->onDelete('cascade');
             $table->foreignId('guru_id')->constrained('guru_profiles')->onDelete('cascade');
-            $table->enum('hari', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']);
-            $table->time('jam_mulai');
-            $table->time('jam_selesai');
+            $table->foreignId('evaluasi_id')->constrained('evaluasi_pembelajaran')->onDelete('cascade');
+            $table->enum('jenis', ['tugas', 'kuis', 'ujian'])->default('tugas');
+            $table->string('nilai')->nullable();
             $table->string('semester')->nullable();
             $table->string('tahun_ajaran')->nullable();
             $table->timestamps();
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jadwal_pelajaran');
+        Schema::dropIfExists('nilai');
     }
 };

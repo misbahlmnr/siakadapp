@@ -10,11 +10,13 @@ class JadwalPelajaran extends Model
 
     protected $fillable = [
         'kelas_id',
-        'mata_pelajaran_id',
+        'matpel_id',
         'guru_id',
         'hari',
         'jam_mulai',
         'jam_selesai',
+        'semester',
+        'tahun_ajaran',
     ];
 
     public function kelas()
@@ -24,7 +26,7 @@ class JadwalPelajaran extends Model
 
     public function mataPelajaran()
     {
-        return $this->belongsTo(MataPelajaran::class);
+        return $this->belongsTo(MataPelajaran::class, 'matpel_id');
     }
 
     public function guru()
@@ -37,8 +39,18 @@ class JadwalPelajaran extends Model
         return $this->hasMany(MateriPembelajaran::class, 'jadwal_id');
     }
 
-    public function tugasUjian()
+    public function evaluasiPembelajaran()
     {
-        return $this->hasMany(TugasUjian::class);
+        return $this->hasMany(EvaluasiPembelajaran::class, 'jadwal_id');
+    }
+
+    public function nilai()
+    {
+        return $this->hasMany(Nilai::class, 'jadwal_id');
+    }
+
+    public function absensi()
+    {
+        return $this->hasMany(Absensi::class, 'jadwal_id');
     }
 }
