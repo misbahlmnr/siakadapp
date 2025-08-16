@@ -3,16 +3,22 @@
         @apply w-full overflow-hidden overflow-x-auto rounded-sm bg-gray-50 text-sm dark:bg-[#1A1A1A];
     }
     th {
-        @apply border border-gray-300 bg-white px-5 py-3 text-black uppercase;
+        @apply border border-gray-600 bg-blue-800 px-5 py-3 text-white uppercase;
     }
     td {
-        @apply border border-gray-300 px-5 py-5 dark:border-gray-800;
+        @apply border border-gray-300 px-5 py-5 dark:border-gray-800 dark:text-gray-300;
     }
     tbody tr:nth-child(even) {
         @apply bg-gray-100 dark:bg-[#262626];
     }
     .dt-container > .dt-layout-row:first-child {
         @apply flex items-center justify-between py-3;
+    }
+    .dt-layout-row {
+        @apply flex items-center justify-between;
+    }
+    .dt-layout-table {
+        @apply block w-full;
     }
     .dt-length select {
         @apply mr-2 rounded-md bg-gray-100 p-1.5 dark:bg-[#1A1A1A];
@@ -28,11 +34,11 @@
     }
 
     .dt-paging .dt-paging-button {
-        @apply rounded-md bg-white px-3 py-1.5 text-sm text-black shadow-md transition-all duration-150 ease-in-out;
+        @apply rounded-md bg-blue-800 px-3 py-1.5 text-sm text-black shadow-md transition-all duration-150 ease-in-out;
     }
 
     .dt-paging .dt-paging-button.current {
-        @apply cursor-default bg-white font-semibold;
+        @apply cursor-default bg-blue-800 font-semibold;
     }
 
     .dt-paging .dt-paging-button.disabled {
@@ -40,7 +46,7 @@
     }
 
     .dt-paging .dt-paging-button:not(.current):not(.disabled):hover {
-        @apply cursor-not-allowed bg-white opacity-50;
+        @apply cursor-not-allowed bg-blue-800 opacity-50;
     }
 
     .dt-paging .dt-paging-button.previous,
@@ -49,10 +55,10 @@
     }
 
     .dark .dt-paging .dt-paging-button {
-        @apply bg-white text-black;
+        @apply bg-blue-600 text-white;
     }
 
     .dark .dt-paging .dt-paging-button:hover {
-        @apply bg-white;
+        @apply bg-blue-600/90;
     }
 }

@@ -64,7 +64,7 @@ const submit = () => {
 
                 <!-- Submit -->
                 <div class="mt-4 md:col-span-2">
-                    <Button :disabled="form.processing">
+                    <Button :disabled="form.processing" class="bg-blue-600 text-white hover:bg-blue-600/90">
                         <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                         Simpan
                     </Button>

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -74,10 +74,8 @@ const submit = () => {
 
                 <!-- Submit -->
                 <div class="mt-4 md:col-span-2">
-                    <Link :href="route('admin.users.index', 'admin')" class="mr-2">
-                        <Button variant="outline">Batal</Button>
-                    </Link>
-                    <Button :disabled="form.processing">
+                    <Button variant="outline" type="button" @click="router.visit(route('admin.users.index', 'admin'))">Batal</Button>
+                    <Button :disabled="form.processing" class="bg-blue-600 text-white hover:bg-blue-600/90">
                         <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                         Simpan
                     </Button>
