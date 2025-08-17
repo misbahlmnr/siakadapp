@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\ManajemenUser\Admin;
+namespace App\Http\Requests\ManajemenUser;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -33,11 +33,12 @@ class StoreRequest extends FormRequest
         if ($role === 'guru') {
             $rules = array_merge($rules, [
                 'nip' => 'nullable|string|unique:guru_profiles,nip',
-                'no_telp' => 'nullable|string|max:20',
+                'jenis_kelamin' => 'nullable|string|max:50',
+                'tempat_lahir' => 'nullable|string|max:255',
+                'tanggal_lahir' => 'required|date|before:today|after:1900-01-01',
                 'alamat' => 'nullable|string|max:255',
-                'status_guru' => 'required|in:pns,honorer',
-                'tanggal_masuk' => 'nullable|date',
-                'matpel_id' => 'required|exists:mata_pelajaran,id',
+                'no_hp' => 'required|string|max:20',
+                'status_kepegawaian' => 'required|in:pns,honorer',
             ]);
         }
 

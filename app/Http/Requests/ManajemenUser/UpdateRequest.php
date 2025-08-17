@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\ManajemenUser\Admin;
+namespace App\Http\Requests\ManajemenUser;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -46,11 +46,12 @@ class UpdateRequest extends FormRequest
                     'string',
                     Rule::unique('guru_profiles', 'nip')->ignore($userId, 'user_id'), // ignore berdasarkan user_id
                 ],
-                'no_telp' => ['nullable', 'string', 'max:20'],
-                'alamat' => ['nullable', 'string', 'max:255'],
-                'status_guru' => ['required', Rule::in(['pns', 'honorer'])],
-                'tanggal_masuk' => ['nullable', 'date'],
-                'matpel_id' => ['required', 'exists:mata_pelajaran,id'],
+                'jenis_kelamin' => 'nullable|string|max:50',
+                'tempat_lahir' => 'nullable|string|max:255',
+                'tanggal_lahir' => 'required|date|before:today|after:1900-01-01',
+                'alamat' => 'nullable|string|max:255',
+                'no_hp' => 'required|string|max:20',
+                'status_kepegawaian' => 'required|in:pns,honorer',
             ]);
         }
 

@@ -44,6 +44,12 @@ export function useDataTable(
                 },
             },
         ],
+        language: {
+            paginate: {
+                previous: `<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-chevron-left w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>`,
+                next: `<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-chevron-right w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>`,
+            },
+        },
         drawCallback: function () {
             $('.btn-edit').on('click', function () {
                 const id = $(this).data('id');

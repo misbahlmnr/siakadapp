@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ManajemenUser\Admin\StoreRequest;
-use App\Http\Requests\ManajemenUser\Admin\UpdateRequest;
+use App\Http\Requests\ManajemenUser\StoreRequest;
+use App\Http\Requests\ManajemenUser\UpdateRequest;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\User;
@@ -58,28 +58,30 @@ class UserController extends Controller
                 return $role === 'siswa' ? ($user->siswaProfile->status ?? '-') : '-';
             })
 
-            // Columns for teachers
+            // Columns for guru
             ->addColumn('nip', function ($user) use ($role) {
                 return $role === 'guru' ? ($user->guruProfile->nip ?? '-') : '-';
             })
-            ->addColumn('mapel', function ($user) use ($role) {
-                return $role === 'guru' && $user->guruProfile?->mataPelajaran ? $user->guruProfile->mataPelajaran->nama_mapel ?? '-' : '-';
+            ->addColumn('jenis_kelamin', function ($user) use ($role) {
+                return $role === 'guru' ? ($user->guruProfile->jenis_kelamin ?? '-') : '-';
             })
-            ->addColumn('no_telp', function ($user) use ($role) {
-                return $role === 'guru' ? ($user->guruProfile->no_telp ?? '-') : '-';
+            ->addColumn('tempat_tanggal_lahir', function ($user) use ($role) {
+                if ($role === 'guru' && $user->guruProfile) {
+                    $tempat = $user->guruProfile->tempat_lahir ?? '-';
+                    $tanggal = $user->guruProfile->tanggal_lahir 
+                        ? \Carbon\Carbon::parse($user->guruProfile->tanggal_lahir)->format('d-m-Y') 
+                        : '-';
+                    return $tempat . ', ' . $tanggal;
+                }
+                return '-';
             })
-            ->addColumn('status_guru', function ($user) use ($role) {
-                return $role === 'guru' ? ($user->guruProfile->status_guru ?? '-') : '-';
-            })
-            ->addColumn('tanggal_masuk', function ($user) use ($role) {
-                return $role === 'guru' && isset($user->guruProfile->tanggal_masuk)
-                    ? Carbon::parse($user->guruProfile->tanggal_masuk)->setTimezone('Asia/Jakarta')->format('d-m-Y')
-                    : '-';
+            ->addColumn('status_kepegawaian', function ($user) use ($role) {
+                return $role === 'guru' ? ($user->guruProfile->status_kepegawaian ?? '-') : '-';
             })
 
             // Created at
             ->editColumn('created_at', function ($user) {
-                return Carbon::parse($user->created_at)->setTimezone('Asia/Jakarta')->format('d-m-Y H:i');
+                return formatCreatedAt($user->created_at);
             })
             ->make(true);
     }
@@ -92,9 +94,7 @@ class UserController extends Controller
             'role' => $roleName
         ];
 
-        if ($roleName === 'guru') {
-            $viewData['mataPelajaran'] = MataPelajaran::all();
-        } elseif ($roleName === 'siswa') {
+        if ($roleName === 'siswa') {
             $viewData['kelas'] = Kelas::all();
         }
 
@@ -142,11 +142,12 @@ class UserController extends Controller
         match ($roleName) {
             'guru' => $user->guruProfile()->create([
                 'nip' => $request->nip,
-                'no_telp' => $request->no_telp,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
                 'alamat' => $request->alamat,
-                'status_guru' => $request->status_guru,
-                'tanggal_masuk' => $request->tanggal_masuk,
-                'matpel_id' => $request->matpel_id,
+                'no_hp' => $request->no_hp,
+                'status_kepegawaian' => $request->status_kepegawaian,
             ]),
             'siswa' => $user->siswaProfile()->create([
                 'kelas_id' => $request->kelas_id,
@@ -171,7 +172,6 @@ class UserController extends Controller
             $query->with($relation);
         }
 
-
         $user = $query->findOrFail($id);
 
         // Inject data relasi ke property dinamis
@@ -192,8 +192,7 @@ class UserController extends Controller
             
             return inertia('admin/manajemen-user/guru/Edit', [
                 'role' => $role,
-                'user' => $user,
-                'mataPelajaran' => MataPelajaran::all()
+                'guru' => $user,
             ]);
         }
 
@@ -217,10 +216,12 @@ class UserController extends Controller
         match ($role) {
             'guru' => $user->guruProfile()->update([
                 'nip' => $request->nip,
-                'no_telp' => $request->no_telp,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
                 'alamat' => $request->alamat,
-                'status_guru' => $request->status_guru,
-                'tanggal_masuk' => $request->tanggal_masuk,
+                'no_hp' => $request->no_hp,
+                'status_kepegawaian' => $request->status_kepegawaian,
             ]),
             'siswa' => $user->siswaProfile()->update([
                 'nisn' => $request->nisn,

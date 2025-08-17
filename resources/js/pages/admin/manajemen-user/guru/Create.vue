@@ -12,14 +12,6 @@ import { ref } from 'vue';
 
 const props = defineProps<{
     role: string;
-    mataPelajaran: {
-        id: number;
-        kode_mapel: string;
-        nama_mapel: string;
-        deskripsi: string | null;
-        created_at: string;
-        updated_at: string;
-    }[];
 }>();
 
 type Form = {
@@ -27,12 +19,13 @@ type Form = {
     email: string;
     password: string;
     password_confirmation: string;
-    nip: string;
-    matpel_id: number | null;
-    no_telp: string;
-    alamat: string;
-    status_guru: string;
-    tanggal_masuk: string;
+    nip: string | null;
+    jenis_kelamin: string | null;
+    tempat_lahir: string | null;
+    tanggal_lahir: string | null;
+    alamat: string | null;
+    no_hp: string | null;
+    status_kepegawaian: string | null;
     role: string;
 };
 
@@ -41,24 +34,24 @@ const form = useForm<Form>({
     email: '',
     password: '',
     password_confirmation: '',
-    nip: '',
-    matpel_id: null,
-    no_telp: '',
-    alamat: '',
-    status_guru: 'pns',
-    tanggal_masuk: '',
+    nip: null,
+    jenis_kelamin: null,
+    tempat_lahir: null,
+    tanggal_lahir: null,
+    alamat: null,
+    no_hp: null,
+    status_kepegawaian: null,
     role: 'guru',
 });
 
-const statusGuruLabel = ref('PNS');
+const selectedStatusGuruLabel = ref('Pilih Status');
+const selectedJenisKelaminLabel = ref('Pilih Jenis Kelamin');
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Beranda', href: route('admin.dashboard') },
     { title: 'Manajemen Data Guru', href: route('admin.users.index', props.role) },
     { title: 'Tambah Data Guru', href: route('admin.users.create', props.role) },
 ];
-
-const selectedMatpelLabel = ref('Pilih Mata Pelajaran');
 
 const submit = () => {
     form.post(route('admin.users.store', props.role));
@@ -107,42 +100,90 @@ const submit = () => {
                     <InputError :message="form.errors.nip" />
                 </div>
 
-                <!-- No Telp -->
+                <!-- Jenis Kelamin -->
                 <div class="flex flex-col gap-3">
-                    <Label for="no_telp">No Telepon</Label>
-                    <Input id="no_telp" v-model="form.no_telp" placeholder="08xxxx" />
-                    <InputError :message="form.errors.no_telp" />
-                </div>
-
-                <!-- Mata Pelajaran -->
-                <div class="flex flex-col gap-3">
-                    <Label for="mapel">Mata Pelajaran</Label>
+                    <Label>Jenis Kelamin</Label>
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
                             <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
-                                <span class="text-sm">
-                                    {{ selectedMatpelLabel }}
-                                </span>
+                                <span class="text-sm">{{ selectedJenisKelaminLabel }}</span>
                                 <ChevronDown class="h-4 w-4 text-gray-500" />
                             </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
+                        <DropdownMenuContent class="min-w-[200px]">
                             <DropdownMenuItem
-                                v-for="matpel in props.mataPelajaran"
-                                :key="matpel.id"
                                 @click="
-                                    form.matpel_id = matpel.id;
-                                    selectedMatpelLabel = matpel.nama_mapel;
+                                    form.jenis_kelamin = 'L';
+                                    selectedJenisKelaminLabel = 'Laki-laki';
                                 "
                             >
-                                {{ matpel.nama_mapel }}
+                                Laki-Laki
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                @click="
+                                    form.jenis_kelamin = 'P';
+                                    selectedJenisKelaminLabel = 'Perempuan';
+                                "
+                            >
+                                Perempuan
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <InputError :message="form.errors.matpel_id" />
+                    <InputError :message="form.errors.jenis_kelamin" />
                 </div>
 
-                <div />
+                <!-- Tempat lahir -->
+                <div class="flex flex-col gap-3">
+                    <Label for="tempat_lahir">Tempat Lahir</Label>
+                    <Input id="tempat_lahir" v-model="form.tempat_lahir" placeholder="Masukkan Tempat lahir" />
+                    <InputError :message="form.errors.tempat_lahir" />
+                </div>
+
+                <!-- Tanggal lahir -->
+                <div class="flex flex-col gap-3">
+                    <Label for="tanggal_lahir">Tanggal Lahir</Label>
+                    <Input id="tanggal_lahir" type="date" v-model="form.tanggal_lahir" />
+                    <InputError :message="form.errors.tanggal_lahir" />
+                </div>
+
+                <!-- No HP -->
+                <div class="flex flex-col gap-3">
+                    <Label for="no_hp">No HP</Label>
+                    <Input id="no_hp" v-model="form.no_hp" placeholder="08xxxx" />
+                    <InputError :message="form.errors.no_hp" />
+                </div>
+
+                <!-- Status Kepegawaian (Dropdown) -->
+                <div class="flex flex-col gap-3">
+                    <Label>Status Kepegawaian</Label>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
+                                <span class="text-sm">{{ selectedStatusGuruLabel }}</span>
+                                <ChevronDown class="h-4 w-4 text-gray-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="min-w-[200px]">
+                            <DropdownMenuItem
+                                @click="
+                                    form.status_kepegawaian = 'pns';
+                                    selectedStatusGuruLabel = 'PNS';
+                                "
+                            >
+                                PNS
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                @click="
+                                    form.status_kepegawaian = 'honorer';
+                                    selectedStatusGuruLabel = 'Honorer';
+                                "
+                            >
+                                Honorer
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <InputError :message="form.errors.status_kepegawaian" />
+                </div>
 
                 <!-- Alamat -->
                 <div class="flex flex-col gap-3 md:col-span-2">
@@ -157,48 +198,9 @@ const submit = () => {
                     <InputError :message="form.errors.alamat" />
                 </div>
 
-                <!-- Status Guru (Dropdown) -->
-                <div class="flex flex-col gap-3">
-                    <Label>Status Guru</Label>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger as-child>
-                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
-                                <span class="text-sm">{{ statusGuruLabel }}</span>
-                                <ChevronDown class="h-4 w-4 text-gray-500" />
-                            </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent class="min-w-[200px]">
-                            <DropdownMenuItem
-                                @click="
-                                    form.status_guru = 'pns';
-                                    statusGuruLabel = 'PNS';
-                                "
-                            >
-                                PNS
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                @click="
-                                    form.status_guru = 'honorer';
-                                    statusGuruLabel = 'Honorer';
-                                "
-                            >
-                                Honorer
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <InputError :message="form.errors.status_guru" />
-                </div>
-
-                <!-- Tanggal Masuk -->
-                <div class="flex flex-col gap-3">
-                    <Label for="tanggal_masuk">Tanggal Masuk</Label>
-                    <Input id="tanggal_masuk" type="date" v-model="form.tanggal_masuk" />
-                    <InputError :message="form.errors.tanggal_masuk" />
-                </div>
-
                 <!-- Submit -->
                 <div class="mt-4 md:col-span-2">
-                    <Button :disabled="form.processing">
+                    <Button :disabled="form.processing" class="bg-blue-600 text-white hover:bg-blue-600/90">
                         <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                         Simpan
                     </Button>
