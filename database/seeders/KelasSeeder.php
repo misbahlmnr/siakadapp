@@ -16,7 +16,8 @@ class KelasSeeder extends Seeder
             foreach ($subkelas as $sub) {
                 Kelas::factory()->create([
                     'nama_kelas' => "{$level} {$sub}",
-                    'tingkat_kelas' => $level,
+                    'tingkat' => $level,
+                    'tahun_ajaran' => '2025/2026',
                 ]);
             }
         }

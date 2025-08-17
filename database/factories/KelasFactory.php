@@ -16,7 +16,8 @@ class KelasFactory extends Factory
 
         return [
             'nama_kelas' => "{$tingkat} {$subkelas}",
-            'tingkat_kelas' => $tingkat,
+            'tingkat' => $tingkat,
+            'tahun_ajaran' => '2025/2026',
         ];
     }
 }
