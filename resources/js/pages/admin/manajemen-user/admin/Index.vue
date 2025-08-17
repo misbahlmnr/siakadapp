@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import { useDataTable } from '@/composables/useDataTables';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import $ from 'jquery';
 import { Plus } from 'lucide-vue-next';
-import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { onMounted } from 'vue';
 
@@ -19,54 +18,17 @@ const props = defineProps({
 });
 
 onMounted(() => {
-    const table = $('#user-table').DataTable({
-        processing: true,
-        serverSide: true,
-        destroy: true,
-        pagingType: 'simple_numbers',
+    useDataTable('#user-table', {
         ajax: route('admin.users.data', props.role),
+        role: props.role,
+        editRoute: 'admin.users.edit',
+        deleteRoute: 'admin.users.destroy',
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', width: '4%', orderable: false, searchable: false },
             { data: 'name', name: 'name' },
             { data: 'email', name: 'email' },
             { data: 'created_at', name: 'created_at', width: '15%' },
-            {
-                data: 'id',
-                orderable: false,
-                searchable: false,
-                className: 'flex items-center justify-center gap-1',
-                render: (data) => {
-                    return `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button> | <button class="btn-delete text-red-500 cursor-pointer" data-id="${data}">Hapus</button>`;
-                },
-            },
         ],
-        drawCallback: function () {
-            $('.btn-edit').on('click', function () {
-                const id = $(this).data('id');
-                router.visit(route('admin.users.edit', { role: props.role, id: id }));
-            });
-
-            $('.btn-delete').on('click', function () {
-                const id = $(this).data('id');
-                Swal.fire({
-                    title: 'Yakin ingin menghapus?',
-                    text: 'Data akan dihapus secara permanen!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal',
-                    confirmButtonColor: '#ff0000',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        router.delete(route('admin.users.destroy', { role: props.role, id: id }), {
-                            onSuccess: () => {
-                                table.ajax.reload();
-                            },
-                        });
-                    }
-                });
-            });
-        },
     });
 });
 </script>
