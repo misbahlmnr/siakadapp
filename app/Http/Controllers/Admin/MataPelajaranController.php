@@ -7,7 +7,6 @@ use App\Http\Requests\MataPelajaran\StoreRequest;
 use App\Http\Requests\MataPelajaran\UpdateRequest;
 use App\Models\GuruProfile;
 use App\Models\MataPelajaran;
-use Carbon\Carbon;
 use Inertia\Inertia;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -15,15 +14,11 @@ class MataPelajaranController extends Controller
 {
     public function get()
     {
-        $query = MataPelajaran::query();
+        $query = MataPelajaran::with('guru.user');
 
         return DataTables::of($query)
             ->addIndexColumn()
-            ->editColumn('created_at', function ($row) {
-                return Carbon::parse($row->created_at)
-                    ->setTimezone('Asia/Jakarta')
-                    ->format('d-m-Y H:i');
-            })
+            ->addColumn('guru_pengampu', fn ($row) => $row->guru->user->name ?? 'Belum ada guru')
             ->make(true);
     }
 
@@ -34,7 +29,12 @@ class MataPelajaranController extends Controller
     
     public function create()
     {
-        return Inertia::render('admin/mata-pelajaran/Create');
+        return Inertia::render('admin/mata-pelajaran/Create', [
+            'guruList' => GuruProfile::with('user:id,name')->get()->map(fn ($guru) => [
+                'id' => $guru->id,
+                'name' => $guru->user->name
+            ])
+        ]);
     }
 
     public function store(StoreRequest $request)
@@ -42,7 +42,7 @@ class MataPelajaranController extends Controller
         MataPelajaran::create([
             'kode_mapel' => $request->kode_mapel,
             'nama_mapel' => $request->nama_mapel,
-            'deskripsi' => $request->deskripsi,
+            'guru_id' => $request->guru_id,
         ]);
 
         return to_route('admin.mata-pelajaran.index')
@@ -53,14 +53,18 @@ class MataPelajaranController extends Controller
     {
         $mataPelajaran = MataPelajaran::findOrFail($id);
 
-        return Inertia::render('admin/mata-pelajaran/View', compact('mataPelajaran'));
+        return Inertia::render('admin/mata-pelajaran/View', $mataPelajaran);
     }
 
     public function edit(string $id)
     {
-        $mataPelajaran = MataPelajaran::findOrFail($id);
-
-        return Inertia::render('admin/mata-pelajaran/Edit', compact('mataPelajaran'));
+        return Inertia::render('admin/mata-pelajaran/Edit', [
+            'mataPelajaran' => MataPelajaran::findOrFail($id),
+            'guruList' => GuruProfile::with('user:id,name')->get()->map(fn ($guru) => [
+                'id' => $guru->id,
+                'name' => $guru->user->name
+            ])
+        ]);
     }
 
     public function update(UpdateRequest $request, string $id)
@@ -69,7 +73,7 @@ class MataPelajaranController extends Controller
         $mataPelajaran->update([
             'kode_mapel' => $request->kode_mapel,
             'nama_mapel' => $request->nama_mapel,
-            'deskripsi' => $request->deskripsi,
+            'guru_id' => $request->guru_id,
         ]);
 
         return to_route('admin.mata-pelajaran.index')

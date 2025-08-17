@@ -22,9 +22,9 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kode_mapel' => ['required', 'string', 'max:255', 'unique:mata_pelajaran'],
-            'nama_mapel' => ['required', 'string', 'max:255', 'unique:mata_pelajaran'],
-            'deskripsi' => ['nullable', 'string', 'max:255'],
+            'kode_mapel' => 'required|string|max:255|unique:mata_pelajaran',
+            'nama_mapel' => 'required|string|max:255|unique:mata_pelajaran',
+            'guru_id' => 'nullable|exists:guru_profiles,id',
         ];
     }
 }

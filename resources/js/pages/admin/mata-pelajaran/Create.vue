@@ -1,24 +1,32 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
+import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
+import { ref } from 'vue';
+
+defineProps<{
+    guruList: { id: number; name: string }[];
+}>();
 
 type Form = {
     kode_mapel: string;
     nama_mapel: string;
-    deskripsi: string;
+    guru_id: number | null;
 };
 
 const form = useForm<Form>({
     kode_mapel: '',
     nama_mapel: '',
-    deskripsi: '',
+    guru_id: null,
 });
+
+const selectedGuruLabel = ref('Pilih Guru');
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Beranda', href: route('admin.dashboard') },
@@ -27,7 +35,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const submit = () => {
-    console.log('data form', form);
     form.post(route('admin.mata-pelajaran.store'));
 };
 </script>
@@ -53,22 +60,38 @@ const submit = () => {
                     <InputError :message="form.errors.nama_mapel" />
                 </div>
 
-                <!-- Deskripsi -->
-                <div class="flex flex-col gap-3 md:col-span-2">
-                    <Label for="deskripsi">Deskripsi (Opsional)</Label>
-                    <textarea
-                        id="deskripsi"
-                        v-model="form.deskripsi"
-                        rows="4"
-                        class="rounded border p-2 text-sm"
-                        placeholder="Tambahkan deskripsi singkat..."
-                    />
-                    <InputError :message="form.errors.deskripsi" />
+                <!-- Guru -->
+                <div class="flex flex-col gap-2">
+                    <Label>Guru Pengampu</Label>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <button type="button" class="flex w-full justify-between rounded border px-4 py-2">
+                                <span class="text-sm">{{ selectedGuruLabel }}</span>
+                                <ChevronDown class="h-4 w-4 text-gray-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
+                            <DropdownMenuItem
+                                v-for="guru in guruList"
+                                :key="guru.id"
+                                @click="
+                                    () => {
+                                        form.guru_id = guru.id;
+                                        selectedGuruLabel = guru.name;
+                                    }
+                                "
+                            >
+                                {{ guru.name }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <InputError :message="form.errors.guru_id" />
                 </div>
 
                 <!-- Submit -->
                 <div class="mt-4 md:col-span-2">
-                    <Button :disabled="form.processing">
+                    <Button :disabled="form.processing" class="bg-blue-600 text-white hover:bg-blue-600/90">
                         <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                         Simpan
                     </Button>

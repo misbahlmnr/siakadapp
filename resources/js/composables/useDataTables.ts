@@ -16,7 +16,7 @@ export function useDataTable(
     }: {
         ajax: string;
         columns: any[];
-        role: string | undefined;
+        role?: string | undefined;
         editRoute: string;
         deleteRoute: string;
         detailRoute?: string;
@@ -53,12 +53,14 @@ export function useDataTable(
         drawCallback: function () {
             $('.btn-edit').on('click', function () {
                 const id = $(this).data('id');
-                router.visit(route(editRoute, { role, id }));
+                const params = role ? { role, id } : { id };
+                router.visit(route(editRoute, params));
             });
 
             $('.btn-detail').on('click', function () {
                 const id = $(this).data('id');
-                router.visit(route(detailRoute, { role, id }));
+                const params = role ? { role, id } : { id };
+                router.visit(route(detailRoute!, params));
             });
 
             $('.btn-delete').on('click', function () {
@@ -73,7 +75,8 @@ export function useDataTable(
                     confirmButtonColor: '#ff0000',
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        router.delete(route(deleteRoute, { role, id }), {
+                        const params = role ? { role, id } : { id };
+                        router.delete(route(deleteRoute, params), {
                             onSuccess: () => {
                                 table.ajax.reload();
                             },

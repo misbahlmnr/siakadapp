@@ -49,7 +49,7 @@ export interface MatPel {
     id: number;
     kode_mapel: string;
     nama_mapel: string;
-    deskripsi: string | null;
+    guru_id: string | number | null;
     created_at: string;
     updated_at: string;
 }
