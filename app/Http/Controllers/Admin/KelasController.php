@@ -40,7 +40,8 @@ class KelasController extends Controller
     {
         Kelas::create([
             'nama_kelas' => $request->nama_kelas,
-            'tingkat_kelas' => $request->tingkat_kelas,
+            'tingkat' => $request->tingkat,
+            'tahun_ajaran' => $request->tahun_ajaran,
         ]);
 
         return to_route('admin.kelas.index')
@@ -49,9 +50,9 @@ class KelasController extends Controller
 
     public function edit(string $id)
     {
-        $kelas = Kelas::findOrFail($id);
-
-        return Inertia::render('admin/kelas/Edit', compact('kelas'));
+        return Inertia::render('admin/kelas/Edit', [
+            'kelas' => Kelas::findOrFail($id)
+        ]);
     }
 
     public function update(UpdateRequest $request, string $id)
@@ -59,7 +60,8 @@ class KelasController extends Controller
         $kelas = Kelas::findOrFail($id);
         $kelas->update([
             'nama_kelas' => $request->nama_kelas,
-            'tingkat_kelas' => $request->tingkat_kelas,
+            'tingkat' => $request->tingkat,
+            'tahun_ajaran' => $request->tahun_ajaran,
         ]);
 
         return to_route('admin.kelas.index')

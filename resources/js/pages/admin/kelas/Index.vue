@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import { useDataTable } from '@/composables/useDataTables';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/vue3';
-import $ from 'jquery';
+import { Head, router } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
-import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { onMounted } from 'vue';
 
@@ -15,54 +14,16 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 onMounted(() => {
-    const table = $('#data-table').DataTable({
-        processing: true,
-        serverSide: true,
-        destroy: true,
-        pagingType: 'simple_numbers',
+    useDataTable('#data-table', {
         ajax: route('admin.kelas.data'),
+        editRoute: 'admin.kelas.edit',
+        deleteRoute: 'admin.kelas.destroy',
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', width: '4%', orderable: false, searchable: false },
             { data: 'nama_kelas', name: 'nama_kelas' },
-            { data: 'created_at', name: 'created_at', width: '15%' },
-            {
-                data: 'id',
-                orderable: false,
-                searchable: false,
-                width: '5%',
-                className: 'flex items-center justify-center gap-1',
-                render: (data) => {
-                    return `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button> |  <button class="btn-delete text-red-500 cursor-pointer" data-id="${data}">Hapus</button>`;
-                },
-            },
+            { data: 'tingkat', name: 'tingkat' },
+            { data: 'tahun_ajaran', name: 'tahun_ajaran' },
         ],
-        drawCallback: function () {
-            $('.btn-edit').on('click', function () {
-                const id = $(this).data('id');
-                router.visit(route('admin.kelas.edit', id));
-            });
-
-            $('.btn-delete').on('click', function () {
-                const id = $(this).data('id');
-                Swal.fire({
-                    title: 'Yakin ingin menghapus?',
-                    text: 'Data akan dihapus secara permanen!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal',
-                    confirmButtonColor: '#ff0000',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        router.delete(route('admin.kelas.destroy', id), {
-                            onSuccess: () => {
-                                table.ajax.reload();
-                            },
-                        });
-                    }
-                });
-            });
-        },
     });
 });
 </script>
@@ -74,14 +35,13 @@ onMounted(() => {
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl px-10 py-4">
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-bold">Daftar List Kelas</h1>
-                <Link :href="route('admin.kelas.create')">
-                    <Button
-                        class="flex items-center justify-center gap-2 rounded-md bg-white px-2 py-2.5 text-sm text-black hover:cursor-pointer hover:bg-white/90"
-                    >
-                        <Plus :size="18" />
-                        Tambah Data
-                    </Button>
-                </Link>
+                <Button
+                    class="flex items-center justify-center gap-2 rounded-md bg-blue-600 px-2 py-2.5 text-sm text-white hover:cursor-pointer hover:bg-blue-600/90"
+                    @click="router.visit(route('admin.kelas.create'))"
+                >
+                    <Plus :size="18" />
+                    Tambah Data
+                </Button>
             </div>
             <div>
                 <table id="data-table" class="display">
@@ -89,7 +49,8 @@ onMounted(() => {
                         <tr>
                             <th>No</th>
                             <th>Nama Kelas</th>
-                            <th>Created At</th>
+                            <th>Tingkat Kelas</th>
+                            <th>Tahun Ajaran</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>

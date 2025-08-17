@@ -23,7 +23,8 @@ class StoreRequest extends FormRequest
     {
         return [
             'nama_kelas' => 'required|string|max:255',
-            'tingkat_kelas' => 'required|string|max:10',
+            'tingkat' => 'required|string|max:10',
+            'tahun_ajaran' => 'required|string|max:10',
         ];
     }
 }
