@@ -12,9 +12,9 @@ class MataPelajaranFactory extends Factory
     public function definition()
     {
         return [
+            'guru_id' => null,
             'kode_mapel' => strtoupper($this->faker->unique()->bothify('???##')), // Contoh: ABC12
             'nama_mapel' => $this->faker->word(),
-            'deskripsi' => $this->faker->sentence(),
         ];
     }
 }
