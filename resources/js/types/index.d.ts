@@ -57,11 +57,15 @@ export interface MatPel {
 export interface JadwalPelajaran {
     id: number;
     kelas_id: number;
-    mata_pelajaran_id: number;
+    matpel_id: number;
     guru_id: number;
     hari: string;
     jam_mulai: string;
     jam_selesai: string;
+    semester: string;
+    tahun_ajaran: string;
+    created_at: string;
+    updated_at: string;
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;

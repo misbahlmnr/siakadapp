@@ -17,3 +17,10 @@ if (!function_exists('formatCreatedAt')) {
             ->format('d-m-Y H:i');
     }
 }
+
+if (!function_exists('formatTime')) {
+    function formatTime($time)
+    {
+        return date('H:i', strtotime($time));
+    }
+}

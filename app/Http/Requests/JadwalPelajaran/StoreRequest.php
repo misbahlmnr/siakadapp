@@ -23,11 +23,13 @@ class StoreRequest extends FormRequest
     {
         return [
             'kelas_id' => 'required|exists:kelas,id',
-            'mata_pelajaran_id' => 'required|exists:mata_pelajaran,id',
+            'matpel_id' => 'required|exists:mata_pelajaran,id',
             'guru_id' => 'required|exists:guru_profiles,id',
             'hari' => 'required|string|max:255',
             'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'semester' => 'required|string|max:255',
+            'tahun_ajaran' => 'required|string|max:255'
         ];
     }
 }

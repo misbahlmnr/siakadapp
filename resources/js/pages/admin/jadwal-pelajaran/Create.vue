@@ -10,28 +10,32 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
 import { ref } from 'vue';
 
-type Form = {
-    kelas_id: number | null;
-    mata_pelajaran_id: number | null;
-    guru_id: number | null;
-    hari: string;
-    jam_mulai: string;
-    jam_selesai: string;
-};
-
 const props = defineProps<{
     kelasList: { id: number; nama_kelas: string }[];
     mapelList: { id: number; nama_mapel: string }[];
     guruList: { id: number; nama: string }[];
 }>();
 
+type Form = {
+    kelas_id: number | null;
+    matpel_id: number | null;
+    guru_id: number | null;
+    hari: string;
+    jam_mulai: string;
+    jam_selesai: string;
+    semester: string;
+    tahun_ajaran: string;
+};
+
 const form = useForm<Form>({
     kelas_id: null,
-    mata_pelajaran_id: null,
+    matpel_id: null,
     guru_id: null,
     hari: '',
     jam_mulai: '',
     jam_selesai: '',
+    semester: '',
+    tahun_ajaran: '',
 });
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -41,11 +45,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const hariOptions = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+const semesterOptions = ['Ganjil', 'Genap'];
 
 const selectedKelasLabel = ref('Pilih Kelas');
 const selectedMapelLabel = ref('Pilih Mata Pelajaran');
 const selectedGuruLabel = ref('Pilih Guru');
 const selectedHariLabel = ref('Pilih Hari');
+const selectedSemesterLabel = ref('Pilih Semester');
 
 const submit = () => {
     form.post(route('admin.jadwal-pelajaran.store'));
@@ -100,7 +106,7 @@ const submit = () => {
                                 v-for="mapel in props.mapelList"
                                 :key="mapel.id"
                                 @click="
-                                    form.mata_pelajaran_id = mapel.id;
+                                    form.matpel_id = mapel.id;
                                     selectedMapelLabel = mapel.nama_mapel;
                                 "
                             >
@@ -108,7 +114,7 @@ const submit = () => {
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <InputError :message="form.errors.mata_pelajaran_id" />
+                    <InputError :message="form.errors.matpel_id" />
                 </div>
 
                 <!-- Guru -->
@@ -175,6 +181,39 @@ const submit = () => {
                     <Label for="jam_selesai">Jam Selesai</Label>
                     <Input id="jam_selesai" type="time" v-model="form.jam_selesai" />
                     <InputError :message="form.errors.jam_selesai" />
+                </div>
+
+                <!-- Semester -->
+                <div class="flex flex-col gap-3">
+                    <Label for="semester">Semester</Label>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
+                                <span class="text-sm">{{ selectedSemesterLabel }}</span>
+                                <ChevronDown class="h-4 w-4 text-gray-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="max-h-40 min-w-[200px] overflow-auto">
+                            <DropdownMenuItem
+                                v-for="s in semesterOptions"
+                                :key="s"
+                                @click="
+                                    form.semester = s;
+                                    selectedSemesterLabel = s;
+                                "
+                            >
+                                {{ s }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <InputError :message="form.errors.semester" />
+                </div>
+
+                <!-- Tahun Ajaran -->
+                <div class="flex flex-col gap-3">
+                    <Label for="tahun_ajaran">Tahun Ajaran</Label>
+                    <Input id="tahun_ajaran" type="text" placeholder="2024/2025" v-model="form.tahun_ajaran" />
+                    <InputError :message="form.errors.tahun_ajaran" />
                 </div>
 
                 <!-- Submit -->

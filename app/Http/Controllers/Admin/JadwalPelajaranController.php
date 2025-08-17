@@ -21,27 +21,11 @@ class JadwalPelajaranController extends Controller
 
         return DataTables::of($jadwalPelajaran)
             ->addIndexColumn()
-            ->addColumn('nama_kelas', fn ($row) => $row->kelas->nama_kelas)
+            ->addColumn('kelas', fn ($row) => $row->kelas->nama_kelas)
             ->addColumn('mata_pelajaran', fn ($row) => $row->mataPelajaran->nama_mapel)
-            ->addColumn('nama_guru', fn ($row) => $row->guru->user->name)
-            ->editColumn('waktu', fn ($row) => $this->formatWaktu($row->jam_mulai, $row->jam_selesai))
-            ->editColumn('created_at', fn ($row) => $this->formatCreatedAt($row->created_at))
+            ->addColumn('guru', fn ($row) => $row->guru->user->name)
+            ->editColumn('jam', fn ($row) => formatStartEndTime($row->jam_mulai, $row->jam_selesai))
             ->make(true);
-    }
-
-    private function formatWaktu(string $jamMulai, string $jamSelesai): string
-    {
-        return Carbon::parse($jamMulai)
-            ->format('H:i') . ' - ' . Carbon::parse($jamSelesai)
-            ->format('H:i');
-    }
-
-    // TODO: Move to helper class
-    private function formatCreatedAt(string $createdAt): string
-    {
-        return Carbon::parse($createdAt)
-            ->setTimezone('Asia/Jakarta')
-            ->format('d-m-Y H:i');
     }
 
     public function index()
@@ -82,17 +66,44 @@ class JadwalPelajaranController extends Controller
             return back()->with('error', 'Jadwal bentrok dengan jadwal lain untuk guru ini.');
         }
 
-        JadwalPelajaran::create($request->all());
+        JadwalPelajaran::create([
+            'kelas_id' => $request->kelas_id,
+            'matpel_id' => $request->matpel_id,
+            'guru_id' => $request->guru_id,
+            'hari' => $request->hari,
+            'jam_mulai' => $request->jam_mulai,
+            'jam_selesai' => $request->jam_selesai,
+            'semester' => $request->semester,
+            'tahun_ajaran' => $request->tahun_ajaran
+        ]);
 
         return to_route('admin.jadwal-pelajaran.index')
             ->with('success', 'Jadwal pelajaran berhasil ditambahkan');
     }
 
+    public function show(string $id)
+    {
+        return Inertia::render('admin/jadwal-pelajaran/View', [
+           'jadwal' => JadwalPelajaran::with('kelas', 'mataPelajaran', 'guru.user')->find($id) 
+        ]);
+    }
 
     public function edit(string $id)
     {
+        $jadwal = JadwalPelajaran::find($id);
+
         return Inertia::render('admin/jadwal-pelajaran/Edit', [
-            'jadwal' => JadwalPelajaran::find($id),
+            'jadwal' => [
+                'id' => $jadwal->id,
+                'kelas_id' => $jadwal->kelas_id,
+                'matpel_id' => $jadwal->matpel_id,
+                'guru_id' => $jadwal->guru_id,
+                'hari' => $jadwal->hari,
+                'jam_mulai' => Carbon::parse($jadwal->jam_mulai)->format('H:i'),
+                'jam_selesai' => Carbon::parse($jadwal->jam_selesai)->format('H:i'),
+                'semester' => $jadwal->semester,
+                'tahun_ajaran' => $jadwal->tahun_ajaran
+            ],
             'kelasList' => Kelas::select('id', 'nama_kelas')->get(),
             'mapelList' => MataPelajaran::select('id', 'nama_mapel')->get(),
             'guruList' => GuruProfile::with('user:id,name')->get()->map(function ($guru) {
@@ -124,7 +135,16 @@ class JadwalPelajaranController extends Controller
             return back()->with('error', 'Jadwal bentrok dengan jadwal lain untuk guru ini.')->withInput();
         }
 
-        JadwalPelajaran::find($id)->update($request->all());
+        JadwalPelajaran::find($id)->update([
+            'kelas_id' => $request->kelas_id,
+            'matpel_id' => $request->matpel_id,
+            'guru_id' => $request->guru_id,
+            'hari' => $request->hari,
+            'jam_mulai' => $request->jam_mulai,
+            'jam_selesai' => $request->jam_selesai,
+            'semester' => $request->semester,
+            'tahun_ajaran' => $request->tahun_ajaran
+        ]);
 
         return to_route('admin.jadwal-pelajaran.index')
             ->with('success', 'Jadwal pelajaran berhasil diubah');
