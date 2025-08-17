@@ -39,7 +39,8 @@ export interface User {
 export interface Kelas {
     id: number;
     nama_kelas: string;
-    tingkat_kelas: string;
+    tingkat: string;
+    tahun_ajaran: string;
     created_at: string;
     updated_at: string;
 }

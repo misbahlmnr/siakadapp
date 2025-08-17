@@ -58,16 +58,25 @@ class UpdateRequest extends FormRequest
         // Tambahan jika role == siswa
         if ($role === 'siswa') {
             $rules = array_merge($rules, [
+                'kelas_id' => 'required|exists:kelas,id',
+                'nis' => [
+                    'required',
+                    'string',
+                    Rule::unique('siswa_profiles', 'nis')->ignore($userId, 'user_id'), // ignore berdasarkan user_id
+                ],
                 'nisn' => [
                     'required',
                     'string',
                     Rule::unique('siswa_profiles', 'nisn')->ignore($userId, 'user_id'), // ignore berdasarkan user_id
                 ],
-                'kelas_id' => ['nullable', 'exists:kelas,id'],
-                'tahun_masuk' => ['nullable', 'digits:4'],
-                'alamat' => ['nullable', 'string', 'max:255'],
-                'kontak_ortu' => ['nullable', 'string', 'max:20'],
-                'status' => ['required', Rule::in(['aktif', 'tidak_aktif'])],
+                'jenis_kelamin' => 'required|string|max:1',
+                'tempat_lahir' => 'required|string|max:255',
+                'tanggal_lahir' => 'required|date|before:today|after:1900-01-01',
+                'no_hp' => 'required|string|max:20',
+                'angkatan' => 'required|string',
+                'status' => 'required|string',
+                'nama_ortu' => 'required|string|max:255',
+                'kontak_ortu' => 'required|string|max:20',
             ]);
         }
 

@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ManajemenUser\StoreRequest;
-use App\Http\Requests\ManajemenUser\UpdateRequest;
+use App\Http\Requests\ManajemenUser\{StoreRequest, UpdateRequest};
 use App\Models\Kelas;
-use App\Models\MataPelajaran;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -34,25 +32,11 @@ class UserController extends Controller
             ->addIndexColumn()
             
             // Columns for students
-            ->addColumn('nisn', function ($user) use ($role) {
-                return $role === 'siswa' ? ($user->siswaProfile->nisn ?? '-') : '-';
+            ->addColumn('nis', function ($user) use ($role) {
+                return $role === 'siswa' ? ($user->siswaProfile->nis ?? '-') : '-';
             })
             ->addColumn('kelas', function ($user) use ($role) {
                 return $role === 'siswa' && $user->siswaProfile?->kelas ? $user->siswaProfile->kelas->nama_kelas ?? '-' : '-';
-            })
-            ->addColumn('tahun_masuk', function ($user) use ($role) {
-                return $role === 'siswa' ? ($user->siswaProfile->tahun_masuk ?? '-') : '-';
-            })
-            ->addColumn('alamat', function ($user) {
-                if ($user->role === 'siswa') {
-                    return $user->siswaProfile->alamat ?? '-';
-                } elseif ($user->role === 'guru') {
-                    return $user->guruProfile->alamat ?? '-';
-                }
-                return '-';
-            })
-            ->addColumn('kontak_ortu', function ($user) use ($role) {
-                return $role === 'siswa' ? ($user->siswaProfile->kontak_ortu ?? '-') : '-';
             })
             ->addColumn('status', function ($user) use ($role) {
                 return $role === 'siswa' ? ($user->siswaProfile->status ?? '-') : '-';
@@ -110,7 +94,6 @@ class UserController extends Controller
             $query->with($relation);
         }
 
-
         $user = $query->findOrFail($id);
 
         // Inject data relasi ke property dinamis
@@ -151,16 +134,21 @@ class UserController extends Controller
             ]),
             'siswa' => $user->siswaProfile()->create([
                 'kelas_id' => $request->kelas_id,
+                'nis' => $request->nis,
                 'nisn' => $request->nisn,
-                'tahun_masuk' => $request->tahun_masuk,
-                'alamat' => $request->alamat,
-                'kontak_ortu' => $request->kontak_ortu,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'no_hp' => $request->no_hp,
+                'angkatan' => $request->angkatan,
                 'status' => $request->status,
+                'nama_ortu' => $request->nama_ortu,
+                'kontak_ortu' => $request->kontak_ortu,
             ]),
         };
 
         return to_route('admin.users.index', $roleName)
-            ->with('success', 'Data '.$roleName.' berhasil ditambahkan');
+            ->with('success', 'Data ' . $roleName . ' berhasil ditambahkan');
     }
 
     public function edit(string $role, string $id)
@@ -182,7 +170,7 @@ class UserController extends Controller
 
             return inertia('admin/manajemen-user/siswa/Edit', [
                 'role' => $role,
-                'user' => $user,
+                'siswa' => $user,
                 'kelas' => Kelas::all()
             ]);
         } elseif ($role === 'guru' && $user->guruProfile) {
@@ -224,12 +212,17 @@ class UserController extends Controller
                 'status_kepegawaian' => $request->status_kepegawaian,
             ]),
             'siswa' => $user->siswaProfile()->update([
-                'nisn' => $request->nisn,
                 'kelas_id' => $request->kelas_id,
-                'tahun_masuk' => $request->tahun_masuk,
-                'alamat' => $request->alamat,
-                'kontak_ortu' => $request->kontak_ortu,
+                'nis' => $request->nis,
+                'nisn' => $request->nisn,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'no_hp' => $request->no_hp,
+                'angkatan' => $request->angkatan,
                 'status' => $request->status,
+                'nama_ortu' => $request->nama_ortu,
+                'kontak_ortu' => $request->kontak_ortu,
             ]),
             default => null,
         };
@@ -262,7 +255,7 @@ class UserController extends Controller
                 return 'guruProfile';
                 break;
             case 'siswa':
-                return 'siswaProfile';
+                return 'siswaProfile.kelas';
                 break;
             default:
                 return null;

@@ -44,12 +44,17 @@ class StoreRequest extends FormRequest
 
         if ($role === 'siswa') {
             $rules = array_merge($rules, [
+                'kelas_id' => 'required|exists:kelas,id',
+                'nis' => 'required|string|unique:siswa_profiles,nis',
                 'nisn' => 'required|string|unique:siswa_profiles,nisn',
-                'kelas_id' => 'nullable|exists:kelas,id',
-                'tahun_masuk' => 'nullable|digits:4',
-                'alamat' => 'nullable|string|max:255',
-                'kontak_ortu' => 'nullable|string|max:20',
-                'status' => 'required|in:aktif,tidak_aktif',
+                'jenis_kelamin' => 'required|string|max:1',
+                'tempat_lahir' => 'required|string|max:255',
+                'tanggal_lahir' => 'required|date|before:today|after:1900-01-01',
+                'no_hp' => 'required|string|max:20',
+                'angkatan' => 'required|string',
+                'status' => 'required|string',
+                'nama_ortu' => 'required|string|max:255',
+                'kontak_ortu' => 'required|string|max:20',
             ]);
         }
 
