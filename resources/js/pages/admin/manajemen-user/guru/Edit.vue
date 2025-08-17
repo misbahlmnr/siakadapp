@@ -71,8 +71,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Edit Data Guru', href: route('admin.users.edit', { role: props.role, id: props.guru.id }) },
 ];
 
-console.log(props.guru);
-
 const submit = () => {
     form.put(route('admin.users.update', { role: props.role, id: props.guru?.guru_profile.user_id }));
 };
