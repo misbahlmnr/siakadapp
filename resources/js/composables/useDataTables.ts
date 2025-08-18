@@ -14,11 +14,11 @@ export function useDataTable(
         deleteRoute,
         detailRoute,
     }: {
-        ajax: string;
+        ajax: string | { url: any; data: (d: any) => void };
         columns: any[];
         role?: string | undefined;
-        editRoute: string;
-        deleteRoute: string;
+        editRoute?: string;
+        deleteRoute?: string;
         detailRoute?: string;
     },
 ) {
@@ -30,19 +30,23 @@ export function useDataTable(
         ajax,
         columns: [
             ...columns,
-            {
-                data: 'id',
-                orderable: false,
-                searchable: false,
-                className: 'flex items-center justify-center gap-1',
-                render: (data) => {
-                    return `
-                        <button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button> |
-                        ${detailRoute ? `<button class="btn-detail text-green-500 cursor-pointer" data-id="${data}">Detail</button> |` : ''} 
-                        <button class="btn-delete text-red-500 cursor-pointer" data-id="${data}">Hapus</button>
-                    `;
-                },
-            },
+            ...(editRoute || deleteRoute || detailRoute
+                ? [
+                      {
+                          data: 'id',
+                          orderable: false,
+                          searchable: false,
+                          className: 'flex items-center justify-center gap-1',
+                          render: (data: any) => {
+                              return `
+                            ${editRoute ? `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button> |` : ''}
+                            ${detailRoute ? `<button class="btn-detail text-green-500 cursor-pointer" data-id="${data}">Detail</button> |` : ''}
+                            ${deleteRoute ? `<button class="btn-delete text-red-500 cursor-pointer" data-id="${data}">Hapus</button>` : ''}
+                        `;
+                          },
+                      },
+                  ]
+                : []),
         ],
         language: {
             paginate: {

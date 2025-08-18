@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\{DashboardController, JadwalPelajaranController, KelasController, MataPelajaranController, UserController};
+use App\Http\Controllers\Admin\{DashboardController, JadwalPelajaranController, KelasController, LaporanNilaiController, MataPelajaranController, UserController};
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')
@@ -71,6 +71,16 @@ Route::prefix('admin')
                 Route::get('/{id}/edit', 'edit')->name('edit');
                 Route::put('/{id}', 'update')->name('update');
                 Route::delete('/{id}', 'destroy')->name('destroy');
+            });
+
+        Route::prefix('laporan-nilai')
+            ->name('laporan-nilai.')
+            ->controller(LaporanNilaiController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/data', 'get')->name('data');
+                Route::get('/export-excel', 'exportExcel')->name('export-excel');
+                Route::get('/export-pdf', 'exportPdf')->name('export-pdf');
             });
     });
 

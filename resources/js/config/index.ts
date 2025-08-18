@@ -34,14 +34,14 @@ export const GlobalConfig = {
                 icon: Calendar,
             },
             {
+                title: 'Laporan Nilai',
+                href: '/admin/laporan-nilai',
+                icon: BarChart,
+            },
+            {
                 title: 'Adaptive Rules',
                 href: '/admin/adaptive-rules',
                 icon: Settings,
-            },
-            {
-                title: 'Laporan Nilai',
-                href: '/admin/reports',
-                icon: BarChart,
             },
         ],
         guru: [
