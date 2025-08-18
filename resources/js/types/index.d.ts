@@ -54,6 +54,21 @@ export interface MatPel {
     updated_at: string;
 }
 
+export interface MateriPelajaran {
+    id: number;
+    jadwal_id: number;
+    guru_id: number;
+    pertemuan_ke: number;
+    judul_materi: string;
+    deskripsi: string;
+    file_materi: string;
+    link_materi: string;
+    semester: string;
+    tahun_ajaran: string;
+    created_at: string;
+    updated_at: string;
+}
+
 export interface JadwalPelajaran {
     id: number;
     kelas_id: number;
@@ -64,6 +79,20 @@ export interface JadwalPelajaran {
     jam_selesai: string;
     semester: string;
     tahun_ajaran: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface AdaptiveRule {
+    id: number;
+    matpel_id: number;
+    materi_id: number;
+    dibuat_oleh: number;
+    operator: string;
+    nilai_batas: number;
+    mataPelajaran: MatPel;
+    materi: MateriPelajaran;
+    dibuatOleh: User;
     created_at: string;
     updated_at: string;
 }

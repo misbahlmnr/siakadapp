@@ -23,10 +23,10 @@ class AdaptiveRules extends Model
 
     public function materi()
     {
-        return $this->belongsTo(MateriPembelajaran::class, 'materi_id');
+        return $this->belongsTo(MateriPelajaran::class, 'materi_id');
     }
 
-    public function user()
+    public function dibuatOleh()
     {
         return $this->belongsTo(User::class, 'dibuat_oleh');
     }

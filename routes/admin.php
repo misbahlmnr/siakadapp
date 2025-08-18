@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\{DashboardController, JadwalPelajaranController, KelasController, LaporanNilaiController, MataPelajaranController, UserController};
+use App\Http\Controllers\Admin\{AdaptiveRulesController, DashboardController, JadwalPelajaranController, KelasController, LaporanNilaiController, MataPelajaranController, UserController};
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')
@@ -81,6 +81,15 @@ Route::prefix('admin')
                 Route::get('/data', 'get')->name('data');
                 Route::get('/export-excel', 'exportExcel')->name('export-excel');
                 Route::get('/export-pdf', 'exportPdf')->name('export-pdf');
+            });
+
+        Route::prefix('adaptive-rules')
+            ->name('adaptive-rules.')
+            ->controller(AdaptiveRulesController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/data', 'get')->name('data');
+                Route::get('/create', 'create')->name('create');
             });
     });
 
