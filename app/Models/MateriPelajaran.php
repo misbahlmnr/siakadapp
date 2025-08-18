@@ -41,6 +41,11 @@ class MateriPembelajaran extends Model
         return $this->hasMany(RekomendasiMateriManual::class, 'materi_id');
     }
 
+    public function adaptiveRules()
+    {
+        return $this->hasMany(AdaptiveRules::class);
+    }
+
     public function getFilePathAttribute($value)
     {
         if ($value) {

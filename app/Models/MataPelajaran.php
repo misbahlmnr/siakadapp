@@ -26,4 +26,9 @@ class MataPelajaran extends Model
     {
         return $this->hasMany(JadwalPelajaran::class);
     }
+
+    public function adaptiveRules()
+    {
+        return $this->hasMany(AdaptiveRules::class);
+    }
 }
