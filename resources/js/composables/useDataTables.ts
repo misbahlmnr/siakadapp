@@ -1,4 +1,3 @@
-// resources/js/composables/useDataTable.js
 import { router } from '@inertiajs/vue3';
 import 'datatables.net';
 import $ from 'jquery';
@@ -13,6 +12,8 @@ export function useDataTable(
         editRoute,
         deleteRoute,
         detailRoute,
+        actions,
+        onAction,
     }: {
         ajax: string | { url: any; data: (d: any) => void };
         columns: any[];
@@ -20,6 +21,8 @@ export function useDataTable(
         editRoute?: string;
         deleteRoute?: string;
         detailRoute?: string;
+        actions?: (id: any, rowData?: any) => string;
+        onAction?: (action: string, id: any, rowData?: any) => void;
     },
 ) {
     const table = $(selector).DataTable({
@@ -30,19 +33,22 @@ export function useDataTable(
         ajax,
         columns: [
             ...columns,
-            ...(editRoute || deleteRoute || detailRoute
+            ...(editRoute || deleteRoute || detailRoute || actions
                 ? [
                       {
                           data: 'id',
                           orderable: false,
                           searchable: false,
                           className: 'flex items-center justify-center gap-1',
-                          render: (data: any) => {
+                          render: (data: any, type: any, row: any) => {
+                              if (actions) {
+                                  return actions(data, row);
+                              }
                               return `
-                            ${editRoute ? `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button> |` : ''}
-                            ${detailRoute ? `<button class="btn-detail text-green-500 cursor-pointer" data-id="${data}">Detail</button> |` : ''}
-                            ${deleteRoute ? `<button class="btn-delete text-red-500 cursor-pointer" data-id="${data}">Hapus</button>` : ''}
-                        `;
+                                    ${editRoute ? `<button class="btn-edit text-blue-500 cursor-pointer" data-id="${data}">Edit</button> |` : ''}
+                                    ${detailRoute ? `<button class="btn-detail text-green-500 cursor-pointer" data-id="${data}">Detail</button> |` : ''}
+                                    ${deleteRoute ? `<button class="btn-delete text-red-500 cursor-pointer" data-id="${data}">Hapus</button>` : ''}
+                              `;
                           },
                       },
                   ]
@@ -55,39 +61,56 @@ export function useDataTable(
             },
         },
         drawCallback: function () {
-            $('.btn-edit').on('click', function () {
-                const id = $(this).data('id');
-                const params = role ? { role, id } : { id };
-                router.visit(route(editRoute, params));
-            });
-
-            $('.btn-detail').on('click', function () {
-                const id = $(this).data('id');
-                const params = role ? { role, id } : { id };
-                router.visit(route(detailRoute!, params));
-            });
-
-            $('.btn-delete').on('click', function () {
-                const id = $(this).data('id');
-                Swal.fire({
-                    title: 'Yakin ingin menghapus?',
-                    text: 'Data akan dihapus secara permanen!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal',
-                    confirmButtonColor: '#ff0000',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const params = role ? { role, id } : { id };
-                        router.delete(route(deleteRoute, params), {
-                            onSuccess: () => {
-                                table.ajax.reload();
-                            },
-                        });
-                    }
+            // default handler
+            $('.btn-edit')
+                .off('click')
+                .on('click', function () {
+                    const id = $(this).data('id');
+                    const params = role ? { role, id } : { id };
+                    router.visit(route(editRoute!, params));
                 });
-            });
+
+            $('.btn-detail')
+                .off('click')
+                .on('click', function () {
+                    const id = $(this).data('id');
+                    const params = role ? { role, id } : { id };
+                    router.visit(route(detailRoute!, params));
+                });
+
+            $('.btn-delete')
+                .off('click')
+                .on('click', function () {
+                    const id = $(this).data('id');
+                    Swal.fire({
+                        title: 'Yakin ingin menghapus?',
+                        text: 'Data akan dihapus secara permanen!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal',
+                        confirmButtonColor: '#ff0000',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const params = role ? { role, id } : { id };
+                            router.delete(route(deleteRoute!, params), {
+                                onSuccess: () => table.ajax.reload(),
+                            });
+                        }
+                    });
+                });
+
+            // custom handler → tangkap semua tombol yang punya data-action
+            if (onAction) {
+                $('[data-action]')
+                    .off('click')
+                    .on('click', function () {
+                        const id = $(this).data('id');
+                        const action = $(this).data('action');
+                        const rowData = table.row($(this).closest('tr')).data();
+                        onAction(action, id, rowData);
+                    });
+            }
         },
     });
 

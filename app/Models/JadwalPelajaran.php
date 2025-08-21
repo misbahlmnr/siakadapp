@@ -36,7 +36,7 @@ class JadwalPelajaran extends Model
 
     public function materi()
     {
-        return $this->hasMany(MateriPembelajaran::class, 'jadwal_id');
+        return $this->hasMany(MateriPelajaran::class, 'jadwal_id');
     }
 
     public function evaluasiPembelajaran()

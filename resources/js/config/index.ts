@@ -1,4 +1,4 @@
-import { Activity, BarChart, Book, BookOpen, Calendar, CheckCircle, ClipboardList, Home, Pencil, Settings, Sparkles, Users } from 'lucide-vue-next';
+import { Activity, BarChart, Book, BookOpen, Calendar, CheckCircle, Home, Pencil, Settings, Sparkles, Users } from 'lucide-vue-next';
 
 export const GlobalConfig = {
     menuByRole: {
@@ -56,12 +56,7 @@ export const GlobalConfig = {
                 icon: Calendar,
             },
             {
-                title: 'Tugas & Ujian',
-                href: '/guru/tugas-ujian',
-                icon: ClipboardList,
-            },
-            {
-                title: 'Penilaian Siswa',
+                title: 'Nilai Siswa',
                 href: '/guru/nilai',
                 icon: CheckCircle,
             },

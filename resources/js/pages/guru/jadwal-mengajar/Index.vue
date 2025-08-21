@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { useDataTable } from '@/composables/useDataTables';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import $ from 'jquery';
 import { onMounted } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -11,42 +11,32 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 onMounted(() => {
-    $('#data-table').DataTable({
-        processing: true,
-        serverSide: true,
-        destroy: true,
-        pagingType: 'simple_numbers',
+    useDataTable('#data-table', {
         ajax: route('guru.jadwal-mengajar.data'),
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', width: '4%', orderable: false, searchable: false },
-            { data: 'hari', name: 'hari' },
-            { data: 'waktu', name: 'waktu' },
-            { data: 'nama_kelas', name: 'nama_kelas', searchable: true },
             { data: 'mata_pelajaran', name: 'mata_pelajaran' },
-            {
-                data: 'id',
-                orderable: false,
-                searchable: false,
-                width: '20%',
-                className: 'flex items-center justify-center gap-1',
-                render: (data) => {
-                    return `
-                        <button class="btn-materi text-blue-500 cursor-pointer" data-id="${data}">Materi</button> |
-                        <button class="btn-detail text-green-500 cursor-pointer" data-id="${data}">Detail</button>
-                    `;
-                },
-            },
+            { data: 'kelas', name: 'kelas' },
+            { data: 'hari', name: 'hari' },
+            { data: 'jam', name: 'jam' },
         ],
-        drawCallback: function () {
-            $('.btn-materi').on('click', function () {
-                const id = $(this).data('id');
+        actions: (id, row) => {
+            return `
+                <button data-action="detail" data-id="${id}" class="text-green-500 cursor-pointer">Detail</button> |
+                <button data-action="materi" data-id="${id}" class="text-purple-500 cursor-pointer">Materi</button> |
+                <button data-action="tugas" data-id="${id}" class="text-orange-500 cursor-pointer">Tugas</button>
+            `;
+        },
+        onAction: (action, id, row) => {
+            if (action === 'materi') {
                 router.visit(route('guru.jadwal-mengajar.materi.index', { jadwal_id: id }));
-            });
-
-            $('.btn-detail').on('click', function () {
-                const id = $(this).data('id');
-                router.visit(route('guru.jadwal-mengajar.show', id));
-            });
+            }
+            if (action === 'tugas') {
+                router.visit(route('guru.tugas.create', { jadwal: id }));
+            }
+            if (action === 'detail') {
+                router.visit(route('guru.jadwal-mengajar.show', { id }));
+            }
         },
     });
 });
@@ -65,10 +55,10 @@ onMounted(() => {
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Hari</th>
-                            <th>Waktu</th>
+                            <th>Mata Pelajaran</th>
                             <th>Kelas</th>
-                            <th>Mapel</th>
+                            <th>Hari</th>
+                            <th>Jam</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>

@@ -7,6 +7,7 @@ use App\Models\EvaluasiPembelajaran;
 use App\Models\JadwalPelajaran;
 use App\Models\MateriPelajaran;
 use App\Models\RekomendasiMateri;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -34,13 +35,32 @@ class DashboardController extends Controller
         $totalEvaluasi = EvaluasiPembelajaran::where('guru_id', $guruId)->count();
 
         // Ambil 5 jadwal terdekat (hari ini ke depan)
-        $upcomingSchedule = JadwalPelajaran::with(['kelas', 'mataPelajaran'])
+        // $upcomingSchedule = JadwalPelajaran::with(['kelas', 'mataPelajaran'])
+        //     ->where('guru_id', $guruId)
+        //     ->orderByRaw("
+        //         FIELD(hari, 'Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'),
+        //         jam_mulai ASC
+        //     ")
+        //     ->limit(5)
+        //     ->get()
+        //     ->map(function ($item) {
+        //         return [
+        //             'hari' => $item->hari,
+        //             'jam_mulai' => substr($item->jam_mulai, 0, 5),
+        //             'jam_selesai' => substr($item->jam_selesai, 0, 5),
+        //             'nama_kelas' => $item->kelas->nama_kelas,
+        //             'nama_mapel' => $item->mataPelajaran->nama_mapel,
+        //         ];
+        //     });
+
+        // Ambil jadwal mengajar HARI INI
+        $hariIni = Carbon::now()->locale('id')->dayName; 
+        // hasilnya misal: "Senin", "Selasa", dst.
+
+        $todaySchedule = JadwalPelajaran::with(['kelas', 'mataPelajaran'])
             ->where('guru_id', $guruId)
-            ->orderByRaw("
-                FIELD(hari, 'Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'),
-                jam_mulai ASC
-            ")
-            ->limit(5)
+            ->where('hari', ucfirst($hariIni)) // pastikan format di DB sama, misal "Senin"
+            ->orderBy('jam_mulai', 'asc')
             ->get()
             ->map(function ($item) {
                 return [
@@ -70,7 +90,7 @@ class DashboardController extends Controller
             'totalMatpel' => $totalMatpel,
             'totalMateri' => $totalMateri,
             'totalEvaluasi' => $totalEvaluasi,
-            'upcomingSchedule' => $upcomingSchedule,
+            'todaySchedule' => $todaySchedule,
             'adaptiveProgress' => $adaptiveProgress,
         ]);
     }

@@ -16,7 +16,7 @@ defineProps<{
         dibaca: number;
         selesai: number;
     };
-    upcomingSchedule: {
+    todaySchedule: {
         hari: string;
         jam_mulai: string;
         jam_selesai: string;
@@ -61,10 +61,10 @@ defineProps<{
 
             <!-- Jadwal Mengajar Berikutnya -->
             <div class="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-[#121212]">
-                <h2 class="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-100">Jadwal Mengajar Terdekat</h2>
-                <div v-if="upcomingSchedule.length > 0" class="space-y-3">
+                <h2 class="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-100">Jadwal Mengajar Hari Ini</h2>
+                <div v-if="todaySchedule.length > 0" class="space-y-3">
                     <div
-                        v-for="(item, index) in upcomingSchedule"
+                        v-for="(item, index) in todaySchedule"
                         :key="index"
                         class="flex items-center justify-between rounded-lg bg-blue-50 p-4 shadow-sm dark:bg-blue-900/30"
                     >
@@ -75,7 +75,7 @@ defineProps<{
                         <div class="text-sm text-gray-600 dark:text-gray-300">{{ item.hari }}, {{ item.jam_mulai }} - {{ item.jam_selesai }}</div>
                     </div>
                 </div>
-                <div v-else class="text-gray-500 dark:text-gray-400">Tidak ada jadwal terdekat.</div>
+                <div v-else class="text-gray-500 dark:text-gray-400">Tidak ada jadwal hari ini.</div>
             </div>
 
             <!-- Progress Adaptive Learning -->

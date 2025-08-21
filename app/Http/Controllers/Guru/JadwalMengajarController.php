@@ -12,29 +12,16 @@ class JadwalMengajarController extends Controller
 {
     public function get()
     {
-        $jadwal = JadwalPelajaran::with(['kelas', 'mataPelajaran'])
-                ->where('guru_id', Auth::user()->guruProfile->id)
-                ->orderBy('hari')
-                ->orderBy('jam_mulai');
+        $jadwal = JadwalPelajaran::with(['mataPelajaran', 'kelas'])
+            ->where('guru_id', Auth::user()->guruProfile->id);
 
         return DataTables::of($jadwal)
-                ->addIndexColumn()
-                ->addColumn('waktu', fn ($row) => formatStartEndTime($row->jam_mulai, $row->jam_selesai))
-                ->addColumn('nama_kelas', fn ($row) => $row->kelas->nama_kelas)
-                ->addColumn('mata_pelajaran', fn ($row) => $row->mataPelajaran->nama_mapel)
-                ->editColumn('hari', function ($row) {
-                    $hariList = [
-                        1 => 'Senin',
-                        2 => 'Selasa',
-                        3 => 'Rabu',
-                        4 => 'Kamis',
-                        5 => 'Jumat',
-                        6 => 'Sabtu',
-                        7 => 'Minggu',
-                    ];
-                    return $hariList[$row->hari] ?? $row->hari;
-                })
-                ->make(true);
+            ->addIndexColumn()
+            ->addColumn('mata_pelajaran', fn($j) => $j->mataPelajaran->nama_mapel)
+            ->addColumn('kelas', fn($j) => $j->kelas->nama_kelas)
+            ->addColumn('hari', fn($j) => $j->hari)
+            ->addColumn('jam', fn($j) => substr($j->jam_mulai, 0, 5) . ' - ' . substr($j->jam_selesai, 0, 5))
+            ->make(true);
     }
 
     public function index()
@@ -44,26 +31,15 @@ class JadwalMengajarController extends Controller
 
     public function show(string $id)
     {
-        $jadwal = JadwalPelajaran::with(['kelas', 'mataPelajaran', 'materi'])
-            ->findOrFail($id);
+        $jadwal = JadwalPelajaran::with(['mataPelajaran', 'kelas'])->findOrFail($id);
+
+        $materi = $jadwal->materi()->orderBy('pertemuan_ke')->get();
+        $tugas = $jadwal->evaluasiPembelajaran()->orderBy('tanggal_mulai')->get();
 
         return Inertia::render('guru/jadwal-mengajar/View', [
-            'jadwal' => [
-                'id' => $jadwal->id,
-                'hari' => $jadwal->hari,
-                'waktu' => formatStartEndTime($jadwal->jam_mulai, $jadwal->jam_selesai),
-                'kelas' => $jadwal->kelas->nama_kelas,
-                'mapel' => $jadwal->mataPelajaran->nama_mapel,
-                'materi' => $jadwal->materi->map(function ($m) {
-                    return [
-                        'id' => $m->id,
-                        'judul' => $m->judul,
-                        'edit_url' => $m->id
-                            ? route('guru.dashboard')
-                            : null,
-                    ];
-                })
-            ]
+            'jadwal' => $jadwal,
+            'materi' => $materi,
+            'tugas' => $tugas,
         ]);
     }
 

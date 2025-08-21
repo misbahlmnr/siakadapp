@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Guru\{DashboardController, JadwalMengajarController, MateriPembelajaranController, TugasUjianController};
+use App\Http\Controllers\Guru\{DashboardController, JadwalMengajarController, MateriPelajaranController, TugasUjianController};
 
 Route::prefix('guru')
     ->name('guru.')
@@ -20,7 +20,7 @@ Route::prefix('guru')
                // route materi pembelajaran
                 Route::prefix('{jadwal_id}/materi')
                     ->name('materi.')
-                    ->controller(MateriPembelajaranController::class)
+                    ->controller(MateriPelajaranController::class)
                     ->group(function () {
                         Route::get('/', 'index')->name('index');
                         Route::get('/data', 'get')->name('data');

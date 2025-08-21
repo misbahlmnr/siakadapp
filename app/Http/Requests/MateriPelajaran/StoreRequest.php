@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\MateriPembelajaran;
+namespace App\Http\Requests\MateriPelajaran;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -25,10 +25,12 @@ class StoreRequest extends FormRequest
             'jadwal_id' => 'required|exists:jadwal_pelajaran,id',
             'guru_id' => 'required|exists:guru_profiles,id',
             'pertemuan_ke' => 'required|numeric',
-            'judul' => 'required|string|max:255',
+            'judul_materi' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'file_path' => 'nullable|file|mimes:pdf,docx,pptx|max:5120',
-            'link_file' => 'nullable|url',
+            'file_materi' => 'nullable|file|mimes:pdf,docx,pptx|max:5120',
+            'link_materi' => 'nullable|url',
+            'semester' => 'required|string|in:Ganjil,Genap',
+            'tahun_ajaran' => 'required|string',
         ];
     }
 }

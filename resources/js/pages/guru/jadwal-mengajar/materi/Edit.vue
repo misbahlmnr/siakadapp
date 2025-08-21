@@ -1,0 +1,183 @@
+<script setup lang="ts">
+import InputError from '@/components/InputError.vue';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { MateriPelajaran } from '@/types';
+import { Head, router, useForm } from '@inertiajs/vue3';
+import { ChevronDown, File, FileDown, LoaderCircle } from 'lucide-vue-next';
+import { ref } from 'vue';
+
+const props = defineProps<{
+    jadwal_id: number;
+    guru_id: number;
+    materi: MateriPelajaran;
+}>();
+
+// Form
+const form = useForm({
+    jadwal_id: props.jadwal_id,
+    guru_id: props.guru_id,
+    pertemuan_ke: props.materi?.pertemuan_ke || '',
+    judul_materi: props.materi?.judul_materi || '',
+    deskripsi: props.materi?.deskripsi || '',
+    file_materi: null,
+    link_materi: props.materi?.link_materi || '',
+    semester: props.materi?.semester || '',
+    tahun_ajaran: props.materi?.tahun_ajaran || '',
+});
+
+// Dropdown semester
+const semesterOptions = ['Ganjil', 'Genap'];
+const selectedSemesterLabel = ref(form.semester || 'Pilih Semester');
+
+// File upload
+const onFileChange = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    form.file_materi = target.files?.[0] || null;
+};
+
+// Submit
+const submit = () => {
+    form.transform((data) => ({ ...data, _method: 'PUT' })).post(
+        route('guru.jadwal-mengajar.materi.update', { jadwal_id: props.jadwal_id, materi_id: props.materi.id }),
+        { preserveScroll: true, forceFormData: true },
+    );
+};
+
+// Breadcrumbs
+const breadcrumbs = [
+    { title: 'Beranda', href: route('guru.dashboard') },
+    { title: 'Jadwal Mengajar', href: route('guru.jadwal-mengajar.index') },
+    { title: 'Materi Pembelajaran', href: route('guru.jadwal-mengajar.materi.index', { jadwal_id: props.jadwal_id }) },
+    { title: 'Edit Materi', href: '#' },
+];
+</script>
+
+<template>
+    <Head title="Edit Materi Pembelajaran" />
+
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="flex flex-col gap-6 px-10 py-6">
+            <h1 class="text-2xl font-bold">Edit Materi Pembelajaran</h1>
+
+            <form @submit.prevent="submit" class="grid gap-4 md:max-w-2xl md:grid-cols-2">
+                <!-- Pertemuan Ke -->
+                <div class="col-span-2 flex flex-col gap-2">
+                    <Label for="pertemuan_ke">Pertemuan Ke</Label>
+                    <Input id="pertemuan_ke" type="number" min="1" v-model="form.pertemuan_ke" placeholder="Masukkan nomor pertemuan" />
+                    <InputError :message="form.errors.pertemuan_ke" />
+                </div>
+
+                <!-- Judul Materi -->
+                <div class="col-span-2 flex flex-col gap-2">
+                    <Label for="judul_materi">Judul Materi</Label>
+                    <Input id="judul_materi" v-model="form.judul_materi" placeholder="Masukkan judul materi" />
+                    <InputError :message="form.errors.judul_materi" />
+                </div>
+
+                <!-- Deskripsi -->
+                <div class="col-span-2 flex flex-col gap-2">
+                    <Label for="deskripsi">Deskripsi</Label>
+                    <textarea
+                        id="deskripsi"
+                        v-model="form.deskripsi"
+                        placeholder="Masukkan deskripsi"
+                        class="w-full rounded border p-2 text-sm"
+                        rows="4"
+                    ></textarea>
+                    <InputError :message="form.errors.deskripsi" />
+                </div>
+
+                <!-- File Materi -->
+                <div class="flex flex-col gap-3">
+                    <Label for="file_materi">File (ppt, pdf, doc)</Label>
+                    <Input id="file_materi" type="file" @change="onFileChange" class="mb-2" />
+
+                    <div
+                        v-if="props.materi?.file_materi"
+                        class="flex w-full max-w-md items-center justify-between gap-2 rounded-lg border border-gray-200 bg-white p-2 shadow-md transition hover:shadow-lg dark:border-gray-700 dark:bg-gray-900"
+                    >
+                        <!-- Icon File -->
+                        <File :size="18" />
+
+                        <!-- Nama File -->
+                        <div class="flex-1 truncate">
+                            <span class="truncate text-xs font-medium text-gray-800 dark:text-gray-200">{{
+                                props.materi.file_materi.split('/').pop()
+                            }}</span>
+                        </div>
+
+                        <!-- Download Button -->
+                        <a
+                            :href="props.materi.file_materi"
+                            target="_blank"
+                            class="inline-flex items-center gap-1 rounded bg-blue-500 px-3 py-1 text-sm font-medium text-white shadow transition hover:bg-blue-600"
+                        >
+                            <FileDown :size="18" />
+                            Download
+                        </a>
+                    </div>
+
+                    <InputError :message="form.errors.file_materi" />
+                </div>
+
+                <!-- Link File -->
+                <div class="flex flex-col gap-2">
+                    <Label for="link_materi">Link File</Label>
+                    <Input id="link_materi" v-model="form.link_materi" placeholder="Masukkan link file (jika ada)" />
+                    <InputError :message="form.errors.link_materi" />
+                </div>
+
+                <!-- Semester -->
+                <div class="flex flex-col gap-2">
+                    <Label for="semester">Semester</Label>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
+                                <span class="text-sm">{{ selectedSemesterLabel }}</span>
+                                <ChevronDown class="h-4 w-4 text-gray-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="max-h-40 min-w-[200px] overflow-auto">
+                            <DropdownMenuItem
+                                v-for="s in semesterOptions"
+                                :key="s"
+                                @click="
+                                    form.semester = s;
+                                    selectedSemesterLabel = s;
+                                "
+                            >
+                                {{ s }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <InputError :message="form.errors.semester" />
+                </div>
+
+                <!-- Tahun Ajaran -->
+                <div class="flex flex-col gap-2">
+                    <Label for="tahun_ajaran">Tahun Ajaran</Label>
+                    <Input id="tahun_ajaran" v-model="form.tahun_ajaran" placeholder="Masukkan tahun ajaran" />
+                    <InputError :message="form.errors.tahun_ajaran" />
+                </div>
+
+                <!-- Submit -->
+                <div class="mt-4 md:col-span-2">
+                    <Button
+                        variant="outline"
+                        type="button"
+                        @click="router.visit(route('guru.jadwal-mengajar.materi.index', { jadwal_id: jadwal_id }))"
+                        >Batal</Button
+                    >
+                    <Button :disabled="form.processing" class="bg-blue-600 text-white hover:bg-blue-600/90">
+                        <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
+                        Simpan
+                    </Button>
+                </div>
+            </form>
+        </div>
+    </AppLayout>
+</template>
