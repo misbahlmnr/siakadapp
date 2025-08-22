@@ -32,7 +32,7 @@ onMounted(() => {
                 router.visit(route('guru.jadwal-mengajar.materi.index', { jadwal_id: id }));
             }
             if (action === 'tugas') {
-                router.visit(route('guru.tugas.create', { jadwal: id }));
+                router.visit(route('guru.jadwal-mengajar.evaluasi-pembelajaran.index', { jadwal_id: id }));
             }
             if (action === 'detail') {
                 router.visit(route('guru.jadwal-mengajar.show', { id }));

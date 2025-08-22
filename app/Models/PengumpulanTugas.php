@@ -14,7 +14,7 @@ class PengumpulanTugas extends Model
         'file_jawaban',
         'link_jawaban',
         'nilai',
-        'tanggal_pengumpulan',
+        'waktu_pengumpulan',
     ];
 
     public function evaluasiPembelajaran()

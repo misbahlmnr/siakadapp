@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('judul');
             $table->text('deskripsi')->nullable();
             $table->enum('jenis', ['tugas', 'kuis', 'ujian'])->default('tugas');
-            $table->date('tanggal_mulai');
-            $table->date('tanggal_selesai');
+            $table->datetime('waktu_mulai');
+            $table->datetime('waktu_selesai');
             $table->string('link_soal')->nullable();
             $table->string('file_soal')->nullable();
             $table->string('semester')->nullable();

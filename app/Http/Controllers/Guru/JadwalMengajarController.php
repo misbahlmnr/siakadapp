@@ -34,7 +34,7 @@ class JadwalMengajarController extends Controller
         $jadwal = JadwalPelajaran::with(['mataPelajaran', 'kelas'])->findOrFail($id);
 
         $materi = $jadwal->materi()->orderBy('pertemuan_ke')->get();
-        $tugas = $jadwal->evaluasiPembelajaran()->orderBy('tanggal_mulai')->get();
+        $tugas = $jadwal->evaluasiPembelajaran()->orderBy('waktu_mulai')->get();
 
         return Inertia::render('guru/jadwal-mengajar/View', [
             'jadwal' => $jadwal,

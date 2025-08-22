@@ -89,24 +89,40 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <table class="w-full border-collapse text-left">
                         <thead class="bg-gray-100 dark:bg-gray-800">
                             <tr>
-                                <th class="border p-2">#</th>
+                                <th class="border p-2">No</th>
                                 <th class="border p-2">Judul</th>
-                                <th class="border p-2">Tanggal Mulai</th>
-                                <th class="border p-2">Deadline</th>
-                                <th class="border p-2">File</th>
+                                <th class="border p-2">Waktu</th>
+                                <th class="border p-2">File Soal</th>
+                                <th class="border p-2">Link Soal</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="(t, index) in tugas" :key="t.id" class="hover:bg-gray-50 dark:hover:bg-gray-900">
                                 <td class="border p-2">{{ index + 1 }}</td>
                                 <td class="border p-2">{{ t.judul }}</td>
-                                <td class="border p-2">{{ new Date(t.tanggal_mulai).toLocaleDateString() }}</td>
-                                <td class="border p-2">{{ t.tanggal_selesai ? new Date(t.tanggal_selesai).toLocaleDateString() : '-' }}</td>
+
+                                <!-- Gabungan waktu mulai dan selesai -->
                                 <td class="border p-2">
-                                    <a v-if="t.file_soal" :href="`/storage/${t.file_soal}`" target="_blank" class="text-blue-600 hover:underline"
-                                        >Download</a
-                                    >
+                                    {{ new Date(t.waktu_mulai).toLocaleDateString('id-ID') }}
+                                    {{ new Date(t.waktu_mulai).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }}
+                                    -
+                                    <span v-if="t.waktu_selesai">
+                                        {{ new Date(t.waktu_selesai).toLocaleDateString('id-ID') }}
+                                        {{ new Date(t.waktu_selesai).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }}
+                                    </span>
+                                    <span v-else>-</span>
+                                </td>
+
+                                <td class="border p-2">
+                                    <a v-if="t.file_soal" :href="`/storage/${t.file_soal}`" target="_blank" class="text-blue-600 hover:underline">
+                                        Download
+                                    </a>
                                     <span v-else class="text-gray-400 italic">Tidak ada file</span>
+                                </td>
+
+                                <td class="border p-2">
+                                    <a v-if="t.link_soal" :href="t.link_soal" target="_blank" class="text-blue-600 hover:underline">Buka Link</a>
+                                    <span v-else class="text-gray-400 italic">Tidak ada link</span>
                                 </td>
                             </tr>
                         </tbody>

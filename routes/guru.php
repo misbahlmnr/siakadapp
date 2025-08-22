@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Guru\{DashboardController, JadwalMengajarController, MateriPelajaranController, TugasUjianController};
+use App\Http\Controllers\Guru\{DashboardController, EvaluasiPembelajaranController, JadwalMengajarController, MateriPelajaranController, TugasUjianController};
 
 Route::prefix('guru')
     ->name('guru.')
@@ -31,14 +31,20 @@ Route::prefix('guru')
                         Route::put('/{materi_id}', 'update')->name('update');
                         Route::delete('/{materi_id}', 'destroy')->name('destroy');
                     });
-            });
 
-        Route::prefix('tugas-ujian')
-            ->name('tugas-ujian.')
-            ->controller(TugasUjianController::class)
-            ->group(function () {
-                Route::get('/', 'index')->name('index');
-                Route::get('/data', 'get')->name('data');
+                Route::prefix('{jadwal_id}/evaluasi-pembelajaran')
+                    ->name('evaluasi-pembelajaran.')
+                    ->controller(EvaluasiPembelajaranController::class)
+                    ->group(function () {
+                        Route::get('/', 'index')->name('index');
+                        Route::get('/data', 'get')->name('data');
+                        Route::get('/create', 'create')->name('create');
+                        Route::post('/', 'store')->name('store');
+                        Route::get('/{evaluasi_id}', 'show')->name('show');
+                        Route::get('/{evaluasi_id}/edit', 'edit')->name('edit');
+                        Route::put('/{evaluasi_id}', 'update')->name('update');
+                        Route::delete('/{evaluasi_id}', 'destroy')->name('destroy');
+                    });
             });
     });
 

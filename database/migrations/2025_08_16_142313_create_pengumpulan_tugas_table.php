@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('file_jawaban')->nullable();
             $table->string('link_jawaban')->nullable();
             $table->string('nilai')->nullable();
-            $table->date('tanggal_pengumpulan')->nullable();
+            $table->datetime('waktu_pengumpulan')->nullable();
             $table->timestamps();
         });
     }
