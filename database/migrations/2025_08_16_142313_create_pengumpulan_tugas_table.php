@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('siswa_id')->constrained('siswa_profiles')->onDelete('cascade');
             $table->string('file_jawaban')->nullable();
             $table->string('link_jawaban')->nullable();
-            $table->string('nilai')->nullable();
+            $table->enum('status', ['dikumpulkan', 'telat', 'belum_dikumpulkan'])->default('belum_dikumpulkan');
             $table->datetime('waktu_pengumpulan')->nullable();
             $table->timestamps();
         });

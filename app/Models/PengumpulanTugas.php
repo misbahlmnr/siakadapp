@@ -13,7 +13,7 @@ class PengumpulanTugas extends Model
         'siswa_id',
         'file_jawaban',
         'link_jawaban',
-        'nilai',
+        'status',
         'waktu_pengumpulan',
     ];
 

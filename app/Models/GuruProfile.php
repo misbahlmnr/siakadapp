@@ -36,9 +36,4 @@ class GuruProfile extends Model
     {
         return $this->hasMany(EvaluasiPembelajaran::class);
     }
-
-    public function nilai()
-    {
-        return $this->hasMany(Nilai::class);
-    }
 }

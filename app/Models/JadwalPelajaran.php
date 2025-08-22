@@ -44,11 +44,6 @@ class JadwalPelajaran extends Model
         return $this->hasMany(EvaluasiPembelajaran::class, 'jadwal_id');
     }
 
-    public function nilai()
-    {
-        return $this->hasMany(Nilai::class, 'jadwal_id');
-    }
-
     public function absensi()
     {
         return $this->hasMany(Absensi::class, 'jadwal_id');
