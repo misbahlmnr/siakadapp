@@ -52,12 +52,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 
                 <div>
                     <p class="text-sm text-gray-400">Semester</p>
-                    <p class="font-semibold">{{ jadwal.semester }}</p>
+                    <p class="font-semibold">{{ jadwal.semester_ajaran.semester }}</p>
                 </div>
 
                 <div>
                     <p class="text-sm text-gray-400">Tahun Ajaran</p>
-                    <p class="font-semibold">{{ jadwal.tahun_ajaran }}</p>
+                    <p class="font-semibold">{{ jadwal.semester_ajaran.tahun_ajaran }}</p>
                 </div>
             </div>
 

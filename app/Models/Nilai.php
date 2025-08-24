@@ -13,8 +13,8 @@ class Nilai extends Model
         'evaluasi_id',
         'nilai',
         'status',
-        'semester',
-        'tahun_ajaran',
+        'feedback',
+        'tanggal_dinilai',
     ];
 
     public function siswa()

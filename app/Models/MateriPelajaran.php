@@ -12,13 +12,12 @@ class MateriPelajaran extends Model
     protected $fillable = [
         'jadwal_id',
         'guru_id',
+        'semester_ajaran_id',
         'pertemuan_ke',
         'judul_materi',
         'deskripsi',
         'file_materi',
         'link_materi',
-        'semester',
-        'tahun_ajaran',
     ];
 
     public function jadwal()
@@ -44,6 +43,11 @@ class MateriPelajaran extends Model
     public function adaptiveRules()
     {
         return $this->hasMany(AdaptiveRules::class);
+    }
+
+    public function semesterAjaran()
+    {
+        return $this->belongsTo(SemesterAjaran::class);
     }
 
     public function getFilePathAttribute($value)

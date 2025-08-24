@@ -11,11 +11,10 @@ class Absensi extends Model
     protected $fillable = [
         'jadwal_id',
         'siswa_id',
+        'semester_ajaran_id',
         'pertemuan_ke',
         'tanggal',
         'status',
-        'semester',
-        'tahun_ajaran',
     ];
 
     public function jadwal()
@@ -26,5 +25,10 @@ class Absensi extends Model
     public function siswa()
     {
         return $this->belongsTo(SiswaProfile::class, 'siswa_id');
+    }
+
+    public function semesterAjaran()
+    {
+        return $this->belongsTo(SemesterAjaran::class);
     }
 }

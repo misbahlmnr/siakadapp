@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MateriPelajaran\{StoreRequest, UpdateRequest};
 use App\Models\JadwalPelajaran;
 use App\Models\MateriPelajaran;
+use App\Models\SemesterAjaran;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -39,6 +40,11 @@ class MateriPelajaranController extends Controller
         return Inertia::render('guru/jadwal-mengajar/materi/Create', [
             'jadwal_id' => $jadwal_id,
             'guru_id' => Auth::user()->guruProfile->id,
+            'semesterDanTahunAjaranList' => SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
+                'id' => $se->id,
+                'semester' => $se->semester,
+                'tahun_ajaran' => $se->tahun_ajaran
+            ])
         ]);
     }
 
@@ -82,7 +88,7 @@ class MateriPelajaranController extends Controller
             'guru' => [
                 'nama' => Auth::user()->name,
             ],
-            'materi' => MateriPelajaran::find($materi_id),
+            'materi' => MateriPelajaran::with('semesterAjaran')->find($materi_id),
         ]);
     }
 
@@ -95,14 +101,18 @@ class MateriPelajaranController extends Controller
             'guru_id' => $materi->guru_id,
             'materi' => [
                 'id' => $materi->id,
+                'semester_ajaran_id' => $materi->semester_ajaran_id,
                 'pertemuan_ke' => $materi->pertemuan_ke,
                 'judul_materi' => $materi->judul_materi,
                 'deskripsi' => $materi->deskripsi,
                 'file_materi' => $materi->file_materi ? Storage::url($materi->file_materi) : null,
                 'link_materi' => $materi->link_materi,
-                'semester' => $materi->semester,
-                'tahun_ajaran' => $materi->tahun_ajaran,
             ],
+            'semesterDanTahunAjaranList' => SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
+                'id' => $se->id,
+                'semester' => $se->semester,
+                'tahun_ajaran' => $se->tahun_ajaran
+            ])
         ]);
     }
 

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('jadwal_id')->constrained('jadwal_pelajaran')->onDelete('cascade');
             $table->foreignId('guru_id')->constrained('guru_profiles')->onDelete('cascade');
+            $table->foreignId('semester_ajaran_id')->constrained('semester_ajaran')->onDelete('cascade');
             $table->string('judul');
             $table->text('deskripsi')->nullable();
             $table->enum('jenis', ['tugas', 'kuis', 'ujian'])->default('tugas');
@@ -22,8 +23,6 @@ return new class extends Migration
             $table->datetime('waktu_selesai');
             $table->string('link_soal')->nullable();
             $table->string('file_soal')->nullable();
-            $table->string('semester')->nullable();
-            $table->string('tahun_ajaran')->nullable();
             $table->timestamps();
         });
     }

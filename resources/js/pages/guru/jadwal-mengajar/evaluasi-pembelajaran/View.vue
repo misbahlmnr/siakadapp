@@ -9,15 +9,15 @@ const props = defineProps<{
     evaluasi: {
         id: number;
         jadwal_id: number;
+        semester_ajaran_id: number;
         judul: string;
         deskripsi: string | null;
         jenis: string;
-        semester: string;
-        tahun_ajaran: string;
         waktu_mulai: string;
         waktu_selesai: string;
         file_soal: string | null;
         link_soal: string | null;
+        semester_ajaran: any;
     };
 }>();
 </script>
@@ -47,11 +47,11 @@ const props = defineProps<{
                 </div>
                 <div>
                     <p class="text-sm text-gray-400">Semester</p>
-                    <p class="font-semibold">{{ props.evaluasi.semester || '-' }}</p>
+                    <p class="font-semibold">{{ props.evaluasi.semester_ajaran.semester || '-' }}</p>
                 </div>
                 <div>
                     <p class="text-sm text-gray-400">Tahun Ajaran</p>
-                    <p class="font-semibold">{{ props.evaluasi.tahun_ajaran || '-' }}</p>
+                    <p class="font-semibold">{{ props.evaluasi.semester_ajaran.tahun_ajaran || '-' }}</p>
                 </div>
                 <div class="md:col-span-2">
                     <p class="text-sm text-gray-400">Waktu</p>

@@ -15,11 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('jadwal_id')->constrained('jadwal_pelajaran')->onDelete('cascade');
             $table->foreignId('siswa_id')->constrained('siswa_profiles')->onDelete('cascade');
+            $table->foreignId('semester_ajaran_id')->constrained('semester_ajaran')->onDelete('cascade');
             $table->string('pertemuan_ke');
             $table->date('tanggal');
             $table->enum('status', ['hadir', 'izin', 'sakit', 'alpha'])->default('hadir');
-            $table->string('semester')->nullable();
-            $table->string('tahun_ajaran')->nullable();
             $table->timestamps();
         });
     }

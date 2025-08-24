@@ -58,13 +58,13 @@ export interface MateriPelajaran {
     id: number;
     jadwal_id: number;
     guru_id: number;
+    semester_ajaran_id: number;
     pertemuan_ke: number;
     judul_materi: string;
     deskripsi: string;
     file_materi: string;
     link_materi: string;
-    semester: string;
-    tahun_ajaran: string;
+    semester_ajaran: any;
     created_at: string;
     updated_at: string;
 }
@@ -74,11 +74,10 @@ export interface JadwalPelajaran {
     kelas_id: number;
     matpel_id: number;
     guru_id: number;
+    semester_ajaran_id: number;
     hari: string;
     jam_mulai: string;
     jam_selesai: string;
-    semester: string;
-    tahun_ajaran: string;
     created_at: string;
     updated_at: string;
 }

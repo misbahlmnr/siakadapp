@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\{AdaptiveRulesController, DashboardController, JadwalPelajaranController, KelasController, LaporanNilaiController, MataPelajaranController, UserController};
+use App\Http\Controllers\Admin\{AdaptiveRulesController, DashboardController, JadwalPelajaranController, KelasController, LaporanNilaiController, MataPelajaranController, SemesterAjaranController, UserController};
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')
@@ -31,6 +31,19 @@ Route::prefix('admin')
         Route::delete('/manajemen-user/{role}/{id}', [UserController::class, 'destroy'])
             ->whereNumber('id')
             ->name('users.destroy');
+
+        Route::prefix('semester')
+            ->name('semester.')
+            ->controller(SemesterAjaranController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index'); 
+                Route::get('/data', 'get')->name('data');
+                Route::get('/create', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{id}/edit', 'edit')->name('edit');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+            });
 
         Route::prefix('mata-pelajaran')
             ->name('mata-pelajaran.')

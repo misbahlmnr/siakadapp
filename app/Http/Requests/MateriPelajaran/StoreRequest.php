@@ -24,13 +24,12 @@ class StoreRequest extends FormRequest
         return [
             'jadwal_id' => 'required|exists:jadwal_pelajaran,id',
             'guru_id' => 'required|exists:guru_profiles,id',
+            'semester_ajaran_id' => 'required|exists:semester_ajaran,id',
             'pertemuan_ke' => 'required|numeric',
             'judul_materi' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'file_materi' => 'nullable|file|mimes:pdf,docx,pptx|max:5120',
             'link_materi' => 'nullable|url',
-            'semester' => 'required|string|in:Ganjil,Genap',
-            'tahun_ajaran' => 'required|string',
         ];
     }
 }

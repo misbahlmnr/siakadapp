@@ -12,11 +12,10 @@ class JadwalPelajaran extends Model
         'kelas_id',
         'matpel_id',
         'guru_id',
+        'semester_ajaran_id',
         'hari',
         'jam_mulai',
         'jam_selesai',
-        'semester',
-        'tahun_ajaran',
     ];
 
     public function kelas()
@@ -47,5 +46,10 @@ class JadwalPelajaran extends Model
     public function absensi()
     {
         return $this->hasMany(Absensi::class, 'jadwal_id');
+    }
+
+    public function semesterAjaran()
+    {
+        return $this->belongsTo(SemesterAjaran::class);
     }
 }

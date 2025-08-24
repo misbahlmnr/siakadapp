@@ -11,6 +11,7 @@ class EvaluasiPembelajaran extends Model
     protected $fillable = [
         'jadwal_id',
         'guru_id',
+        'semester_ajaran_id',
         'judul',
         'deskripsi',
         'jenis',
@@ -18,8 +19,6 @@ class EvaluasiPembelajaran extends Model
         'waktu_selesai',
         'link_soal',
         'file_soal',
-        'semester',
-        'tahun_ajaran',
     ];
 
     public function jadwal()
@@ -50,5 +49,10 @@ class EvaluasiPembelajaran extends Model
     public function rekomendasiMateriManual()
     {
         return $this->hasMany(RekomendasiMateriManual::class, 'evaluasi_id');
+    }
+
+    public function semesterAjaran()
+    {
+        return $this->belongsTo(SemesterAjaran::class);
     }
 }

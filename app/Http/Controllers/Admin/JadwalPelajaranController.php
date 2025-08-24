@@ -9,6 +9,7 @@ use App\Models\GuruProfile;
 use App\Models\JadwalPelajaran;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
+use App\Models\SemesterAjaran;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use Yajra\DataTables\Facades\DataTables;
@@ -24,6 +25,8 @@ class JadwalPelajaranController extends Controller
             ->addColumn('kelas', fn ($row) => $row->kelas->nama_kelas)
             ->addColumn('mata_pelajaran', fn ($row) => $row->mataPelajaran->nama_mapel)
             ->addColumn('guru', fn ($row) => $row->guru->user->name)
+            ->addColumn('semester', fn ($row) => $row->semesterAjaran->semester)
+            ->addColumn('tahun_ajaran', fn ($row) => $row->semesterAjaran->tahun_ajaran)
             ->editColumn('jam', fn ($row) => formatStartEndTime($row->jam_mulai, $row->jam_selesai))
             ->make(true);
     }
@@ -44,6 +47,11 @@ class JadwalPelajaranController extends Controller
                     'nama' => $guru->user->name,
                 ];
             }),
+            'semesterDanTahunAjaranList' => SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
+                'id' => $se->id,
+                'semester' => $se->semester,
+                'tahun_ajaran' => $se->tahun_ajaran
+            ])
         ]);
     }
 
@@ -70,11 +78,10 @@ class JadwalPelajaranController extends Controller
             'kelas_id' => $request->kelas_id,
             'matpel_id' => $request->matpel_id,
             'guru_id' => $request->guru_id,
+            'semester_ajaran_id' => $request->semester_ajaran_id,
             'hari' => $request->hari,
             'jam_mulai' => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,
-            'semester' => $request->semester,
-            'tahun_ajaran' => $request->tahun_ajaran
         ]);
 
         return to_route('admin.jadwal-pelajaran.index')
@@ -84,7 +91,7 @@ class JadwalPelajaranController extends Controller
     public function show(string $id)
     {
         return Inertia::render('admin/jadwal-pelajaran/View', [
-           'jadwal' => JadwalPelajaran::with('kelas', 'mataPelajaran', 'guru.user')->find($id) 
+           'jadwal' => JadwalPelajaran::with('kelas', 'mataPelajaran', 'guru.user', 'semesterAjaran')->find($id) 
         ]);
     }
 
@@ -98,11 +105,10 @@ class JadwalPelajaranController extends Controller
                 'kelas_id' => $jadwal->kelas_id,
                 'matpel_id' => $jadwal->matpel_id,
                 'guru_id' => $jadwal->guru_id,
+                'semester_ajaran_id' => $jadwal->semester_ajaran_id,
                 'hari' => $jadwal->hari,
                 'jam_mulai' => Carbon::parse($jadwal->jam_mulai)->format('H:i'),
                 'jam_selesai' => Carbon::parse($jadwal->jam_selesai)->format('H:i'),
-                'semester' => $jadwal->semester,
-                'tahun_ajaran' => $jadwal->tahun_ajaran
             ],
             'kelasList' => Kelas::select('id', 'nama_kelas')->get(),
             'mapelList' => MataPelajaran::select('id', 'nama_mapel')->get(),
@@ -111,7 +117,12 @@ class JadwalPelajaranController extends Controller
                     'id' => $guru->id,
                     'nama' => $guru->user->name,
                 ];
-            })
+            }),
+            'semesterDanTahunAjaranList' => SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
+                'id' => $se->id,
+                'semester' => $se->semester,
+                'tahun_ajaran' => $se->tahun_ajaran
+            ])
         ]);
     }
 

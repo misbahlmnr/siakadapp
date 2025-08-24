@@ -19,6 +19,11 @@ export const GlobalConfig = {
                 ],
             },
             {
+                title: 'Semester & Tahun Ajaran',
+                href: '/admin/semester',
+                icon: Sparkles,
+            },
+            {
                 title: 'Mata Pelajaran',
                 href: '/admin/mata-pelajaran',
                 icon: BookOpen,

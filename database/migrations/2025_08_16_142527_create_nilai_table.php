@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('siswa_id')->constrained('siswa_profiles')->onDelete('cascade');
             $table->foreignId('evaluasi_id')->constrained('evaluasi_pembelajaran')->onDelete('cascade');
             $table->string('nilai')->nullable();
-            $table->enum('status', ['lulus','remedial','tidak lulus'])->default('tidak lulus');
-            $table->string('semester')->nullable();
-            $table->string('tahun_ajaran')->nullable();
+            $table->enum('status', ['lulus','remedial','kosong'])->default('kosong');
+            $table->text('feedback')->nullable();
+            $table->date('tanggal_dinilai');
             $table->timestamps();
         });
     }

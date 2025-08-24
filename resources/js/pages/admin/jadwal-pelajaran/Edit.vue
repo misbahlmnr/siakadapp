@@ -15,28 +15,27 @@ const props = defineProps<{
     kelasList: { id: number; nama_kelas: string }[];
     mapelList: { id: number; nama_mapel: string }[];
     guruList: { id: number; nama: string }[];
+    semesterDanTahunAjaranList: { id: number; semester: string; tahun_ajaran: string }[];
 }>();
 
 type Form = {
     kelas_id: number | null;
     matpel_id: number | null;
     guru_id: number | null;
+    semester_ajaran_id: number | null;
     hari: string;
     jam_mulai: string;
     jam_selesai: string;
-    semester: string;
-    tahun_ajaran: string;
 };
 
 const form = useForm<Form>({
     kelas_id: props.jadwal.kelas_id,
     matpel_id: props.jadwal.matpel_id,
     guru_id: props.jadwal.guru_id,
+    semester_ajaran_id: props.jadwal.semester_ajaran_id,
     hari: props.jadwal.hari,
     jam_mulai: props.jadwal.jam_mulai,
     jam_selesai: props.jadwal.jam_selesai,
-    semester: props.jadwal.semester,
-    tahun_ajaran: props.jadwal.tahun_ajaran,
 });
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -46,16 +45,19 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const hariOptions = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-const semesterOptions = ['Ganjil', 'Genap'];
 
 // inisialisasi label agar langsung sesuai data jadwal
 const selectedKelasLabel = ref(props.kelasList.find((k) => k.id === props.jadwal.kelas_id)?.nama_kelas || 'Pilih Kelas');
 const selectedMapelLabel = ref(props.mapelList.find((m) => m.id === props.jadwal.matpel_id)?.nama_mapel || 'Pilih Mata Pelajaran');
 const selectedGuruLabel = ref(props.guruList.find((g) => g.id === props.jadwal.guru_id)?.nama || 'Pilih Guru');
 const selectedHariLabel = ref(props.jadwal.hari || 'Pilih Hari');
-const selectedSemesterLabel = ref(props.jadwal.semester || 'Pilih Semester');
-
-console.log(props.jadwal);
+const selectedSemesterDanTahunAjaranLabel = ref(
+    props.semesterDanTahunAjaranList.find((s) => s.id === props.jadwal.semester_ajaran_id)
+        ? `${props.semesterDanTahunAjaranList.find((s) => s.id === props.jadwal.semester_ajaran_id)!.semester} / ${
+              props.semesterDanTahunAjaranList.find((s) => s.id === props.jadwal.semester_ajaran_id)!.tahun_ajaran
+          }`
+        : 'Pilih Semester & Tahun Ajaran',
+);
 
 const submit = () => {
     form.put(route('admin.jadwal-pelajaran.update', props.jadwal.id));
@@ -187,37 +189,30 @@ const submit = () => {
                     <InputError :message="form.errors.jam_selesai" />
                 </div>
 
-                <!-- Semester -->
+                <!-- Semester & Tahun Ajaran -->
                 <div class="flex flex-col gap-3">
-                    <Label for="semester">Semester</Label>
+                    <Label for="semester_ajaran">Semester & Tahun Ajaran</Label>
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
                             <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
-                                <span class="text-sm">{{ selectedSemesterLabel }}</span>
+                                <span class="text-sm">{{ selectedSemesterDanTahunAjaranLabel }}</span>
                                 <ChevronDown class="h-4 w-4 text-gray-500" />
                             </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent class="max-h-40 min-w-[200px] overflow-auto">
+                        <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
                             <DropdownMenuItem
-                                v-for="s in semesterOptions"
-                                :key="s"
+                                v-for="sa in props.semesterDanTahunAjaranList"
+                                :key="sa.id"
                                 @click="
-                                    form.semester = s;
-                                    selectedSemesterLabel = s;
+                                    form.semester_ajaran_id = sa.id;
+                                    selectedSemesterDanTahunAjaranLabel = `${sa.semester} / ${sa.tahun_ajaran}`;
                                 "
                             >
-                                {{ s }}
+                                {{ sa.semester }} / {{ sa.tahun_ajaran }}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <InputError :message="form.errors.semester" />
-                </div>
-
-                <!-- Tahun Ajaran -->
-                <div class="flex flex-col gap-3">
-                    <Label for="tahun_ajaran">Tahun Ajaran</Label>
-                    <Input id="tahun_ajaran" type="text" placeholder="2024/2025" v-model="form.tahun_ajaran" />
-                    <InputError :message="form.errors.tahun_ajaran" />
+                    <InputError :message="form.errors.semester_ajaran_id" />
                 </div>
 
                 <!-- Submit -->

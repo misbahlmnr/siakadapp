@@ -24,6 +24,7 @@ class UpdateRequest extends FormRequest
         return [
             'jadwal_id' => 'required|exists:jadwal_pelajaran,id',
             'guru_id' => 'required|exists:guru_profiles,id',
+            'semester_ajaran_id' => 'required|exists:semester_ajaran,id',
             'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'jenis' => 'required|string|in:ujian,kuis,tugas',

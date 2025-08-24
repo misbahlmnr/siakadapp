@@ -51,11 +51,11 @@ const props = defineProps<{
                 </div>
                 <div>
                     <p class="text-sm text-gray-400">Semester</p>
-                    <p class="font-semibold">{{ props.materi.semester || '-' }}</p>
+                    <p class="font-semibold">{{ props.materi.semester_ajaran.semester || '-' }}</p>
                 </div>
                 <div>
                     <p class="text-sm text-gray-400">Tahun Ajaran</p>
-                    <p class="font-semibold">{{ props.materi.tahun_ajaran || '-' }}</p>
+                    <p class="font-semibold">{{ props.materi.semester_ajaran.tahun_ajaran || '-' }}</p>
                 </div>
                 <!-- Deskripsi Materi -->
                 <div>

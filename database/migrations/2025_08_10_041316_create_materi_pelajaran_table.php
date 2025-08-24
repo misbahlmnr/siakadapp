@@ -15,13 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('jadwal_id')->constrained('jadwal_pelajaran')->onDelete('cascade');
             $table->foreignId('guru_id')->constrained('guru_profiles')->onDelete('cascade');
+            $table->foreignId('semester_ajaran_id')->constrained('semester_ajaran')->onDelete('cascade');
             $table->unsignedInteger('pertemuan_ke');
             $table->string('judul_materi');
             $table->text('deskripsi')->nullable();
             $table->string('file_materi')->nullable();
             $table->string('link_materi')->nullable();
-            $table->string('semester')->nullable();
-            $table->string('tahun_ajaran')->nullable();
             $table->timestamps();
         });
     }

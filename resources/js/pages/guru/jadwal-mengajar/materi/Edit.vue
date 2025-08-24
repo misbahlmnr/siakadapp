@@ -8,30 +8,32 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { MateriPelajaran } from '@/types';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import { ChevronDown, File, FileDown, LoaderCircle } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps<{
     jadwal_id: number;
     guru_id: number;
     materi: MateriPelajaran;
+    semesterDanTahunAjaranList: { id: number; semester: string; tahun_ajaran: string }[];
 }>();
 
 // Form
 const form = useForm({
     jadwal_id: props.jadwal_id,
     guru_id: props.guru_id,
+    semester_ajaran_id: props.materi?.semester_ajaran_id || null,
     pertemuan_ke: props.materi?.pertemuan_ke || '',
     judul_materi: props.materi?.judul_materi || '',
     deskripsi: props.materi?.deskripsi || '',
     file_materi: null,
     link_materi: props.materi?.link_materi || '',
-    semester: props.materi?.semester || '',
-    tahun_ajaran: props.materi?.tahun_ajaran || '',
 });
 
-// Dropdown semester
-const semesterOptions = ['Ganjil', 'Genap'];
-const selectedSemesterLabel = ref(form.semester || 'Pilih Semester');
+// Label semester & tahun ajaran computed
+const selectedSemesterDanTahunAjaranLabel = computed(() => {
+    const sa = props.semesterDanTahunAjaranList.find((s) => s.id === form.semester_ajaran_id);
+    return sa ? `${sa.semester} / ${sa.tahun_ajaran}` : 'Pilih Semester & Tahun Ajaran';
+});
 
 // File upload
 const onFileChange = (event: Event) => {
@@ -100,17 +102,12 @@ const breadcrumbs = [
                         v-if="props.materi?.file_materi"
                         class="flex w-full max-w-md items-center justify-between gap-2 rounded-lg border border-gray-200 bg-white p-2 shadow-md transition hover:shadow-lg dark:border-gray-700 dark:bg-gray-900"
                     >
-                        <!-- Icon File -->
                         <File :size="18" />
-
-                        <!-- Nama File -->
                         <div class="flex-1 truncate">
                             <span class="truncate text-xs font-medium text-gray-800 dark:text-gray-200">{{
                                 props.materi.file_materi.split('/').pop()
                             }}</span>
                         </div>
-
-                        <!-- Download Button -->
                         <a
                             :href="props.materi.file_materi"
                             target="_blank"
@@ -131,47 +128,34 @@ const breadcrumbs = [
                     <InputError :message="form.errors.link_materi" />
                 </div>
 
-                <!-- Semester -->
-                <div class="flex flex-col gap-2">
-                    <Label for="semester">Semester</Label>
+                <!-- Semester & Tahun Ajaran -->
+                <div class="flex flex-col gap-3">
+                    <Label for="semester_ajaran">Semester & Tahun Ajaran</Label>
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
                             <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
-                                <span class="text-sm">{{ selectedSemesterLabel }}</span>
+                                <span class="text-sm">{{ selectedSemesterDanTahunAjaranLabel }}</span>
                                 <ChevronDown class="h-4 w-4 text-gray-500" />
                             </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent class="max-h-40 min-w-[200px] overflow-auto">
-                            <DropdownMenuItem
-                                v-for="s in semesterOptions"
-                                :key="s"
-                                @click="
-                                    form.semester = s;
-                                    selectedSemesterLabel = s;
-                                "
-                            >
-                                {{ s }}
+                        <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
+                            <DropdownMenuItem v-for="sa in props.semesterDanTahunAjaranList" :key="sa.id" @click="form.semester_ajaran_id = sa.id">
+                                {{ sa.semester }} / {{ sa.tahun_ajaran }}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <InputError :message="form.errors.semester" />
-                </div>
-
-                <!-- Tahun Ajaran -->
-                <div class="flex flex-col gap-2">
-                    <Label for="tahun_ajaran">Tahun Ajaran</Label>
-                    <Input id="tahun_ajaran" v-model="form.tahun_ajaran" placeholder="Masukkan tahun ajaran" />
-                    <InputError :message="form.errors.tahun_ajaran" />
+                    <InputError :message="form.errors.semester_ajaran_id" />
                 </div>
 
                 <!-- Submit -->
-                <div class="mt-4 md:col-span-2">
+                <div class="col-span-2 mt-4 flex gap-2">
                     <Button
                         variant="outline"
                         type="button"
-                        @click="router.visit(route('guru.jadwal-mengajar.materi.index', { jadwal_id: jadwal_id }))"
-                        >Batal</Button
+                        @click="router.visit(route('guru.jadwal-mengajar.materi.index', { jadwal_id: props.jadwal_id }))"
                     >
+                        Batal
+                    </Button>
                     <Button :disabled="form.processing" class="bg-blue-600 text-white hover:bg-blue-600/90">
                         <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                         Simpan

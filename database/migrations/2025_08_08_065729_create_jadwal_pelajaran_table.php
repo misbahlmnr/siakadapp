@@ -16,11 +16,10 @@ return new class extends Migration
             $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
             $table->foreignId('matpel_id')->constrained('mata_pelajaran')->onDelete('cascade');
             $table->foreignId('guru_id')->constrained('guru_profiles')->onDelete('cascade');
+            $table->foreignId('semester_ajaran_id')->constrained('semester_ajaran')->onDelete('cascade');
             $table->enum('hari', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']);
             $table->time('jam_mulai');
             $table->time('jam_selesai');
-            $table->string('semester')->nullable();
-            $table->string('tahun_ajaran')->nullable();
             $table->timestamps();
         });
     }

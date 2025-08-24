@@ -14,6 +14,7 @@ const props = defineProps<{
     kelasList: { id: number; nama_kelas: string }[];
     mapelList: { id: number; nama_mapel: string }[];
     guruList: { id: number; nama: string }[];
+    semesterDanTahunAjaranList: { id: number; semester: string; tahun_ajaran: string }[];
 }>();
 
 type Form = {
@@ -23,8 +24,7 @@ type Form = {
     hari: string;
     jam_mulai: string;
     jam_selesai: string;
-    semester: string;
-    tahun_ajaran: string;
+    semester_ajaran_id: number | null;
 };
 
 const form = useForm<Form>({
@@ -34,8 +34,7 @@ const form = useForm<Form>({
     hari: '',
     jam_mulai: '',
     jam_selesai: '',
-    semester: '',
-    tahun_ajaran: '',
+    semester_ajaran_id: null,
 });
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -45,13 +44,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const hariOptions = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-const semesterOptions = ['Ganjil', 'Genap'];
 
 const selectedKelasLabel = ref('Pilih Kelas');
 const selectedMapelLabel = ref('Pilih Mata Pelajaran');
 const selectedGuruLabel = ref('Pilih Guru');
 const selectedHariLabel = ref('Pilih Hari');
-const selectedSemesterLabel = ref('Pilih Semester');
+const selectedSemesterDanTahunAjaranLabel = ref('Pilih Semester & Tahun Ajaran');
 
 const submit = () => {
     form.post(route('admin.jadwal-pelajaran.store'));
@@ -183,37 +181,30 @@ const submit = () => {
                     <InputError :message="form.errors.jam_selesai" />
                 </div>
 
-                <!-- Semester -->
+                <!-- Semester & Tahun Ajaran -->
                 <div class="flex flex-col gap-3">
-                    <Label for="semester">Semester</Label>
+                    <Label for="semester_ajaran">Semester & Tahun Ajaran</Label>
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
                             <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
-                                <span class="text-sm">{{ selectedSemesterLabel }}</span>
+                                <span class="text-sm">{{ selectedSemesterDanTahunAjaranLabel }}</span>
                                 <ChevronDown class="h-4 w-4 text-gray-500" />
                             </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent class="max-h-40 min-w-[200px] overflow-auto">
+                        <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
                             <DropdownMenuItem
-                                v-for="s in semesterOptions"
-                                :key="s"
+                                v-for="sa in props.semesterDanTahunAjaranList"
+                                :key="sa.id"
                                 @click="
-                                    form.semester = s;
-                                    selectedSemesterLabel = s;
+                                    form.semester_ajaran_id = sa.id;
+                                    selectedSemesterDanTahunAjaranLabel = `${sa.semester} - ${sa.tahun_ajaran}`;
                                 "
                             >
-                                {{ s }}
+                                {{ sa.semester }} - {{ sa.tahun_ajaran }}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <InputError :message="form.errors.semester" />
-                </div>
-
-                <!-- Tahun Ajaran -->
-                <div class="flex flex-col gap-3">
-                    <Label for="tahun_ajaran">Tahun Ajaran</Label>
-                    <Input id="tahun_ajaran" type="text" placeholder="2024/2025" v-model="form.tahun_ajaran" />
-                    <InputError :message="form.errors.tahun_ajaran" />
+                    <InputError :message="form.errors.semester_ajaran_id" />
                 </div>
 
                 <!-- Submit -->

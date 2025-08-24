@@ -7,6 +7,7 @@ use App\Http\Requests\EvaluasiPembelajaran\StoreRequest;
 use App\Models\EvaluasiPembelajaran;
 use App\Models\JadwalPelajaran;
 use App\Models\MataPelajaran;
+use App\Models\SemesterAjaran;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -48,6 +49,11 @@ class EvaluasiPembelajaranController extends Controller
             'jadwal_id' => $jadwal_id,
             'guru_id' => Auth::user()->guruProfile->id,
             'nama_mapel' => $mapel->nama_mapel,
+            'semesterDanTahunAjaranList' => SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
+                'id' => $se->id,
+                'semester' => $se->semester,
+                'tahun_ajaran' => $se->tahun_ajaran
+            ])
         ]);
     }
 
@@ -71,7 +77,7 @@ class EvaluasiPembelajaranController extends Controller
 
     public function show(string $jadwal_id, int $evaluasi_id)
     {
-        $evaluasi = EvaluasiPembelajaran::findOrFail($evaluasi_id);
+        $evaluasi = EvaluasiPembelajaran::with('semesterAjaran')->findOrFail($evaluasi_id);
         return Inertia::render('guru/jadwal-mengajar/evaluasi-pembelajaran/View', [
             'jadwal_id' => $jadwal_id,
             'evaluasi' => $evaluasi,
@@ -88,6 +94,11 @@ class EvaluasiPembelajaranController extends Controller
             'guru_id' => Auth::user()->guruProfile->id,
             'nama_mapel' => $mapel->nama_mapel,
             'evaluasi' => $evaluasi,
+            'semesterDanTahunAjaranList' => SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
+                'id' => $se->id,
+                'semester' => $se->semester,
+                'tahun_ajaran' => $se->tahun_ajaran
+            ])
         ]);
     }
 

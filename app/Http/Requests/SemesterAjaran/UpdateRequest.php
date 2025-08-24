@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\JadwalPelajaran;
+namespace App\Http\Requests\SemesterAjaran;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -22,13 +22,9 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kelas_id' => 'required|exists:kelas,id',
-            'matpel_id' => 'required|exists:mata_pelajaran,id',
-            'guru_id' => 'required|exists:guru_profiles,id',
-            'semester_ajaran_id' => 'required|exists:semester_ajaran,id',
-            'hari' => 'required|string|max:255',
-            'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'semester' => 'required|in:ganjil,genap',
+            'tahun_ajaran' => 'required|string',
+            'status_aktif' => 'required|boolean',
         ];
     }
 }
