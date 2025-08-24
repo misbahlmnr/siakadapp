@@ -137,7 +137,10 @@ class NilaiController extends Controller
 
     public function show(string $id)
     {
-
+        $nilai = Nilai::with(['siswa.user', 'evaluasiPembelajaran', 'evaluasiPembelajaran.jadwal.mataPelajaran'])->findOrFail($id);
+        return Inertia::render('guru/nilai/View', [
+            'nilai' => $nilai
+        ]);
     }
 
     public function edit(string $id)
