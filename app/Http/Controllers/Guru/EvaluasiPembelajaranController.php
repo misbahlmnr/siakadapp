@@ -7,6 +7,7 @@ use App\Http\Requests\EvaluasiPembelajaran\StoreRequest;
 use App\Models\EvaluasiPembelajaran;
 use App\Models\JadwalPelajaran;
 use App\Models\MataPelajaran;
+use App\Models\PengumpulanTugas;
 use App\Models\SemesterAjaran;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -78,9 +79,19 @@ class EvaluasiPembelajaranController extends Controller
     public function show(string $jadwal_id, int $evaluasi_id)
     {
         $evaluasi = EvaluasiPembelajaran::with('semesterAjaran')->findOrFail($evaluasi_id);
+        $pengumpulanTugas = PengumpulanTugas::where('evaluasi_id', $evaluasi_id)
+            ->whereIn('status', ['dikumpulkan', 'telat'])
+            ->get()->map(fn ($pt) => [
+                'id' => $pt->id,
+                'siswa' => $pt->siswa->user->name,
+                'file_jawaban' => $pt->file_jawaban ? Storage::url($pt->file_jawaban) : null,
+                'link_jawaban' => $pt->link_jawaban ? $pt->link_jawaban : null
+            ]);
+
         return Inertia::render('guru/jadwal-mengajar/evaluasi-pembelajaran/View', [
             'jadwal_id' => $jadwal_id,
             'evaluasi' => $evaluasi,
+            'pengumpulanTugasList' => $pengumpulanTugas
         ]);
     }
 

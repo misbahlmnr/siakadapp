@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Guru\{AbsensiController, DashboardController, EvaluasiPembelajaranController, JadwalMengajarController, MateriPelajaranController, TugasUjianController, NilaiController};
+use App\Http\Controllers\Guru\{AbsensiController, DashboardController, EvaluasiPembelajaranController, JadwalMengajarController, MateriPelajaranController, TugasUjianController, NilaiController, PengumpulanTugasController, RekomendasiController, ProgressSiswaController};
+use Inertia\Inertia;
 
 Route::prefix('guru')
     ->name('guru.')
@@ -44,6 +45,13 @@ Route::prefix('guru')
                         Route::get('/{evaluasi_id}/edit', 'edit')->name('edit');
                         Route::put('/{evaluasi_id}', 'update')->name('update');
                         Route::delete('/{evaluasi_id}', 'destroy')->name('destroy');
+
+                        Route::prefix('{evaluasi_id}/pengumpulan-tugas')
+                            ->name('pengumpulan-tugas.')
+                            ->controller(PengumpulanTugasController::class)
+                            ->group(function () {
+                                Route::get('/{pengumpulan_id}', 'show')->name('show');
+                            });
                     });
             });
 
@@ -74,5 +82,26 @@ Route::prefix('guru')
                 Route::put('/{id}', 'update')->name('update');
                 Route::delete('/{id}', 'destroy')->name('destroy');
             });
+
+        // Adaptive Learning Routes
+        // Route::prefix('adaptive-learning')
+        //     ->name('adaptive-learning.')
+        //     ->group(function() {
+        //         Route::get('/', function() {
+        //             return Inertia::render('guru/adaptive-learning/Index');
+        //         })->name('index');
+                
+        //         Route::get('/rekomendasi', [RekomendasiController::class, 'index'])->name('rekomendasi.index');
+        //         Route::get('/rekomendasi/data', [RekomendasiController::class, 'get'])->name('rekomendasi.data');
+        //         Route::get('/rekomendasi/create', [RekomendasiController::class, 'create'])->name('rekomendasi.create');
+        //         Route::post('/rekomendasi', [RekomendasiController::class, 'store'])->name('rekomendasi.store');
+        //         Route::get('/rekomendasi/{id}', [RekomendasiController::class, 'show'])->name('rekomendasi.show');
+        //         Route::get('/rekomendasi/{id}/edit', [RekomendasiController::class, 'edit'])->name('rekomendasi.edit');
+        //         Route::put('/rekomendasi/{id}', [RekomendasiController::class, 'update'])->name('rekomendasi.update');
+        //         Route::delete('/rekomendasi/{id}', [RekomendasiController::class, 'destroy'])->name('rekomendasi.destroy');
+                
+        //         Route::get('/progress-siswa', [ProgressSiswaController::class, 'index'])->name('progress-siswa.index');
+        //         Route::get('/progress-siswa/data', [ProgressSiswaController::class, 'get'])->name('progress-siswa.data');
+        //     });
     });
 

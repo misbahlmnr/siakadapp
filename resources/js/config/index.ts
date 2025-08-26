@@ -71,8 +71,8 @@ export const GlobalConfig = {
                 icon: Users,
             },
             {
-                title: 'Adaptive Tracker',
-                href: '/guru/adaptive',
+                title: 'Adaptive Learning',
+                href: '/guru/adaptive-learning',
                 icon: Activity,
             },
         ],

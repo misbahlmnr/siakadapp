@@ -19,7 +19,9 @@ const props = defineProps<{
         link_soal: string | null;
         semester_ajaran: any;
     };
+    pengumpulanTugasList: any[];
 }>();
+console.log(props.pengumpulanTugasList);
 </script>
 
 <template>
@@ -138,6 +140,73 @@ const props = defineProps<{
                 >
                     Edit Data
                 </Button>
+            </div>
+
+            <div>
+                <h1 class="mt-8 mb-3 text-2xl font-bold text-gray-800 dark:text-gray-200">Siswa yang Sudah Mengumpulkan</h1>
+                <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">
+                    Berikut adalah daftar siswa yang telah mengumpulkan tugas evaluasi pembelajaran.
+                </p>
+
+                <div class="mt-4 space-y-4 md:max-w-2xl">
+                    <div
+                        v-for="pengumpulan in props.pengumpulanTugasList"
+                        :key="pengumpulan.id"
+                        class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-blue-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:hover:border-blue-500"
+                        @click="
+                            router.visit(
+                                route('guru.jadwal-mengajar.evaluasi-pembelajaran.pengumpulan-tugas.show', {
+                                    jadwal_id: props.jadwal_id,
+                                    evaluasi_id: props.evaluasi.id,
+                                    pengumpulan_id: pengumpulan.id,
+                                }),
+                            )
+                        "
+                    >
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <h3
+                                    class="text-lg font-semibold text-gray-800 group-hover:text-blue-600 dark:text-gray-200 dark:group-hover:text-blue-400"
+                                >
+                                    {{ pengumpulan.siswa }}
+                                </h3>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    Status: <span class="font-medium text-green-600 dark:text-green-400">Terkumpul</span>
+                                </p>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <a
+                                    v-if="pengumpulan.link_jawaban"
+                                    :href="pengumpulan.link_jawaban"
+                                    target="_blank"
+                                    @click.stop
+                                    class="inline-flex items-center gap-2 rounded-lg bg-blue-100 px-3 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
+                                >
+                                    <ExternalLink class="h-4 w-4" />
+                                    Link Jawaban
+                                </a>
+                                <a
+                                    v-if="pengumpulan.file_jawaban"
+                                    :href="pengumpulan.file_jawaban"
+                                    target="_blank"
+                                    @click.stop
+                                    class="inline-flex items-center gap-2 rounded-lg bg-green-100 px-3 py-2 text-sm font-medium text-green-700 transition hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800"
+                                >
+                                    <FileDown class="h-4 w-4" />
+                                    File Jawaban
+                                </a>
+                                <div class="text-xs text-gray-400 dark:text-gray-500">Klik untuk detail</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="props.pengumpulanTugasList.length === 0" class="py-8 text-center">
+                        <div class="text-gray-400 dark:text-gray-500">
+                            <File class="mx-auto mb-3 h-12 w-12 opacity-50" />
+                            <p class="text-sm">Belum ada pengumpulan tugas</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </AppLayout>
