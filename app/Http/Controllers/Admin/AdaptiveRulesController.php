@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AdaptiveRules\StoreRequest;
 use App\Http\Requests\AdaptiveRules\UpdateRequest;
 use App\Models\{AdaptiveRules, MataPelajaran, MateriPelajaran};
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -22,9 +23,9 @@ class AdaptiveRulesController extends Controller
 
         return DataTables::of($rules)
             ->addIndexColumn()
-            ->addColumn('matpel', fn ($row) => $row->mataPelajaran->nama_mapel ?? '-')
-            ->addColumn('materi', fn ($row) => $row->materi->nama_materi ?? '-')
-            ->addColumn('dibuat_oleh_name', fn ($row) => $row->dibuatOleh->name ?? '-')
+            ->addColumn('mata_pelajaran', fn ($row) => $row->mataPelajaran->nama_mapel ?? '-')
+            ->addColumn('nama_materi', fn ($row) => $row->materi->judul_materi ?? '-')
+            ->addColumn('dibuat_oleh', fn ($row) => $row->dibuatOleh->name ?? '-')
             ->make(true);
     }
 
@@ -44,6 +45,7 @@ class AdaptiveRulesController extends Controller
         AdaptiveRules::create([
             'matpel_id' => $request->matpel_id,
             'materi_id' => $request->materi_id,
+            'dibuat_oleh' => Auth::user()->id,
             'operator' => $request->operator,
             'nilai_batas' => $request->nilai_batas,
         ]);
@@ -69,6 +71,7 @@ class AdaptiveRulesController extends Controller
         AdaptiveRules::find($id)->update([
             'matpel_id' => $request->matpel_id,
             'materi_id' => $request->materi_id,
+            'dibuat_oleh' => Auth::user()->id,
             'operator' => $request->operator,
             'nilai_batas' => $request->nilai_batas,
         ]);

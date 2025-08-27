@@ -15,14 +15,15 @@ const breadcrumbs: BreadcrumbItem[] = [
 onMounted(() => {
     useDataTable('#adaptive-rules-table', {
         ajax: route('admin.adaptive-rules.data'),
+        editRoute: 'admin.adaptive-rules.edit',
+        deleteRoute: 'admin.adaptive-rules.destroy',
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, width: '4%' },
-            { data: 'matpel.nama_mapel', name: 'matpel.nama_mapel' },
-            { data: 'materi.judul_materi', name: 'materi.judul_materi' },
+            { data: 'mata_pelajaran', name: 'matpel.nama_mapel' },
+            { data: 'nama_materi', name: 'nama_materi' },
             { data: 'operator', name: 'operator', width: '8%' },
             { data: 'nilai_batas', name: 'nilai_batas', width: '8%' },
-            { data: 'dibuat_oleh_name', name: 'dibuat_oleh_name', width: '15%' },
-            { data: 'aksi', name: 'aksi', orderable: false, searchable: false, width: '10%' },
+            { data: 'dibuat_oleh', name: 'dibuat_oleh', width: '15%' },
         ],
     });
 });

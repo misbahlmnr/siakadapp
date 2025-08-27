@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Guru;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Nilai\StoreRequest;
 use App\Http\Requests\Nilai\UpdateRequest;
+use App\Models\AdaptiveRules;
 use App\Models\EvaluasiPembelajaran;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
 use App\Models\Nilai;
+use App\Models\RekomendasiMateri;
 use App\Models\SemesterAjaran;
 use App\Models\SiswaProfile;
 use Illuminate\Http\Request;
@@ -131,8 +133,60 @@ class NilaiController extends Controller
 
     public function store(StoreRequest $request)
     {
-        Nilai::create($request->all());
+        // Simpan nilai
+        $nilai = Nilai::create($request->all());
+        
+        // Cek apakah nilai memicu adaptive rules
+        $this->checkAdaptiveRules($nilai);
+        
         return to_route('guru.nilai.index')->with('success', 'Nilai berhasil ditambahkan');
+    }
+    
+    private function checkAdaptiveRules(Nilai $nilai)
+    {
+        // Ambil evaluasi pembelajaran untuk mendapatkan mata pelajaran
+        $evaluasi = EvaluasiPembelajaran::with('jadwal.mataPelajaran')->find($nilai->evaluasi_id);
+        
+        if (!$evaluasi || !$evaluasi->jadwal || !$evaluasi->jadwal->mataPelajaran) {
+            return;
+        }
+        
+        $mataPelajaranId = $evaluasi->jadwal->mataPelajaran->id;
+        
+        // Cari adaptive rules untuk mata pelajaran ini
+        $adaptiveRules = AdaptiveRules::where('matpel_id', $mataPelajaranId)->get();
+            
+        foreach ($adaptiveRules as $rule) {
+            // Cek apakah nilai memenuhi kondisi rule
+            if ($this->evaluateRule($rule, $nilai->nilai)) {
+                // Buat rekomendasi materi
+                RekomendasiMateri::create([
+                    'siswa_id' => $nilai->siswa_id,
+                    'evaluasi_id' => $nilai->evaluasi_id,
+                    'materi_id' => $rule->materi_id,
+                    'alasan_rekomendasi' => "Nilai evaluasi (" . $nilai->nilai . ") di bawah batas KKM (" . $rule->nilai_batas . ") untuk mata pelajaran " . $evaluasi->jadwal->mataPelajaran->nama_mapel,
+                    'status' => 'belum_dibaca'
+                ]);
+            }
+        }
+    }
+    
+    private function evaluateRule(AdaptiveRules $rule, $nilai)
+    {
+        switch ($rule->operator) {
+            case '<':
+                return $nilai < $rule->nilai_batas;
+            case '<=':
+                return $nilai <= $rule->nilai_batas;
+            case '>':
+                return $nilai > $rule->nilai_batas;
+            case '>=':
+                return $nilai >= $rule->nilai_batas;
+            case '==':
+                return $nilai == $rule->nilai_batas;
+            default:
+                return false;
+        }
     }
 
     public function show(string $id)
@@ -182,6 +236,9 @@ class NilaiController extends Controller
     {
         $nilai = Nilai::findOrFail($id);
         $nilai->update($request->validated());
+        
+        // Cek apakah nilai yang diupdate memicu adaptive rules
+        $this->checkAdaptiveRules($nilai);
         
         return to_route('guru.nilai.index')->with('success', 'Nilai berhasil diperbarui');
     }
