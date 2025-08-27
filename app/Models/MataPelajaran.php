@@ -24,7 +24,7 @@ class MataPelajaran extends Model
 
     public function jadwalPelajaran()
     {
-        return $this->hasMany(JadwalPelajaran::class);
+        return $this->hasMany(JadwalPelajaran::class, 'matpel_id');
     }
 
     public function adaptiveRules()

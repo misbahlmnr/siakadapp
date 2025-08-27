@@ -1,13 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Siswa\{DashboardController, JadwalController, AbsensiController, NilaiController, RekomendasiController};
+use App\Http\Controllers\Siswa\{DashboardController, JadwalController, AbsensiController, MateriBelajarController, NilaiController, RekomendasiController};
 
 Route::prefix('siswa')
     ->name('siswa.')
     ->middleware(['auth', 'verified', 'role:siswa'])
     ->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        Route::prefix('materi-belajar')
+            ->name('materi.')
+            ->controller(MateriBelajarController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index'); 
+                Route::get('/{id}', 'show')->name('show'); 
+            });
 
         // Route::prefix('jadwal')
         //     ->name('jadwal.')

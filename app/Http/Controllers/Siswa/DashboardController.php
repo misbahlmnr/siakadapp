@@ -35,7 +35,7 @@ class DashboardController extends Controller
                 return [
                     'id' => $j->id,
                     'nama_mapel' => $j->mataPelajaran->nama_mapel ?? '-',
-                    'guru' => $j->guru->name ?? '-',
+                    'guru' => $j->guru->user->name ?? '-',
                     'jam_mulai' => $j->jam_mulai,
                     'jam_selesai' => $j->jam_selesai,
                 ];

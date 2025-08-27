@@ -84,7 +84,7 @@ export const GlobalConfig = {
             },
             {
                 title: 'Materi Belajar',
-                href: '/siswa/materi',
+                href: '/siswa/materi-belajar',
                 icon: Book,
             },
             {
