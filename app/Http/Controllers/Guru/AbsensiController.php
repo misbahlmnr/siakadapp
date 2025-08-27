@@ -138,32 +138,46 @@ class AbsensiController extends Controller
     public function edit(string $id)
     {
         $absensi = Absensi::findOrFail($id);
-        // Kelas
+        
+        // Kelas options - get unique kelas from jadwal
         $kelasOptions = JadwalPelajaran::with('kelas')
             ->get()
-            ->map(fn($jp) => [
-                'id' => $jp->kelas->id,
-                'nama_kelas' => $jp->kelas->nama_kelas,
+            ->pluck('kelas.nama_kelas', 'kelas.id')
+            ->unique()
+            ->map(fn($nama, $id) => [
+                'id' => $id,
+                'nama_kelas' => $nama
             ])
-            ->unique('id')
             ->values();
 
-        // Mapel
+        // Mapel options - get unique mata pelajaran from jadwal
         $mapelOptions = JadwalPelajaran::with('mataPelajaran')
             ->get()
-            ->map(fn($jp) => [
-                'id' => $jp->mataPelajaran->id,
-                'nama_mapel' => $jp->mataPelajaran->nama_mapel,
+            ->pluck('mataPelajaran.nama_mapel', 'mataPelajaran.id')
+            ->unique()
+            ->map(fn($nama, $id) => [
+                'id' => $id,
+                'nama_mapel' => $nama
             ])
-            ->unique('id')
             ->values();
 
-        // Siswa
+        // Siswa options
         $siswaOptions = SiswaProfile::with('user')
             ->get()
             ->map(fn($s) => [
                 'id' => $s->id,
                 'nama' => $s->user->name,
+            ]);
+
+        // Jadwal options for frontend to filter
+        $jadwalOptions = JadwalPelajaran::with(['kelas', 'mataPelajaran'])
+            ->get()
+            ->map(fn($jp) => [
+                'id' => $jp->id,
+                'kelas_id' => $jp->kelas_id,
+                'matpel_id' => $jp->matpel_id,
+                'kelas_nama' => $jp->kelas->nama_kelas,
+                'mapel_nama' => $jp->mataPelajaran->nama_mapel,
             ]);
 
         $semesterDanTahunAjaranList = SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
@@ -177,6 +191,7 @@ class AbsensiController extends Controller
             'kelasOptions' => $kelasOptions,
             'mapelOptions' => $mapelOptions,
             'siswaOptions' => $siswaOptions,
+            'jadwalOptions' => $jadwalOptions,
             'semesterDanTahunAjaranList' => $semesterDanTahunAjaranList
         ]);
     }

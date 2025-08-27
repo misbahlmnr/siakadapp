@@ -8,13 +8,14 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem, Kelas, MatPel } from '@/types';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
     absensi: any;
     kelasOptions: Kelas[];
     mapelOptions: MatPel[];
     siswaOptions: { id: number; nama: string }[];
+    jadwalOptions: any[];
     semesterDanTahunAjaranList: { id: number; semester: string; tahun_ajaran: string }[];
 }>();
 
@@ -42,21 +43,68 @@ const form = useForm<Form>({
     status: props.absensi.status || 'hadir',
 });
 
-const selectedKelasLabel = ref(props.kelasOptions.find((k) => k.id === props.absensi.jadwal_id)?.nama_kelas || 'Pilih Kelas');
-const selectedMapelLabel = ref(props.mapelOptions.find((m) => m.id === props.absensi.jadwal_id)?.nama_mapel || 'Pilih Mata Pelajaran');
-const selectedSiswaLabel = ref(props.siswaOptions.find((s) => s.id === props.absensi.siswa_id)?.nama || 'Pilih Siswa');
-const selectedStatusLabel = ref(form.status.charAt(0).toUpperCase() + form.status.slice(1));
-const selectedSemesterLabel = computed(() => {
-    const sa = props.semesterDanTahunAjaranList.find((s) => s.id === form.semester_ajaran_id);
-    return sa ? `${sa.semester} / ${sa.tahun_ajaran}` : 'Pilih Semester & Tahun Ajaran';
-});
+// dropdown label refs
+const selectedKelasLabel = ref('Pilih Kelas');
+const selectedMapelLabel = ref('Pilih Mata Pelajaran');
+const selectedSiswaLabel = ref('Pilih Siswa');
+const selectedStatusLabel = ref('Pilih Status');
+const selectedSemesterLabel = ref('Pilih Semester & Tahun Ajaran');
+const selectedJadwalLabel = ref('Pilih Jadwal');
 
+// State untuk filter
+const selectedKelasId = ref<number | null>(null);
+const selectedMapelId = ref<number | null>(null);
+
+// Status options
 const statusOptions = [
     { label: 'Hadir', value: 'hadir' },
     { label: 'Sakit', value: 'sakit' },
     { label: 'Ijin', value: 'ijin' },
     { label: 'Alfa', value: 'alfa' },
 ];
+
+// Filter jadwal berdasarkan kelas dan mapel yang dipilih
+const filteredJadwalOptions = computed(() => {
+    return props.jadwalOptions.filter((jadwal) => {
+        const matchesKelas = !selectedKelasId.value || jadwal.kelas_id === selectedKelasId.value;
+        const matchesMapel = !selectedMapelId.value || jadwal.matpel_id === selectedMapelId.value;
+        return matchesKelas && matchesMapel;
+    });
+});
+
+// Reset jadwal_id ketika kelas atau mapel berubah
+watch([selectedKelasId, selectedMapelId], () => {
+    form.jadwal_id = null;
+    selectedJadwalLabel.value = 'Pilih Jadwal';
+});
+
+// Inisialisasi data yang sudah ada
+onMounted(() => {
+    // Set nilai default untuk dropdown labels
+    const currentJadwal = props.jadwalOptions.find((j) => j.id === props.absensi.jadwal_id);
+    if (currentJadwal) {
+        selectedKelasId.value = currentJadwal.kelas_id;
+        selectedMapelId.value = currentJadwal.matpel_id;
+        selectedKelasLabel.value = currentJadwal.kelas_nama;
+        selectedMapelLabel.value = currentJadwal.mapel_nama;
+        selectedJadwalLabel.value = `${currentJadwal.kelas_nama} - ${currentJadwal.mapel_nama}`;
+    }
+
+    const currentSiswa = props.siswaOptions.find((s) => s.id === props.absensi.siswa_id);
+    if (currentSiswa) {
+        selectedSiswaLabel.value = currentSiswa.nama;
+    }
+
+    const currentStatus = statusOptions.find((s) => s.value === props.absensi.status);
+    if (currentStatus) {
+        selectedStatusLabel.value = currentStatus.label;
+    }
+
+    const currentSemester = props.semesterDanTahunAjaranList.find((s) => s.id === props.absensi.semester_ajaran_id);
+    if (currentSemester) {
+        selectedSemesterLabel.value = `${currentSemester.semester} / ${currentSemester.tahun_ajaran}`;
+    }
+});
 
 const submit = () => {
     form.put(route('guru.absensi.update', props.absensi.id), { preserveScroll: true });
@@ -69,7 +117,7 @@ const submit = () => {
         <div class="flex flex-col gap-6 px-10 py-6">
             <h1 class="text-2xl font-bold">Edit Absensi</h1>
 
-            <form class="grid grid-cols-1 gap-4 md:max-w-2xl md:grid-cols-2" @submit.prevent="submit">
+            <form class="grid grid-cols-1 gap-4 md:max-w-3xl md:grid-cols-2" @submit.prevent="submit">
                 <!-- Kelas -->
                 <div class="flex flex-col gap-2">
                     <Label>Kelas</Label>
@@ -85,7 +133,7 @@ const submit = () => {
                                 v-for="k in props.kelasOptions"
                                 :key="k.id"
                                 @click="
-                                    form.jadwal_id = k.id;
+                                    selectedKelasId = k.id;
                                     selectedKelasLabel = k.nama_kelas;
                                 "
                                 >{{ k.nama_kelas }}</DropdownMenuItem
@@ -110,10 +158,35 @@ const submit = () => {
                                 v-for="m in props.mapelOptions"
                                 :key="m.id"
                                 @click="
-                                    form.jadwal_id = m.id;
+                                    selectedMapelId = m.id;
                                     selectedMapelLabel = m.nama_mapel;
                                 "
                                 >{{ m.nama_mapel }}</DropdownMenuItem
+                            >
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <InputError :message="form.errors.jadwal_id" />
+                </div>
+
+                <!-- Jadwal (akan muncul setelah kelas dan mapel dipilih) -->
+                <div v-if="selectedKelasId && selectedMapelId" class="flex flex-col gap-2">
+                    <Label>Jadwal</Label>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <button class="flex w-full justify-between rounded-md border px-3 py-2 text-sm">
+                                {{ selectedJadwalLabel }}
+                                <ChevronDown class="h-4 w-4 text-gray-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="max-h-40 overflow-auto">
+                            <DropdownMenuItem
+                                v-for="jadwal in filteredJadwalOptions"
+                                :key="jadwal.id"
+                                @click="
+                                    form.jadwal_id = jadwal.id;
+                                    selectedJadwalLabel = `${jadwal.kelas_nama} - ${jadwal.mapel_nama}`;
+                                "
+                                >{{ jadwal.kelas_nama }} - {{ jadwal.mapel_nama }}</DropdownMenuItem
                             >
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -201,7 +274,13 @@ const submit = () => {
                             </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent class="max-h-40 overflow-auto">
-                            <DropdownMenuItem v-for="sa in props.semesterDanTahunAjaranList" :key="sa.id" @click="form.semester_ajaran_id = sa.id"
+                            <DropdownMenuItem
+                                v-for="sa in props.semesterDanTahunAjaranList"
+                                :key="sa.id"
+                                @click="
+                                    form.semester_ajaran_id = sa.id;
+                                    selectedSemesterLabel = `${sa.semester} / ${sa.tahun_ajaran}`;
+                                "
                                 >{{ sa.semester }} / {{ sa.tahun_ajaran }}</DropdownMenuItem
                             >
                         </DropdownMenuContent>
