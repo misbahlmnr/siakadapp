@@ -40,38 +40,12 @@ Route::prefix('siswa')
                 Route::get('/', 'index')->name('index');
             });
 
-        // Route::prefix('jadwal')
-        //     ->name('jadwal.')
-        //     ->controller(JadwalController::class)
-        //     ->group(function () {
-        //         Route::get('/', 'index')->name('index');
-        //         Route::get('/data', 'get')->name('data');
-        //         Route::get('/{id}', 'show')->name('show');
-        //     });
-
-        // Route::prefix('absensi')
-        //     ->name('absensi.')
-        //     ->controller(AbsensiController::class)
-        //     ->group(function() {
-        //         Route::get('/', 'index')->name('index');
-        //         Route::get('/data', 'get')->name('data');
-        //     });
-
-        // Route::prefix('nilai')
-        //     ->name('nilai.')
-        //     ->controller(NilaiController::class)
-        //     ->group(function() {
-        //         Route::get('/', 'index')->name('index');
-        //         Route::get('/data', 'get')->name('data');
-        //     });
-
-        // Route::prefix('rekomendasi')
-            // ->name('rekomendasi.')
-            // ->controller(RekomendasiController::class)
-            // ->group(function() {
-            //     Route::get('/', 'index')->name('index');
-            //     Route::get('/data', 'get')->name('data');
-            //     Route::get('/{id}', 'show')->name('show');
-            //     Route::put('/{id}/status', 'updateStatus')->name('update-status');
-            // });
+        Route::prefix('rekomendasi')
+            ->name('rekomendasi.')
+            ->controller(RekomendasiController::class)
+            ->group(function() {
+                Route::get('/', 'index')->name('index');
+                Route::get('/{id}', 'show')->name('show');
+                Route::put('/{id}/status', 'updateStatus')->name('update-status');
+            });
     });
