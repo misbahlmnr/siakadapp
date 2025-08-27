@@ -33,6 +33,13 @@ Route::prefix('siswa')
                 Route::get('/', 'index')->name('index');
             });
 
+        Route::prefix('nilai')
+            ->name('nilai.')
+            ->controller(NilaiController::class)
+            ->group(function() {
+                Route::get('/', 'index')->name('index');
+            });
+
         // Route::prefix('jadwal')
         //     ->name('jadwal.')
         //     ->controller(JadwalController::class)

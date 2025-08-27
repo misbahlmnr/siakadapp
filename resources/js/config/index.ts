@@ -98,6 +98,11 @@ export const GlobalConfig = {
                 icon: Calendar,
             },
             {
+                title: 'Nilai Saya',
+                href: '/siswa/nilai',
+                icon: BarChart,
+            },
+            {
                 title: 'Rekomendasi Saya',
                 href: '/siswa/rekomendasi',
                 icon: Sparkles,
