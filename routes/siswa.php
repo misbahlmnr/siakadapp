@@ -26,6 +26,13 @@ Route::prefix('siswa')
                 Route::post('/{id}/submit', 'submit')->name('submit');
             });
 
+        Route::prefix('absensi')
+            ->name('absensi.')
+            ->controller(AbsensiController::class)
+            ->group(function() {
+                Route::get('/', 'index')->name('index');
+            });
+
         // Route::prefix('jadwal')
         //     ->name('jadwal.')
         //     ->controller(JadwalController::class)

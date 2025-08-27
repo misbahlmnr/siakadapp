@@ -93,9 +93,9 @@ export const GlobalConfig = {
                 icon: Pencil,
             },
             {
-                title: 'Hasil Belajar',
-                href: '/siswa/nilai',
-                icon: BarChart,
+                title: 'Absensi Saya',
+                href: '/siswa/absensi',
+                icon: Calendar,
             },
             {
                 title: 'Rekomendasi Saya',
