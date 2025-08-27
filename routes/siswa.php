@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Siswa\{DashboardController, JadwalController, AbsensiController, MateriBelajarController, NilaiController, RekomendasiController};
+use App\Http\Controllers\Siswa\{DashboardController, JadwalController, AbsensiController, MateriBelajarController, NilaiController, RekomendasiController, TugasController};
 
 Route::prefix('siswa')
     ->name('siswa.')
@@ -15,6 +15,15 @@ Route::prefix('siswa')
             ->group(function () {
                 Route::get('/', 'index')->name('index'); 
                 Route::get('/{id}', 'show')->name('show'); 
+            });
+
+        Route::prefix('tugas')
+            ->name('tugas.')
+            ->controller(TugasController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/{id}', 'show')->name('show');
+                Route::post('/{id}/submit', 'submit')->name('submit');
             });
 
         // Route::prefix('jadwal')

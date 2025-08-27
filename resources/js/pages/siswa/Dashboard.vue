@@ -75,7 +75,7 @@ defineProps<{
                         <span class="text-gray-800 dark:text-gray-200"
                             >{{ t.judul }} - <span class="text-gray-500 dark:text-gray-400">{{ t.nama_mapel }}</span></span
                         >
-                        <Link :href="route('siswa.tugas.show', t.id)" class="text-blue-600 hover:underline dark:text-blue-400"> Detail </Link>
+                        <Link :href="route('siswa.dashboard')" class="text-blue-600 hover:underline dark:text-blue-400"> Detail </Link>
                     </li>
                     <li v-if="!tugasBelum.length" class="p-2 text-center text-gray-500 dark:text-gray-400">Tidak ada tugas</li>
                 </ul>

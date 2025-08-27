@@ -88,8 +88,8 @@ export const GlobalConfig = {
                 icon: Book,
             },
             {
-                title: 'Quiz/Ujian',
-                href: '/siswa/quiz',
+                title: 'Tugas/Ujian',
+                href: '/siswa/tugas',
                 icon: Pencil,
             },
             {
