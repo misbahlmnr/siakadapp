@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Guru\{AbsensiController, AdaptiveRulesController, DashboardController, EvaluasiPembelajaranController, JadwalMengajarController, MateriPelajaranController, NilaiController, PengumpulanTugasController };
+use App\Http\Controllers\Guru\{AbsensiController, AdaptiveRulesController, DashboardController, EvaluasiPembelajaranController, JadwalMengajarController, MateriPelajaranController, NilaiController, PengumpulanTugasController, RekomendasiMateriController };
 
 Route::prefix('guru')
     ->name('guru.')
@@ -98,6 +98,21 @@ Route::prefix('guru')
                 // Routes untuk rekomendasi materi manual
                 Route::post('/rekomendasi-manual', 'storeRekomendasiManual')->name('rekomendasi-manual.store');
                 Route::get('/rekomendasi-manual/data', 'getRekomendasiManual')->name('rekomendasi-manual.data');
+            });
+
+        // Rekomendasi Materi Routes
+        Route::prefix('rekomendasi-materi')
+            ->name('rekomendasi-materi.')
+            ->controller(RekomendasiMateriController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/data', 'get')->name('data');
+                Route::get('/create', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{id}', 'show')->name('show');
+                Route::get('/{id}/edit', 'edit')->name('edit');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
             });
     });
 

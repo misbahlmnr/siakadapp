@@ -28,6 +28,6 @@ class RekomendasiMateriManual extends Model
 
     public function materi()
     {
-        return $this->belongsTo(MateriPembelajaran::class, 'materi_id');
+        return $this->belongsTo(MateriPelajaran::class, 'materi_id');
     }
 }
