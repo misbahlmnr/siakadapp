@@ -72,8 +72,12 @@ export const GlobalConfig = {
             },
             {
                 title: 'Adaptive Learning',
-                href: '/guru/adaptive-learning',
+                href: '#',
                 icon: Activity,
+                children: [
+                    { title: 'Adaptive Rules', href: '/guru/adaptive-rules' },
+                    { title: 'Tambah Rekomendasi Materi', href: '/guru/rekomendasi-materi' },
+                ],
             },
         ],
         siswa: [
