@@ -51,7 +51,7 @@ onMounted(() => {
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
-                <div class="rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800">
+                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-[#121212]">
                     <div class="flex items-center">
                         <div class="rounded-full bg-blue-100 p-2 dark:bg-blue-900/20">
                             <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +70,7 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <div class="rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800">
+                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-[#121212]">
                     <div class="flex items-center">
                         <div class="rounded-full bg-gray-100 p-2 dark:bg-gray-900/20">
                             <svg class="h-6 w-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,7 +89,7 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <div class="rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800">
+                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-[#121212]">
                     <div class="flex items-center">
                         <div class="rounded-full bg-green-100 p-2 dark:bg-green-900/20">
                             <svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,7 +108,7 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <div class="dark:bg-gray-极 rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800">
+                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-[#121212]">
                     <div class="flex items-center">
                         <div class="rounded-full bg-purple-100 p-2 dark:bg-purple-900/20">
                             <svg class="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +129,7 @@ onMounted(() => {
             </div>
 
             <!-- Table -->
-            <div class="overflow-hidden rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800">
+            <div>
                 <table id="rekomendasi-materi-table" class="display w-full">
                     <thead>
                         <tr>
@@ -150,101 +150,3 @@ onMounted(() => {
         </div>
     </AppLayout>
 </template>
-
-<style scoped>
-:deep(.dataTables_wrapper) {
-    padding: 1rem;
-}
-
-:deep(.dataTables_filter input) {
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    padding: 极.5rem 0.75rem;
-    background-color: white;
-    color: #111827;
-}
-
-:deep(.dataTables_length select) {
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    padding: 0.5rem 0.75rem;
-    background-color: white;
-    color: #111827;
-}
-
-:deep(table.dataTable) {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-:deep(table.dataTable thead th) {
-    background-color: #f9fafb;
-    color: #111827;
-    font-weight: 500;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-:deep(table.dataTable tbody td) {
-    padding: 0.75rem 1rem;
-    border-bottom: 1极 solid #e5e7eb;
-    color: #111827;
-}
-
-:deep(.dataTables_info) {
-    color: #4b5563;
-}
-
-:deep(.dataTables_paginate .paginate_button) {
-    padding: 0.25rem 0.75rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    color: #374151;
-    margin-left: 0.25rem;
-}
-
-:deep(.dataTables_paginate .paginate_button.current) {
-    background-color: #2563eb;
-    border-color: #2563eb;
-    color: white;
-}
-
-/* Dark mode styles */
-@media (prefers-color-scheme: dark) {
-    :deep(.dataTables_filter input) {
-        border-color: #4b5563;
-        background-color: #374151;
-        color: #f3f4f6;
-    }
-
-    :deep(.dataTables_length select) {
-        border-color: #4b5563;
-        background-color: #374151;
-        color: #f3f4f6;
-    }
-
-    :deep(table.dataTable thead th) {
-        background-color: #374151;
-        color: #f3f4f6;
-        border-bottom-color: #4b5563;
-    }
-
-    :deep(table.dataTable tbody td) {
-        color: #f3f4f6;
-        border-bottom-color: #4b5563;
-    }
-
-    :deep(.dataTables_info) {
-        color: #9ca3af;
-    }
-
-    :极(.dataTables_paginate .paginate_button) {
-        border-color: #4b5563;
-        color: #d1d5db;
-    }
-
-    :deep(.dataTables_paginate .paginate_button:hover) {
-        background-color: #374151;
-    }
-}
-</style>

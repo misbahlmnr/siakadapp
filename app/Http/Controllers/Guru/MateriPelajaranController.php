@@ -21,8 +21,8 @@ class MateriPelajaranController extends Controller
         return DataTables::of($materi)
             ->addIndexColumn()
             ->editColumn('pertemuan_ke', fn ($row) => 'Pertemuan ke '.$row->pertemuan_ke)
-            ->editColumn('file_materi', fn ($row) => $row->file_materi ? '<a href="'.Storage::url($row->file_materi).'" target="_blank" class="text-blue-400 hover:underline">Download</a>' : 'Tidak ada file')
-            ->editColumn('link_materi', fn ($row) => $row->link_materi ? '<a href="'.$row->link_materi.'" target="_blank" class="text-blue-400 hover:underline">Buka Link</a>' : 'Tidak ada link')
+            ->editColumn('file_materi', fn ($row) => $row->file_materi ? '<a href="'.Storage::url($row->file_materi).'" target="_blank"  class="inline-block px-2 py-1 bg-blue-500 text-white rounded-lg">Download</a>' : 'Tidak ada file')
+            ->editColumn('link_materi', fn ($row) => $row->link_materi ? '<a href="'.$row->link_materi.'" target="_blank" class="inline-block px-2 py-1 bg-blue-500 text-white rounded-lg">Buka Link</a>' : 'Tidak ada link')
             ->rawColumns(['file_materi', 'link_materi'])
             ->make(true);
     }

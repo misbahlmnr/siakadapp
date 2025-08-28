@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { ExternalLink, File, FileDown } from 'lucide-vue-next';
+import { ArrowLeft, BookOpen, ExternalLink, File, FileDown } from 'lucide-vue-next';
 
 const props = defineProps<{
     jadwal_id: number;
@@ -21,7 +21,6 @@ const props = defineProps<{
     };
     pengumpulanTugasList: any[];
 }>();
-console.log(props.pengumpulanTugasList);
 </script>
 
 <template>
@@ -35,118 +34,123 @@ console.log(props.pengumpulanTugasList);
             { title: props.evaluasi.judul, href: '#' },
         ]"
     >
-        <div class="flex flex-col gap-6 px-8 py-6">
-            <h1 class="text-2xl font-bold">Detail Evaluasi Pembelajaran</h1>
-
-            <div class="grid max-w-full grid-cols-1 gap-6 md:max-w-2xl md:grid-cols-2">
-                <div>
-                    <p class="text-sm text-gray-400">Judul</p>
-                    <p class="font-semibold">{{ props.evaluasi.judul }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-400">Jenis</p>
-                    <p class="font-semibold capitalize">{{ props.evaluasi.jenis }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-400">Semester</p>
-                    <p class="font-semibold">{{ props.evaluasi.semester_ajaran.semester || '-' }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-400">Tahun Ajaran</p>
-                    <p class="font-semibold">{{ props.evaluasi.semester_ajaran.tahun_ajaran || '-' }}</p>
-                </div>
-                <div class="md:col-span-2">
-                    <p class="text-sm text-gray-400">Waktu</p>
-                    <p class="font-semibold">
-                        {{ new Date(props.evaluasi.waktu_mulai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) }}
-                        –
-                        {{ new Date(props.evaluasi.waktu_selesai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) }}
-                    </p>
-                </div>
-
-                <div class="col-span-1 md:col-span-2">
-                    <p class="text-sm text-gray-400">Deskripsi</p>
-                    <p class="font-semibold whitespace-pre-line">{{ props.evaluasi.deskripsi || '-' }}</p>
-                </div>
-
-                <!-- File Soal -->
-                <div class="col-span-1 flex flex-col gap-3 md:col-span-2">
-                    <p class="text-sm text-gray-400">File Soal</p>
-                    <div
-                        v-if="props.evaluasi.file_soal"
-                        class="flex items-center gap-4 rounded-xl border border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 p-4 shadow-sm dark:border-gray-700 dark:from-gray-800 dark:to-gray-900"
+        <div class="flex flex-col gap-6 px-10 py-6">
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        @click="router.visit(route('guru.jadwal-mengajar.evaluasi-pembelajaran.index', { jadwal_id: props.jadwal_id }))"
+                        class="h-8 w-8"
                     >
-                        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500 text-white shadow">
-                            <File class="h-6 w-6" />
+                        <ArrowLeft class="h-4 w-4" />
+                    </Button>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Detail Evaluasi Pembelajaran</h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Informasi lengkap evaluasi pembelajaran</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <Button
+                        variant="outline"
+                        @click="
+                            router.visit(
+                                route('guru.jadwal-mengajar.evaluasi-pembelajaran.edit', { jadwal_id: props.jadwal_id, id: props.evaluasi.id }),
+                            )
+                        "
+                    >
+                        Edit Data
+                    </Button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <!-- Info Evaluasi -->
+                <div class="rounded-xl border bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-[#121212]">
+                    <h2 class="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        <BookOpen class="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                        Informasi Evaluasi
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Judul</p>
+                            <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ props.evaluasi.judul }}</p>
                         </div>
-                        <div class="flex-1 truncate">
-                            <p class="text-sm font-medium text-gray-900 dark:text-gray-200">File Soal</p>
-                            <p class="truncate text-xs text-gray-500 dark:text-gray-400">
-                                {{ props.evaluasi.file_soal.split('/').pop() }}
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Jenis</p>
+                            <p class="text-gray-900 capitalize dark:text-gray-200">{{ props.evaluasi.jenis }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Semester</p>
+                            <p class="text-gray-900 dark:text-gray-200">{{ props.evaluasi.semester_ajaran.semester || '-' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Tahun Ajaran</p>
+                            <p class="text-gray-900 dark:text-gray-200">{{ props.evaluasi.semester_ajaran.tahun_ajaran || '-' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Waktu</p>
+                            <p class="text-gray-900 dark:text-gray-200">
+                                {{ new Date(props.evaluasi.waktu_mulai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) }}
+                                –
+                                {{ new Date(props.evaluasi.waktu_selesai).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) }}
                             </p>
                         </div>
-                        <a
-                            :href="`/storage/${props.evaluasi.file_soal}`"
-                            target="_blank"
-                            class="inline-flex items-center gap-1 rounded-lg border border-blue-500 px-3 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-500 hover:text-white"
-                        >
-                            <FileDown class="h-4 w-4" />
-                            Download
-                        </a>
                     </div>
-                    <div v-else class="text-sm text-gray-500 italic">Belum ada file soal.</div>
                 </div>
 
-                <!-- Link Soal -->
-                <div class="col-span-1 flex flex-col gap-3 md:col-span-2">
-                    <p class="text-sm text-gray-400">Link Soal</p>
-                    <div
-                        v-if="props.evaluasi.link_soal"
-                        class="flex items-center gap-4 rounded-xl border border-gray-200 bg-gradient-to-r from-green-50 to-green-100 p-4 shadow-sm dark:border-gray-700 dark:from-gray-800 dark:to-gray-900"
-                    >
-                        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500 text-white shadow">
-                            <ExternalLink class="h-6 w-6" />
+                <!-- Deskripsi & Lampiran -->
+                <div class="rounded-xl border bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-[#121212]">
+                    <h2 class="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        <File class="h-5 w-5 text-green-600 dark:text-green-400" />
+                        Deskripsi & Lampiran
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Deskripsi</p>
+                            <p class="whitespace-pre-line text-gray-900 dark:text-gray-200">{{ props.evaluasi.deskripsi || '-' }}</p>
                         </div>
-                        <div class="flex-1 truncate">
-                            <p class="text-sm font-medium text-gray-900 dark:text-gray-200">Link Soal</p>
-                            <p class="truncate text-xs text-gray-500 dark:text-gray-400">{{ props.evaluasi.link_soal }}</p>
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">File Soal</p>
+                            <div v-if="props.evaluasi.file_soal" class="mt-2 flex items-center gap-3">
+                                <a
+                                    :href="`/storage/${props.evaluasi.file_soal}`"
+                                    target="_blank"
+                                    class="inline-flex items-center gap-2 rounded-lg bg-blue-100 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
+                                >
+                                    <FileDown class="h-4 w-4" />
+                                    Download Soal
+                                </a>
+                            </div>
+                            <p v-else class="text-sm text-gray-500 italic">Belum ada file soal.</p>
                         </div>
-                        <a
-                            :href="props.evaluasi.link_soal"
-                            target="_blank"
-                            class="inline-flex items-center gap-1 rounded-lg border border-green-500 px-3 py-1.5 text-sm font-medium text-green-600 transition hover:bg-green-500 hover:text-white"
-                        >
-                            <ExternalLink class="h-4 w-4" />
-                            Buka
-                        </a>
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Link Soal</p>
+                            <div v-if="props.evaluasi.link_soal" class="mt-2 flex items-center gap-3">
+                                <a
+                                    :href="props.evaluasi.link_soal"
+                                    target="_blank"
+                                    class="inline-flex items-center gap-2 rounded-lg bg-green-100 px-3 py-2 text-sm font-medium text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800"
+                                >
+                                    <ExternalLink class="h-4 w-4" />
+                                    Buka Link
+                                </a>
+                            </div>
+                            <p v-else class="text-sm text-gray-500 italic">Belum ada link soal.</p>
+                        </div>
                     </div>
-                    <div v-else class="text-sm text-gray-500 italic">Belum ada link soal.</div>
                 </div>
             </div>
 
-            <!-- Tombol Aksi -->
-            <div class="mt-6 flex gap-4">
-                <Button
-                    variant="outline"
-                    @click="router.visit(route('guru.jadwal-mengajar.evaluasi-pembelajaran.index', { jadwal_id: props.jadwal_id }))"
-                >
-                    Kembali
-                </Button>
-                <Button
-                    @click="
-                        router.visit(route('guru.jadwal-mengajar.evaluasi-pembelajaran.edit', { jadwal_id: props.jadwal_id, id: props.evaluasi.id }))
-                    "
-                    class="bg-blue-600 text-white hover:bg-blue-700"
-                >
-                    Edit Data
-                </Button>
-            </div>
+            <!-- Divider -->
+            <hr class="my-8 border-t border-gray-300 dark:border-gray-700" />
 
+            <!-- Siswa yang Mengumpulkan -->
             <div>
-                <h1 class="mt-8 mb-3 text-2xl font-bold text-gray-800 dark:text-gray-200">Siswa yang Sudah Mengumpulkan</h1>
-                <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">
-                    Berikut adalah daftar siswa yang telah mengumpulkan tugas evaluasi pembelajaran.
-                </p>
+                <h2 class="mb-3 text-2xl font-bold text-gray-800 dark:text-gray-200">Siswa yang Sudah Mengumpulkan</h2>
+                <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Berikut daftar siswa yang sudah mengumpulkan tugas evaluasi.</p>
 
                 <div class="mt-4 space-y-4 md:max-w-2xl">
                     <div
@@ -164,7 +168,7 @@ console.log(props.pengumpulanTugasList);
                         "
                     >
                         <div class="flex items-center justify-between">
-                            <div class="flex-1">
+                            <div>
                                 <h3
                                     class="text-lg font-semibold text-gray-800 group-hover:text-blue-600 dark:text-gray-200 dark:group-hover:text-blue-400"
                                 >
@@ -174,14 +178,13 @@ console.log(props.pengumpulanTugasList);
                                     Status: <span class="font-medium text-green-600 dark:text-green-400">Terkumpul</span>
                                 </p>
                             </div>
-
                             <div class="flex items-center gap-3">
                                 <a
                                     v-if="pengumpulan.link_jawaban"
                                     :href="pengumpulan.link_jawaban"
                                     target="_blank"
                                     @click.stop
-                                    class="inline-flex items-center gap-2 rounded-lg bg-blue-100 px-3 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
+                                    class="inline-flex items-center gap-2 rounded-lg bg-blue-100 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
                                 >
                                     <ExternalLink class="h-4 w-4" />
                                     Link Jawaban
@@ -191,15 +194,15 @@ console.log(props.pengumpulanTugasList);
                                     :href="pengumpulan.file_jawaban"
                                     target="_blank"
                                     @click.stop
-                                    class="inline-flex items-center gap-2 rounded-lg bg-green-100 px-3 py-2 text-sm font-medium text-green-700 transition hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800"
+                                    class="inline-flex items-center gap-2 rounded-lg bg-green-100 px-3 py-2 text-sm font-medium text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800"
                                 >
                                     <FileDown class="h-4 w-4" />
                                     File Jawaban
                                 </a>
-                                <div class="text-xs text-gray-400 dark:text-gray-500">Klik untuk detail</div>
                             </div>
                         </div>
                     </div>
+
                     <div v-if="props.pengumpulanTugasList.length === 0" class="py-8 text-center">
                         <div class="text-gray-400 dark:text-gray-500">
                             <File class="mx-auto mb-3 h-12 w-12 opacity-50" />

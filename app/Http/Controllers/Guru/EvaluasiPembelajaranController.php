@@ -33,12 +33,12 @@ class EvaluasiPembelajaranController extends Controller
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('waktu', function ($row) {
-            return Carbon::parse($row->waktu_mulai)->format('d-m-Y H:i') . 
-                   ' s/d ' . 
-                   Carbon::parse($row->waktu_selesai)->format('d-m-Y H:i');
+            return Carbon::parse($row->waktu_mulai)->format('d M Y H:i') . 
+                   ' - ' . 
+                   Carbon::parse($row->waktu_selesai)->format('d M Y H:i');
             })
-            ->editColumn('file_soal', fn ($row) => $row->file_soal ? '<a href="' . Storage::url($row->file_soal) . '" target="_blank" class="text-blue-400 hover:underline">Download</a>' : '-')
-            ->editColumn('link_soal', fn ($row) => $row->link_soal ? '<a href="' . $row->link_soal . '" target="_blank">Buka Link</a>' : '-')
+            ->editColumn('file_soal', fn ($row) => $row->file_soal ? '<a href="' . Storage::url($row->file_soal) . '" target="_blank" class="inline-block px-2 py-1 bg-blue-500 text-white rounded-lg">Download</a>' : '-')
+            ->editColumn('link_soal', fn ($row) => $row->link_soal ? '<a href="' . $row->link_soal . '" target="_blank" class="inline-block px-2 py-1 bg-blue-500 text-white rounded-lg">Buka Link</a>' : '-')
             ->rawColumns(['file_soal', 'link_soal'])
             ->make(true);
     }
