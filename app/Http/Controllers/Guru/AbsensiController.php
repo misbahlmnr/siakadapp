@@ -70,8 +70,19 @@ class AbsensiController extends Controller
             ->addColumn('kelas', fn($row) => $row->jadwal->kelas->nama_kelas ?? '-')
             ->addColumn('mata_pelajaran', fn($row) => $row->jadwal->mataPelajaran->nama_mapel ?? '-')
             ->addColumn('tanggal', fn($row) => $row->tanggal ? Carbon::parse($row->tanggal)->translatedFormat('d F Y') : '-')
-            ->addColumn('status', fn($row) => ucfirst($row->status))
+            ->addColumn('status', fn($row) => '<span class="inline-block p-0.5 px-2 rounded-full text-white text-xs ' . $this->getStatusClass($row->status) . '">' . $row->status . '</span>')
+            ->rawColumns(['status'])
             ->make(true);
+    }
+
+    public function getStatusClass(string $value)
+    {
+        return match ($value) {
+            'hadir' => 'bg-green-500',
+            'izin' => 'bg-yellow-500',
+            'sakit' => 'bg-blue-500',
+            'alfa' => 'bg-red-500',
+        };
     }
 
     public function create()
