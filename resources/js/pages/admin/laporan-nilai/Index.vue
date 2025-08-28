@@ -12,6 +12,7 @@ import { onMounted, ref, watch } from 'vue';
 const props = defineProps<{
     kelas: Kelas[];
     matpel: MatPel[];
+    semesterAndTahunAjaranList: { id: number; semester: string; tahun_ajaran: string }[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -29,6 +30,7 @@ const tahunAjaran = ref('');
 const selectedKelasLabel = ref('Pilih Kelas');
 const selectedMapelLabel = ref('Pilih Mapel');
 const selectedSemesterLabel = ref('Semester');
+const selectedTahunAjaranLabel = ref('Tahun Ajaran');
 
 onMounted(() => {
     useDataTable('#laporan-nilai-table', {
@@ -50,7 +52,7 @@ onMounted(() => {
             { data: 'jenis', name: 'jenis' },
             { data: 'nilai', name: 'nilai' },
             { data: 'semester', name: 'semester' },
-            { data: 'tahun_ajarannya', name: 'tahun_ajarannya' },
+            { data: 'tahun_ajaran', name: 'tahun_ajaran' },
         ],
     });
 });
@@ -169,36 +171,57 @@ const exportPdf = () => {
                             <ChevronDown class="h-4 w-4 text-gray-500" />
                         </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
+                    <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
                         <DropdownMenuItem
                             @click="
                                 semester = '';
-                                selectedSemesterLabel = 'Semua';
+                                selectedSemesterLabel = 'Semua Semester';
                             "
                         >
-                            Semua
+                            Semua Semester
                         </DropdownMenuItem>
                         <DropdownMenuItem
+                            v-for="(item, index) in props.semesterAndTahunAjaranList"
+                            :key="index"
                             @click="
-                                semester = 'ganjil';
-                                selectedSemesterLabel = 'Ganjil';
+                                semester = item.semester;
+                                selectedSemesterLabel = item.semester;
                             "
                         >
-                            Ganjil
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            @click="
-                                semester = 'genap';
-                                selectedSemesterLabel = 'Genap';
-                            "
-                        >
-                            Genap
+                            {{ item.semester }}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <!-- Input Tahun Ajaran -->
-                <input v-model="tahunAjaran" type="text" placeholder="Tahun Ajaran (misal: 2024/2025)" class="rounded border p-2 text-sm" />
+                <!-- Dropdown Tahun Ajaran -->
+                <DropdownMenu>
+                    <DropdownMenuTrigger as-child>
+                        <button class="flex w-full justify-between rounded border px-4 py-2 text-sm" type="button">
+                            <span>{{ selectedTahunAjaranLabel }}</span>
+                            <ChevronDown class="h-4 w-4 text-gray-500" />
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
+                        <DropdownMenuItem
+                            @click="
+                                tahunAjaran = '';
+                                selectedTahunAjaranLabel = 'Semua Tahun Ajaran';
+                            "
+                        >
+                            Semua Tahun Ajaran
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            v-for="(item, index) in props.semesterAndTahunAjaranList"
+                            :key="index"
+                            @click="
+                                tahunAjaran = item.tahun_ajaran;
+                                selectedTahunAjaranLabel = item.tahun_ajaran;
+                            "
+                        >
+                            {{ item.tahun_ajaran }}
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             <!-- Table -->
