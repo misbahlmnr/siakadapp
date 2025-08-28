@@ -174,4 +174,7 @@
     .bgap {
         @apply grid gap-2;
     }
+    .btn-custom-outline {
+        @apply cursor-pointer rounded-lg border bg-background p-1 shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50;
+    }
 }

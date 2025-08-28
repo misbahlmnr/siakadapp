@@ -3,7 +3,7 @@
         @apply w-full overflow-hidden overflow-x-auto rounded-sm bg-gray-50 text-sm dark:bg-[#1A1A1A];
     }
     th {
-        @apply border border-gray-600 bg-blue-800 px-5 py-3 text-white uppercase;
+        @apply border border-gray-600 bg-blue-800 px-5 py-3 text-left text-white uppercase;
     }
     td {
         @apply border border-gray-300 px-5 py-5 dark:border-gray-800 dark:text-gray-300;
