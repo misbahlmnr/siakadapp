@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { AdaptiveRule, BreadcrumbItem, MatPel, MateriPelajaran } from '@/types';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
 import { ref } from 'vue';
 
@@ -149,10 +149,11 @@ const submit = () => {
                 </div>
 
                 <!-- Submit -->
-                <div class="mt-4 flex justify-end gap-2 md:col-span-2">
-                    <Button :disabled="form.processing" class="bg-blue-600 text-white hover:bg-blue-700">
+                <div class="mt-4 flex gap-2 md:col-span-2">
+                    <Button variant="outline" type="button" @click="router.visit(route('admin.adaptive-rules.index'))">Batal</Button>
+                    <Button :disabled="form.processing" class="bg-blue-600 text-white hover:bg-blue-600/90">
                         <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                        Simpan Perubahan
+                        Update
                     </Button>
                 </div>
             </form>

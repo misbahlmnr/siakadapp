@@ -96,11 +96,11 @@ const submit = () => {
                 </div>
 
                 <!-- Submit -->
-                <div class="mt-4 md:col-span-2">
+                <div class="mt-4 flex gap-2 md:col-span-2">
                     <Button variant="outline" type="button" @click="router.visit(route('admin.kelas.index'))">Batal</Button>
                     <Button :disabled="form.processing" class="bg-blue-600 text-white hover:bg-blue-600/90">
                         <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                        Simpan
+                        Update
                     </Button>
                 </div>
             </form>

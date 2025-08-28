@@ -8,6 +8,8 @@ const props = defineProps<{
     mataPelajaran: MatPel;
 }>();
 
+console.log(props.mataPelajaran);
+
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Beranda', href: route('admin.dashboard') },
     { title: 'Mata Pelajaran', href: route('admin.mata-pelajaran.index') },
@@ -31,13 +33,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <div>
                     <p class="text-sm text-gray-400">Nama Mapel</p>
                     <p class="font-semibold">{{ mataPelajaran.nama_mapel }}</p>
-                </div>
-
-                <div class="md:col-span-2">
-                    <p class="text-sm text-gray-400">Deskripsi</p>
-                    <p class="font-semibold whitespace-pre-line">
-                        {{ mataPelajaran.deskripsi || '-' }}
-                    </p>
                 </div>
             </div>
 

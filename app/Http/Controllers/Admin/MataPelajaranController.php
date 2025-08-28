@@ -53,7 +53,9 @@ class MataPelajaranController extends Controller
     {
         $mataPelajaran = MataPelajaran::findOrFail($id);
 
-        return Inertia::render('admin/mata-pelajaran/View', $mataPelajaran);
+        return Inertia::render('admin/mata-pelajaran/View', [
+            'mataPelajaran' => $mataPelajaran
+        ]);
     }
 
     public function edit(string $id)

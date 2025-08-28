@@ -2,7 +2,8 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
+import { ArrowLeft } from 'lucide-vue-next';
 
 const props = defineProps({
     user: {
@@ -43,9 +44,24 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-6 px-10 py-6">
-            <h1 class="text-2xl font-bold">Detail Data Guru</h1>
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <Button variant="ghost" size="icon" @click="router.visit(route('admin.users.index', 'guru'))" class="h-8 w-8">
+                        <ArrowLeft class="h-4 w-4" />
+                    </Button>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Detail Data Guru</h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Informasi lengkap data guru</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <Button variant="outline" @click="router.visit(route('admin.users.edit', { role: 'guru', id: user.id }))"> Edit Data </Button>
+                </div>
+            </div>
 
-            <div class="grid max-w-full grid-cols-1 gap-6 md:max-w-2xl md:grid-cols-2">
+            <!-- Informasi Umum -->
+            <div class="grid max-w-full grid-cols-1 gap-6 md:max-w-3xl md:grid-cols-2">
                 <!-- Nama -->
                 <div>
                     <p class="text-sm text-gray-400 dark:text-gray-400">Nama Lengkap</p>
@@ -103,14 +119,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <p class="text-sm text-gray-400 dark:text-gray-400">Alamat</p>
                     <p class="font-semibold text-gray-900 dark:text-gray-100">{{ user.guru_profile?.alamat ?? '-' }}</p>
                 </div>
-            </div>
-
-            <!-- Tombol aksi -->
-            <div class="mt-6 flex flex-col justify-start gap-4 sm:flex-row">
-                <Button variant="outline" class="w-full sm:w-auto" @click="$inertia.visit(route('admin.users.index', 'guru'))"> Kembali </Button>
-                <Button class="w-full sm:w-auto" @click="$inertia.visit(route('admin.users.edit', { role: 'guru', id: user.id }))">
-                    Edit Data
-                </Button>
             </div>
         </div>
     </AppLayout>

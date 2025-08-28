@@ -47,7 +47,7 @@ class UserController extends Controller
                 return $role === 'guru' ? ($user->guruProfile->nip ?? '-') : '-';
             })
             ->addColumn('jenis_kelamin', function ($user) use ($role) {
-                return $role === 'guru' ? ($user->guruProfile->jenis_kelamin ?? '-') : '-';
+                return $role === 'guru' ? $this->getJenisKelamin($user->guruProfile->jenis_kelamin) : '-';
             })
             ->addColumn('tempat_tanggal_lahir', function ($user) use ($role) {
                 if ($role === 'guru' && $user->guruProfile) {
@@ -68,6 +68,15 @@ class UserController extends Controller
                 return formatCreatedAt($user->created_at);
             })
             ->make(true);
+    }
+
+    public function getJenisKelamin(string $value)
+    {
+        return match ($value) {
+            'L' => 'Laki-laki',
+            'P' => 'Perempuan',
+            default => '-'
+        };
     }
 
     public function create(Request $request)
