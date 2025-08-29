@@ -72,8 +72,8 @@
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $item->siswa->user->name ?? '-' }}</td>
                 <td>{{ $item->siswa->kelas->nama_kelas ?? '-' }}</td>
-                <td>{{ $item->evaluasiPembelajaran->jadwal->mataPelajaran->nama_mapel ?? '-' }}</td>
-                <td>{{ $item->evaluasiPembelajaran->guru->user->name ?? '-' }}</td>
+                <td>{{ $item->evaluasiPembelajaran->guruMatpel->mataPelajaran->nama_mapel ?? '-' }}</td>
+                <td>{{ $item->evaluasiPembelajaran->guruMatpel->guru->user->name ?? '-' }}</td>
                 <td>{{ $item->evaluasiPembelajaran->jenis ?? '-' }}</td>
                 <td>{{ $item->nilai ?? '-' }}</td>
                 <td>{{ ucfirst($item->evaluasiPembelajaran->semesterAjaran->semester) ?? '-' }}</td>
