@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('evaluasi_pembelajaran', function (Blueprint $table) {
             $table->id();
             $table->foreignId('jadwal_id')->constrained('jadwal_pelajaran')->onDelete('cascade');
-            $table->foreignId('guru_id')->constrained('guru_profiles')->onDelete('cascade');
+            $table->foreignId('guru_matpel_id')->constrained('guru_mata_pelajaran')->onDelete('cascade');
             $table->foreignId('semester_ajaran_id')->constrained('semester_ajaran')->onDelete('cascade');
             $table->string('judul');
             $table->text('deskripsi')->nullable();

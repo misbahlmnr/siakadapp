@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mata_pelajaran', function (Blueprint $table) {
+        Schema::create('guru_mata_pelajaran', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_mapel')->unique();
-            $table->string('nama_mapel');
+            $table->foreignId('guru_id')->constrained('guru_profiles')->onDelete('cascade');
+            $table->foreignId('matpel_id')->constrained('mata_pelajaran')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mata_pelajaran');
+        Schema::dropIfExists('guru_mata_pelajaran');
     }
 };

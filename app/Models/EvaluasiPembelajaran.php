@@ -10,7 +10,7 @@ class EvaluasiPembelajaran extends Model
 
     protected $fillable = [
         'jadwal_id',
-        'guru_id',
+        'guru_matpel_id',
         'semester_ajaran_id',
         'judul',
         'deskripsi',
@@ -31,9 +31,9 @@ class EvaluasiPembelajaran extends Model
         return $this->hasMany(PengumpulanTugas::class, 'evaluasi_id');
     }
 
-    public function guru()
+    public function guruMatpel()
     {
-        return $this->belongsTo(GuruProfile::class, 'guru_id');
+        return $this->belongsTo(GuruMataPelajaran::class, 'guru_matpel_id');
     }
 
     public function nilai()

@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('jadwal_pelajaran', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
-            $table->foreignId('matpel_id')->constrained('mata_pelajaran')->onDelete('cascade');
-            $table->foreignId('guru_id')->constrained('guru_profiles')->onDelete('cascade');
+            $table->foreignId('guru_matpel_id')->constrained('guru_mata_pelajaran')->onDelete('cascade');
             $table->foreignId('semester_ajaran_id')->constrained('semester_ajaran')->onDelete('cascade');
             $table->enum('hari', ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']);
             $table->time('jam_mulai');

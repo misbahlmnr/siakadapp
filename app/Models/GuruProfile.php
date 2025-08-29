@@ -24,12 +24,7 @@ class GuruProfile extends Model
 
     public function mataPelajaran()
     {
-        return $this->hasMany(MataPelajaran::class, 'matpel_id');
-    }
-
-    public function jadwalPelajaran()
-    {
-        return $this->hasMany(JadwalPelajaran::class);
+        return $this->belongsToMany(MataPelajaran::class, 'guru_mata_pelajaran', 'guru_id', 'matpel_id');
     }
 
     public function evaluasiPembelajaran()

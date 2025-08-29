@@ -12,19 +12,13 @@ class MataPelajaran extends Model
     protected $table = 'mata_pelajaran';
 
     protected $fillable = [
-        'guru_id',
         'kode_mapel',
         'nama_mapel',
     ];
 
     public function guru()
     {
-        return $this->belongsTo(GuruProfile::class);
-    }
-
-    public function jadwalPelajaran()
-    {
-        return $this->hasMany(JadwalPelajaran::class, 'matpel_id');
+        return $this->belongsToMany(GuruProfile::class, 'guru_mata_pelajaran', 'matpel_id', 'guru_id');
     }
 
     public function adaptiveRules()
