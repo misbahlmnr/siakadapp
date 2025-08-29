@@ -121,7 +121,7 @@ const navigateTo = (routeName: string) => {
                 </div>
                 <div
                     class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:bg-[#121212] dark:hover:border-orange-600"
-                    @click="navigateTo('admin.settings.index')"
+                    @click="navigateTo('settings')"
                 >
                     <div class="flex items-center gap-3">
                         <div class="rounded-lg bg-orange-500 p-2">
