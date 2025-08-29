@@ -109,14 +109,14 @@ const submit = () => {
                 <!-- NIS -->
                 <div class="flex flex-col gap-2">
                     <Label for="nis">NIS</Label>
-                    <Input id="nis" v-model="form.nis" placeholder="Masukkan NIS" />
+                    <Input id="nis" type="number" v-model="form.nis" placeholder="Masukkan NIS" />
                     <InputError :message="form.errors.nis" />
                 </div>
 
                 <!-- NISN -->
                 <div class="flex flex-col gap-2">
                     <Label for="nisn">NISN</Label>
-                    <Input id="nisn" v-model="form.nisn" placeholder="Masukkan NISN" />
+                    <Input id="nisn" type="number" v-model="form.nisn" placeholder="Masukkan NISN" />
                     <InputError :message="form.errors.nisn" />
                 </div>
 
@@ -149,7 +149,7 @@ const submit = () => {
                 <!-- Angkatan -->
                 <div class="flex flex-col gap-2">
                     <Label>Angkatan</Label>
-                    <Input v-model="form.angkatan" placeholder="Misal: 2022" />
+                    <Input v-model="form.angkatan" type="number" placeholder="Misal: 2022" />
                     <InputError :message="form.errors.angkatan" />
                 </div>
 
@@ -200,7 +200,7 @@ const submit = () => {
                 <!-- No HP -->
                 <div class="flex flex-col gap-2">
                     <Label>No HP</Label>
-                    <Input v-model="form.no_hp" placeholder="Masukkan nomor HP" />
+                    <Input v-model="form.no_hp" type="number" placeholder="Masukkan nomor HP" />
                     <InputError :message="form.errors.no_hp" />
                 </div>
 
@@ -214,7 +214,7 @@ const submit = () => {
                 <!-- Kontak Orang Tua -->
                 <div class="flex flex-col gap-2">
                     <Label>Kontak Orang Tua</Label>
-                    <Input v-model="form.kontak_ortu" placeholder="Masukkan nomor HP orang tua" />
+                    <Input type="number" v-model="form.kontak_ortu" placeholder="Masukkan nomor HP orang tua" />
                     <InputError :message="form.errors.kontak_ortu" />
                 </div>
 
