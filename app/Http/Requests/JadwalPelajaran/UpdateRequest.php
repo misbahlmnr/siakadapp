@@ -23,8 +23,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'kelas_id' => 'required|exists:kelas,id',
-            'matpel_id' => 'required|exists:mata_pelajaran,id',
-            'guru_id' => 'required|exists:guru_profiles,id',
+            'guru_matpel_id' => 'required|exists:guru_mata_pelajaran,id',
             'semester_ajaran_id' => 'required|exists:semester_ajaran,id',
             'hari' => 'required|string|max:255',
             'jam_mulai' => 'required|date_format:H:i',

@@ -5,8 +5,19 @@ import type { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import { ArrowLeft } from 'lucide-vue-next';
 
+type JadwalProps = {
+    id: number;
+    kelas: string;
+    mata_pelajaran: string;
+    nama_guru: string;
+    hari: string;
+    jam: string;
+    semester: string;
+    tahun_ajaran: string;
+};
+
 const props = defineProps<{
-    jadwal: any;
+    jadwal: JadwalProps;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -17,7 +28,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 </script>
 
 <template>
-    <Head :title="`Detail Jadwal Pelajaran - ${jadwal.kelas.nama_kelas}`" />
+    <Head :title="`Detail Jadwal Pelajaran - ${props.jadwal.mata_pelajaran}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-6 px-10 py-6">
@@ -41,39 +52,39 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="grid max-w-full grid-cols-1 gap-6 md:max-w-3xl md:grid-cols-2">
                 <div>
                     <p class="text-sm text-gray-400">Kelas</p>
-                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ jadwal.kelas.nama_kelas }}</p>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ props.jadwal.kelas }}</p>
                 </div>
 
                 <div>
                     <p class="text-sm text-gray-400">Mata Pelajaran</p>
-                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ jadwal.mata_pelajaran.nama_mapel }}</p>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ props.jadwal.mata_pelajaran }}</p>
                 </div>
 
                 <div>
                     <p class="text-sm text-gray-400">Guru</p>
-                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ jadwal.guru?.user.name }}</p>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ props.jadwal.nama_guru }}</p>
                 </div>
 
                 <div>
                     <p class="text-sm text-gray-400">Hari</p>
-                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ jadwal.hari }}</p>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ props.jadwal.hari }}</p>
                 </div>
 
                 <div>
                     <p class="text-sm text-gray-400">Jam</p>
                     <p class="font-semibold text-gray-900 dark:text-gray-100">
-                        {{ jadwal.jam_mulai.slice(0, 5) }} - {{ jadwal.jam_selesai.slice(0, 5) }}
+                        {{ props.jadwal.jam }}
                     </p>
                 </div>
 
                 <div>
                     <p class="text-sm text-gray-400">Semester</p>
-                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ jadwal.semester_ajaran.semester }}</p>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ props.jadwal.semester }}</p>
                 </div>
 
                 <div>
                     <p class="text-sm text-gray-400">Tahun Ajaran</p>
-                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ jadwal.semester_ajaran.tahun_ajaran }}</p>
+                    <p class="font-semibold text-gray-900 dark:text-gray-100">{{ props.jadwal.tahun_ajaran }}</p>
                 </div>
             </div>
         </div>

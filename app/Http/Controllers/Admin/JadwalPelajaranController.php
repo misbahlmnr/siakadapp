@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\JadwalPelajaran\StoreRequest;
 use App\Http\Requests\JadwalPelajaran\UpdateRequest;
+use App\Models\GuruMataPelajaran;
 use App\Models\GuruProfile;
 use App\Models\JadwalPelajaran;
 use App\Models\Kelas;
@@ -23,8 +24,8 @@ class JadwalPelajaranController extends Controller
         return DataTables::of($jadwalPelajaran)
             ->addIndexColumn()
             ->addColumn('kelas', fn ($row) => $row->kelas->nama_kelas)
-            ->addColumn('mata_pelajaran', fn ($row) => $row->mataPelajaran->nama_mapel)
-            ->addColumn('guru', fn ($row) => $row->guru->user->name)
+            ->addColumn('mata_pelajaran', fn ($row) => $row->guruMatpel->mataPelajaran->nama_mapel)
+            ->addColumn('guru', fn ($row) => $row->guruMatpel->guru->user->name)
             ->addColumn('semester', fn ($row) => $row->semesterAjaran->semester)
             ->addColumn('tahun_ajaran', fn ($row) => $row->semesterAjaran->tahun_ajaran)
             ->editColumn('jam', fn ($row) => formatStartEndTime($row->jam_mulai, $row->jam_selesai))
@@ -40,26 +41,39 @@ class JadwalPelajaranController extends Controller
     {
         return Inertia::render('admin/jadwal-pelajaran/Create', [
             'kelasList' => Kelas::select('id', 'nama_kelas')->get(),
-            'mapelList' => MataPelajaran::select('id', 'nama_mapel')->get(),
-            'guruList' => GuruProfile::with('user:id,name')->get()->map(function ($guru) {
+
+            'guruMapelList' => GuruMataPelajaran::with([
+                'guru.user:id,name',
+                'mataPelajaran:id,nama_mapel'
+            ])->get()->map(function ($item) {
                 return [
-                    'id' => $guru->id,
-                    'nama' => $guru->user->name,
+                    'id' => $item->id,
+                    'nama' => $item->guru->user->name . ' - ' . $item->mataPelajaran->nama_mapel
                 ];
             }),
-            'semesterDanTahunAjaranList' => SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
-                'id' => $se->id,
-                'semester' => $se->semester,
-                'tahun_ajaran' => $se->tahun_ajaran
-            ])
+
+            'semesterDanTahunAjaranList' => SemesterAjaran::where('status_aktif', true)
+                ->get()
+                ->map(fn ($se) => [
+                    'id' => $se->id,
+                    'semester' => $se->semester,
+                    'tahun_ajaran' => $se->tahun_ajaran
+                ])
         ]);
     }
 
+
     public function store(StoreRequest $request)
     {
+        $guruMapel = GuruMataPelajaran::with('guru')->findOrFail($request->guru_matpel_id);
+
+        $guruId = $guruMapel->guru_id;
+
         // Cek apakah jadwal bentrok
         $isBentrok = JadwalPelajaran::where('hari', $request->hari)
-            ->where('guru_id', $request->guru_id)
+            ->whereHas('guruMatpel', function ($query) use ($guruId) {
+                $query->where('guru_id', $guruId);
+            })
             ->where(function($query) use ($request) {
                 $query->whereBetween('jam_mulai', [$request->jam_mulai, $request->jam_selesai])
                     ->orWhereBetween('jam_selesai', [$request->jam_mulai, $request->jam_selesai])
@@ -76,8 +90,7 @@ class JadwalPelajaranController extends Controller
 
         JadwalPelajaran::create([
             'kelas_id' => $request->kelas_id,
-            'matpel_id' => $request->matpel_id,
-            'guru_id' => $request->guru_id,
+            'guru_matpel_id' => $request->guru_matpel_id,
             'semester_ajaran_id' => $request->semester_ajaran_id,
             'hari' => $request->hari,
             'jam_mulai' => $request->jam_mulai,
@@ -90,8 +103,19 @@ class JadwalPelajaranController extends Controller
 
     public function show(string $id)
     {
-        return Inertia::render('admin/jadwal-pelajaran/View', [
-           'jadwal' => JadwalPelajaran::with('kelas', 'mataPelajaran', 'guru.user', 'semesterAjaran')->find($id) 
+        $jadwal = JadwalPelajaran::with('kelas', 'guruMatpel.mataPelajaran', 'guruMatpel.guru.user', 'semesterAjaran')->find($id);
+
+        return Inertia::render('admin/jadwal-pelajaran/Show', [
+           'jadwal' => [
+               'id' => $jadwal->id,
+               'kelas' => $jadwal->kelas->nama_kelas,
+               'mata_pelajaran' => $jadwal->guruMatpel->mataPelajaran->nama_mapel,
+               'nama_guru' => $jadwal->guruMatpel->guru->user->name,
+               'hari' => $jadwal->hari,
+               'jam' => formatStartEndTime($jadwal->jam_mulai, $jadwal->jam_selesai),
+               'semester' => $jadwal->semesterAjaran->semester,
+               'tahun_ajaran' => $jadwal->semesterAjaran->tahun_ajaran
+           ]
         ]);
     }
 
@@ -103,19 +127,20 @@ class JadwalPelajaranController extends Controller
             'jadwal' => [
                 'id' => $jadwal->id,
                 'kelas_id' => $jadwal->kelas_id,
-                'matpel_id' => $jadwal->matpel_id,
-                'guru_id' => $jadwal->guru_id,
+                'guru_matpel_id' => $jadwal->guru_matpel_id,
                 'semester_ajaran_id' => $jadwal->semester_ajaran_id,
                 'hari' => $jadwal->hari,
                 'jam_mulai' => Carbon::parse($jadwal->jam_mulai)->format('H:i'),
                 'jam_selesai' => Carbon::parse($jadwal->jam_selesai)->format('H:i'),
             ],
             'kelasList' => Kelas::select('id', 'nama_kelas')->get(),
-            'mapelList' => MataPelajaran::select('id', 'nama_mapel')->get(),
-            'guruList' => GuruProfile::with('user:id,name')->get()->map(function ($guru) {
+            'guruMapelList' => GuruMataPelajaran::with([
+                'guru.user:id,name',
+                'mataPelajaran:id,nama_mapel'
+            ])->get()->map(function ($item) {
                 return [
-                    'id' => $guru->id,
-                    'nama' => $guru->user->name,
+                    'id' => $item->id,
+                    'nama' => $item->guru->user->name . ' - ' . $item->mataPelajaran->nama_mapel
                 ];
             }),
             'semesterDanTahunAjaranList' => SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
@@ -128,8 +153,15 @@ class JadwalPelajaranController extends Controller
 
     public function update(UpdateRequest $request, int $id)
     {
+        $guruMapel = GuruMataPelajaran::with('guru')->findOrFail($request->guru_matpel_id);
+
+        $guruId = $guruMapel->guru_id;
+
         // Cek bentrok jadwal (kecuali jadwal yang sedang diupdate)
-        $bentrok = JadwalPelajaran::where('hari', $request->hari)
+        $isBentrok = JadwalPelajaran::where('hari', $request->hari)
+            ->whereHas('guruMatpel', function ($query) use ($guruId) {
+                $query->where('guru_id', $guruId);
+            })
             ->where('kelas_id', $request->kelas_id)
             ->where('id', '!=', $id)
             ->where(function ($query) use ($request) {
@@ -142,14 +174,13 @@ class JadwalPelajaranController extends Controller
             })
             ->exists();
 
-        if ($bentrok) {
+        if ($isBentrok) {
             return back()->with('error', 'Jadwal bentrok dengan jadwal lain untuk guru ini.')->withInput();
         }
 
         JadwalPelajaran::find($id)->update([
             'kelas_id' => $request->kelas_id,
-            'matpel_id' => $request->matpel_id,
-            'guru_id' => $request->guru_id,
+            'guru_matpel_id' => $request->guru_matpel_id,
             'hari' => $request->hari,
             'jam_mulai' => $request->jam_mulai,
             'jam_selesai' => $request->jam_selesai,

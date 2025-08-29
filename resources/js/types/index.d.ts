@@ -72,8 +72,7 @@ export interface MateriPelajaran {
 export interface JadwalPelajaran {
     id: number;
     kelas_id: number;
-    matpel_id: number;
-    guru_id: number;
+    guru_matpel_id: number;
     semester_ajaran_id: number;
     hari: string;
     jam_mulai: string;

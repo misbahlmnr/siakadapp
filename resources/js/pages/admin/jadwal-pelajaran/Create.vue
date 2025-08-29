@@ -12,15 +12,13 @@ import { ref } from 'vue';
 
 const props = defineProps<{
     kelasList: { id: number; nama_kelas: string }[];
-    mapelList: { id: number; nama_mapel: string }[];
-    guruList: { id: number; nama: string }[];
+    guruMapelList: { id: number; nama: string }[];
     semesterDanTahunAjaranList: { id: number; semester: string; tahun_ajaran: string }[];
 }>();
 
 type Form = {
     kelas_id: number | null;
-    matpel_id: number | null;
-    guru_id: number | null;
+    guru_matpel_id: number | null;
     hari: string;
     jam_mulai: string;
     jam_selesai: string;
@@ -29,8 +27,7 @@ type Form = {
 
 const form = useForm<Form>({
     kelas_id: null,
-    matpel_id: null,
-    guru_id: null,
+    guru_matpel_id: null,
     hari: '',
     jam_mulai: '',
     jam_selesai: '',
@@ -46,8 +43,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const hariOptions = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
 const selectedKelasLabel = ref('Pilih Kelas');
-const selectedMapelLabel = ref('Pilih Mata Pelajaran');
-const selectedGuruLabel = ref('Pilih Guru');
+const selectedGuruMatpelLabel = ref('Pilih Guru & Mata Pelajaran');
 const selectedHariLabel = ref('Pilih Hari');
 const selectedSemesterDanTahunAjaranLabel = ref('Pilih Semester & Tahun Ajaran');
 
@@ -91,54 +87,28 @@ const submit = () => {
 
                 <!-- Mata Pelajaran -->
                 <div class="flex flex-col gap-3">
-                    <Label for="mata_pelajaran_id">Mata Pelajaran</Label>
+                    <Label for="mata_pelajaran_id">Guru Mata Pelajaran</Label>
                     <DropdownMenu>
                         <DropdownMenuTrigger as-child>
                             <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
-                                <span class="text-sm">{{ selectedMapelLabel }}</span>
+                                <span class="text-sm">{{ selectedGuruMatpelLabel }}</span>
                                 <ChevronDown class="h-4 w-4 text-gray-500" />
                             </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
                             <DropdownMenuItem
-                                v-for="mapel in props.mapelList"
+                                v-for="mapel in props.guruMapelList"
                                 :key="mapel.id"
                                 @click="
-                                    form.matpel_id = mapel.id;
-                                    selectedMapelLabel = mapel.nama_mapel;
+                                    form.guru_matpel_id = mapel.id;
+                                    selectedGuruMatpelLabel = mapel.nama;
                                 "
                             >
-                                {{ mapel.nama_mapel }}
+                                {{ mapel.nama }}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <InputError :message="form.errors.matpel_id" />
-                </div>
-
-                <!-- Guru -->
-                <div class="flex flex-col gap-3">
-                    <Label for="guru_id">Guru</Label>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger as-child>
-                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
-                                <span class="text-sm">{{ selectedGuruLabel }}</span>
-                                <ChevronDown class="h-4 w-4 text-gray-500" />
-                            </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
-                            <DropdownMenuItem
-                                v-for="guru in props.guruList"
-                                :key="guru.id"
-                                @click="
-                                    form.guru_id = guru.id;
-                                    selectedGuruLabel = guru.nama;
-                                "
-                            >
-                                {{ guru.nama }}
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <InputError :message="form.errors.guru_id" />
+                    <InputError :message="form.errors.guru_matpel_id" />
                 </div>
 
                 <!-- Hari -->
