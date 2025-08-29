@@ -15,6 +15,8 @@ const props = defineProps<{
     };
     materi: MateriPelajaran;
 }>();
+
+console.log(props.materi);
 </script>
 
 <template>
@@ -48,7 +50,14 @@ const props = defineProps<{
                 <div class="flex gap-2">
                     <Button
                         variant="outline"
-                        @click="router.visit(route('admin.jadwal-pelajaran.edit', { jadwal_id: props.materi.jadwal_id, materi_id: props.materi.id }))"
+                        @click="
+                            router.visit(
+                                route('guru.jadwal-mengajar.materi.edit', {
+                                    jadwal_id: props.materi.jadwal_id,
+                                    materi_id: props.materi.id,
+                                }),
+                            )
+                        "
                     >
                         Edit Data
                     </Button>
@@ -111,7 +120,7 @@ const props = defineProps<{
 
                     <!-- Action -->
                     <a
-                        :href="props.materi.file_materi"
+                        :href="`/storage/${props.materi.file_materi}`"
                         target="_blank"
                         class="inline-flex items-center gap-1 rounded-lg border border-blue-500 px-3 py-1.5 text-sm font-medium text-blue-600 transition hover:bg-blue-500 hover:text-white"
                     >

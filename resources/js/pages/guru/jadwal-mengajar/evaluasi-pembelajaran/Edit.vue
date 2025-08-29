@@ -177,7 +177,7 @@ const submit = () => {
 
                         <!-- Download Button -->
                         <a
-                            :href="props.evaluasi.file_soal"
+                            :href="`/storage/${props.evaluasi.file_soal}`"
                             target="_blank"
                             class="inline-flex items-center gap-1 rounded bg-blue-500 px-3 py-1 text-xs font-medium text-white shadow transition hover:bg-blue-600"
                         >

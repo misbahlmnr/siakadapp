@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import AdaptiveChart from '@/components/AdaptiveChart.vue';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import { AlertCircle, BookOpen, Calendar, CheckCircle2, ClipboardList, Clock, Eye, FileText, TrendingUp, Users } from 'lucide-vue-next';
+import { AlertCircle, BookOpen, Calendar, CheckCircle2, ChevronDown, ClipboardList, Clock, Eye, FileText, TrendingUp, Users } from 'lucide-vue-next';
+import { ref } from 'vue';
+import { useToast } from 'vue-toastification';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: route('guru.dashboard') }];
 
-defineProps<{
+const props = defineProps<{
     totalKelas: number;
     totalMatpel: number;
     totalMateri: number;
@@ -24,41 +29,33 @@ defineProps<{
         nama_kelas: string;
         nama_mapel: string;
     }[];
+    jadwalMengajarList: { id: number; nama_jadwal: string }[];
 }>();
 
-const quickActions = [
-    {
-        title: 'Buat Materi Baru',
-        description: 'Upload materi pembelajaran baru',
-        icon: FileText,
-        route: 'guru.jadwal-mengajar.materi.create',
-        color: 'bg-blue-500',
-    },
-    {
-        title: 'Buat Evaluasi',
-        description: 'Buat tugas atau ujian baru',
-        icon: ClipboardList,
-        route: 'guru.jadwal-mengajar.evaluasi-pembelajaran.create',
-        color: 'bg-green-500',
-    },
-    {
-        title: 'Lihat Jadwal',
-        description: 'Lihat jadwal mengajar lengkap',
-        icon: Calendar,
-        route: 'guru.jadwal-mengajar.index',
-        color: 'bg-purple-500',
-    },
-    {
-        title: 'Rekomendasi',
-        description: 'Kelola rekomendasi materi',
-        icon: TrendingUp,
-        route: 'guru.rekomendasi-materi.index',
-        color: 'bg-orange-500',
-    },
-];
+const toast = useToast();
 
-const navigateTo = (routeName: string) => {
-    router.visit(route(routeName));
+const showMateriDialog = ref(false);
+const showEvaluasiDialog = ref(false);
+
+const jadwalPelajaranId = ref<number | null>(null);
+const selectedJadwalMengajarLabel = ref('Pilih Jadwal Mengajar');
+
+const handleCreateMateri = () => {
+    if (!jadwalPelajaranId.value) {
+        toast.error('Silakan pilih jadwal mengajar terlebih dahulu.');
+        return;
+    }
+
+    router.visit(route('guru.jadwal-mengajar.materi.create', { jadwal_id: jadwalPelajaranId.value }));
+};
+
+const handleEvaluasiPembelajaran = () => {
+    if (!jadwalPelajaranId.value) {
+        toast.error('Silakan pilih jadwal mengajar terlebih dahulu.');
+        return;
+    }
+
+    router.visit(route('guru.jadwal-mengajar.evaluasi-pembelajaran.create', { jadwal_id: jadwalPelajaranId.value }));
 };
 </script>
 
@@ -87,25 +84,158 @@ const navigateTo = (routeName: string) => {
 
             <!-- Quick Actions -->
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <!-- Buat Materi -->
                 <div
-                    v-for="(action, index) in quickActions"
-                    :key="index"
                     class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-blue-300 hover:shadow-md dark:border-gray-700 dark:bg-[#121212] dark:hover:border-blue-600"
-                    @click="navigateTo(action.route)"
+                    @click="showMateriDialog = true"
                 >
                     <div class="flex items-center gap-3">
-                        <div :class="['rounded-lg p-2', action.color]">
-                            <component :is="action.icon" class="h-5 w-5 text-white" />
+                        <div class="rounded-lg bg-blue-500 p-2">
+                            <FileText class="h-5 w-5 text-white" />
                         </div>
                         <div>
                             <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
-                                {{ action.title }}
+                                Buat Materi Baru
                             </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ action.description }}</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Upload materi pembelajaran baru</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buat Evaluasi -->
+                <div
+                    class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-blue-300 hover:shadow-md dark:border-gray-700 dark:bg-[#121212] dark:hover:border-green-600"
+                    @click="showEvaluasiDialog = true"
+                >
+                    <div class="flex items-center gap-3">
+                        <div class="rounded-lg bg-green-500 p-2">
+                            <ClipboardList class="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 group-hover:text-green-600 dark:text-white dark:group-hover:text-green-400">
+                                Buat Evaluasi
+                            </h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Buat tugas atau ujian baru</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jadwal -->
+                <div
+                    class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-purple-300 hover:shadow-md dark:border-gray-700 dark:bg-[#121212] dark:hover:border-purple-600"
+                    @click="router.visit(route('guru.jadwal-mengajar.index'))"
+                >
+                    <div class="flex items-center gap-3">
+                        <div class="rounded-lg bg-purple-500 p-2">
+                            <Calendar class="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 group-hover:text-purple-600 dark:text-white dark:group-hover:text-purple-400">
+                                Lihat Jadwal
+                            </h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Lihat jadwal mengajar lengkap</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rekomendasi -->
+                <div
+                    class="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:bg-[#121212] dark:hover:border-orange-600"
+                    @click="router.visit(route('guru.rekomendasi-materi.index'))"
+                >
+                    <div class="flex items-center gap-3">
+                        <div class="rounded-lg bg-orange-500 p-2">
+                            <TrendingUp class="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 group-hover:text-orange-600 dark:text-white dark:group-hover:text-orange-400">
+                                Rekomendasi
+                            </h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Kelola rekomendasi materi</p>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Modal Buat Materi -->
+            <Dialog v-model:open="showMateriDialog">
+                <DialogContent class="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>Buat Materi Baru</DialogTitle>
+                        <DialogDescription>Silahkan pilih jadwal dibawah untuk pergi ke halaman buat materi</DialogDescription>
+                    </DialogHeader>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
+                                <span class="text-sm">{{ selectedJadwalMengajarLabel }}</span>
+                                <ChevronDown class="h-4 w-4 text-gray-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
+                            <DropdownMenuItem
+                                v-for="jm in props.jadwalMengajarList"
+                                :key="jm.id"
+                                @click="
+                                    jadwalPelajaranId = jm.id;
+                                    selectedJadwalMengajarLabel = jm.nama_jadwal;
+                                "
+                            >
+                                {{ jm.nama_jadwal }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <DialogFooter>
+                        <DialogClose as-child>
+                            <Button type="button" variant="outline">Batal</Button>
+                        </DialogClose>
+                        <Button type="button" class="rounded-lg bg-blue-600 text-white hover:bg-blue-600/90" @click="handleCreateMateri"
+                            >Upload Materi</Button
+                        >
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <!-- Modal Buat Evaluasi -->
+            <Dialog v-model:open="showEvaluasiDialog">
+                <DialogContent class="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>Buat Evaluasi</DialogTitle>
+                        <DialogDescription>Tambahkan tugas, kuis, atau ujian baru.</DialogDescription>
+                    </DialogHeader>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
+                                <span class="text-sm">{{ selectedJadwalMengajarLabel }}</span>
+                                <ChevronDown class="h-4 w-4 text-gray-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="max-h-60 min-w-[200px] overflow-auto">
+                            <DropdownMenuItem
+                                v-for="jm in props.jadwalMengajarList"
+                                :key="jm.id"
+                                @click="
+                                    jadwalPelajaranId = jm.id;
+                                    selectedJadwalMengajarLabel = jm.nama_jadwal;
+                                "
+                            >
+                                {{ jm.nama_jadwal }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <DialogFooter>
+                        <DialogClose as-child>
+                            <Button type="button" variant="outline">Batal</Button>
+                        </DialogClose>
+                        <Button type="button" class="rounded-lg bg-green-600 text-white hover:bg-green-600/90" @click="handleEvaluasiPembelajaran"
+                            >Buat Tugas</Button
+                        >
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             <!-- Stats Grid -->
             <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -231,15 +361,6 @@ const navigateTo = (routeName: string) => {
                     </div>
                 </div>
             </div>
-
-            <!-- Recent Activity Section -->
-            <!-- <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-[#121212]">
-                <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Aktivitas Terbaru</h2>
-                <div class="py-8 text-center text-gray-500 dark:text-gray-400">
-                    <p>Fitur aktivitas terbaru akan segera hadir</p>
-                    <p class="text-sm">(Dalam pengembangan)</p>
-                </div>
-            </div> -->
         </div>
     </AppLayout>
 </template>

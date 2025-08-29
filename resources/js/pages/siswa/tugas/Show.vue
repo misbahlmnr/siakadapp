@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 
 const props = defineProps<{
@@ -26,6 +27,12 @@ const props = defineProps<{
         } | null;
     };
 }>();
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: route('siswa.dashboard') },
+    { title: 'List Tugas', href: route('siswa.tugas.index') },
+    { title: 'Detail Tugas', href: route('siswa.tugas.show', props.tugas.id) },
+];
 
 const form = useForm({
     file_jawaban: null as File | null,
@@ -85,7 +92,7 @@ const getNilaiStatusClass = (status: string) => {
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <Head :title="tugas.judul" />
 
         <div class="space-y-6 p-6">

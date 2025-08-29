@@ -1,5 +1,57 @@
+<script setup lang="ts">
+import AppLayout from '@/layouts/AppLayout.vue';
+import { BreadcrumbItem } from '@/types';
+import { Head } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+// Props dari Laravel Controller
+const props = defineProps<{
+    absensi: {
+        id: number;
+        tanggal: string;
+        status: string;
+        pertemuan_ke: number;
+        mata_pelajaran: string;
+    }[];
+}>();
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: route('siswa.dashboard') },
+    { title: 'List Absensi', href: route('siswa.absensi.index') },
+];
+
+// Compute statistics from absensi data
+const stats = computed(() => {
+    return {
+        hadir: props.absensi.filter((a) => a.status === 'Hadir').length,
+        izin: props.absensi.filter((a) => a.status === 'Izin').length,
+        sakit: props.absensi.filter((a) => a.status === 'Sakit').length,
+        alpha: props.absensi.filter((a) => a.status === 'Alpha').length,
+    };
+});
+
+const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    });
+};
+
+const getStatusBadgeClass = (status: string) => {
+    const classes: Record<string, string> = {
+        Hadir: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+        Izin: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+        Sakit: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+        Alpha: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+        Terlambat: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
+    };
+    return classes[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+};
+</script>
+
 <template>
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <Head title="Daftar Absensi" />
 
         <div class="space-y-6 p-6">
@@ -123,49 +175,3 @@
         </div>
     </AppLayout>
 </template>
-
-<script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import { computed } from 'vue';
-
-// Props dari Laravel Controller
-const props = defineProps<{
-    absensi: {
-        id: number;
-        tanggal: string;
-        status: string;
-        pertemuan_ke: number;
-        mata_pelajaran: string;
-    }[];
-}>();
-
-// Compute statistics from absensi data
-const stats = computed(() => {
-    return {
-        hadir: props.absensi.filter((a) => a.status === 'Hadir').length,
-        izin: props.absensi.filter((a) => a.status === 'Izin').length,
-        sakit: props.absensi.filter((a) => a.status === 'Sakit').length,
-        alpha: props.absensi.filter((a) => a.status === 'Alpha').length,
-    };
-});
-
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-    });
-};
-
-const getStatusBadgeClass = (status: string) => {
-    const classes: Record<string, string> = {
-        Hadir: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-        Izin: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-        Sakit: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-        Alpha: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-        Terlambat: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
-    };
-    return classes[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
-};
-</script>

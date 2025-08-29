@@ -1,5 +1,84 @@
+<script setup lang="ts">
+import AppLayout from '@/layouts/AppLayout.vue';
+import { BreadcrumbItem } from '@/types';
+import { Head, Link } from '@inertiajs/vue3';
+import { reactive } from 'vue';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: route('siswa.dashboard') },
+    { title: 'List Tugas', href: route('siswa.tugas.index') },
+];
+
+interface MataPelajaran {
+    id: number;
+    nama_mapel: string;
+}
+
+interface TugasItem {
+    id: number;
+    judul: string;
+    mata_pelajaran: string;
+    waktu_selesai: string;
+    status: string;
+    waktu_tersisa: string;
+    guru: string;
+    sudah_dikumpulkan: boolean;
+}
+
+// Props dari Laravel Controller
+defineProps<{
+    tugas: TugasItem[];
+    mataPelajaran: MataPelajaran[];
+    filters: {
+        mapel: string;
+        status: string;
+    };
+}>();
+
+const localFilters = reactive({
+    mapel: 'all',
+    status: 'all',
+});
+
+const applyFilters = () => {
+    // Redirect dengan filter yang dipilih
+    window.location.href = route('siswa.tugas.index', {
+        mapel: localFilters.mapel,
+        status: localFilters.status,
+    });
+};
+
+const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+};
+
+const getStatusBadgeClass = (status: string) => {
+    const classes: Record<string, string> = {
+        belum_dikumpulkan: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+        dikumpulkan: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+        telat: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+    };
+    return classes[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+};
+
+const getStatusText = (status: string) => {
+    const texts: Record<string, string> = {
+        belum_dikumpulkan: 'Belum Dikerjakan',
+        dikumpulkan: 'Sudah Dikumpulkan',
+        telat: 'Terlambat',
+    };
+    return texts[status] || status;
+};
+</script>
+
 <template>
-    <AppLayout>
+    <AppLayout :breadcrumbs="breadcrumbs">
         <Head title="Daftar Tugas" />
 
         <div class="space-y-6 p-6">
@@ -89,76 +168,3 @@
         </div>
     </AppLayout>
 </template>
-
-<script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import { reactive } from 'vue';
-
-interface MataPelajaran {
-    id: number;
-    nama_mapel: string;
-}
-
-interface TugasItem {
-    id: number;
-    judul: string;
-    mata_pelajaran: string;
-    waktu_selesai: string;
-    status: string;
-    waktu_tersisa: string;
-    guru: string;
-    sudah_dikumpulkan: boolean;
-}
-
-// Props dari Laravel Controller
-defineProps<{
-    tugas: TugasItem[];
-    mataPelajaran: MataPelajaran[];
-    filters: {
-        mapel: string;
-        status: string;
-    };
-}>();
-
-const localFilters = reactive({
-    mapel: 'all',
-    status: 'all',
-});
-
-const applyFilters = () => {
-    // Redirect dengan filter yang dipilih
-    window.location.href = route('siswa.tugas.index', {
-        mapel: localFilters.mapel,
-        status: localFilters.status,
-    });
-};
-
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
-
-const getStatusBadgeClass = (status: string) => {
-    const classes: Record<string, string> = {
-        belum_dikumpulkan: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-        dikumpulkan: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-        telat: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-    };
-    return classes[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
-};
-
-const getStatusText = (status: string) => {
-    const texts: Record<string, string> = {
-        belum_dikumpulkan: 'Belum Dikerjakan',
-        dikumpulkan: 'Sudah Dikumpulkan',
-        telat: 'Terlambat',
-    };
-    return texts[status] || status;
-};
-</script>

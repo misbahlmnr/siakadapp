@@ -34,28 +34,15 @@ class DashboardController extends Controller
         // Total evaluasi (tugas/kuis/ujian) yang dibuat guru
         $totalEvaluasi = EvaluasiPembelajaran::where('guru_id', $guruId)->count();
 
-        // Ambil 5 jadwal terdekat (hari ini ke depan)
-        // $upcomingSchedule = JadwalPelajaran::with(['kelas', 'mataPelajaran'])
-        //     ->where('guru_id', $guruId)
-        //     ->orderByRaw("
-        //         FIELD(hari, 'Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'),
-        //         jam_mulai ASC
-        //     ")
-        //     ->limit(5)
-        //     ->get()
-        //     ->map(function ($item) {
-        //         return [
-        //             'hari' => $item->hari,
-        //             'jam_mulai' => substr($item->jam_mulai, 0, 5),
-        //             'jam_selesai' => substr($item->jam_selesai, 0, 5),
-        //             'nama_kelas' => $item->kelas->nama_kelas,
-        //             'nama_mapel' => $item->mataPelajaran->nama_mapel,
-        //         ];
-        //     });
-
         // Ambil jadwal mengajar HARI INI
         $hariIni = Carbon::now()->locale('id')->dayName; 
         // hasilnya misal: "Senin", "Selasa", dst.
+
+        // ambil jadwal list guru ini
+        $jadwalMengajarList = JadwalPelajaran::with(['kelas', 'mataPelajaran'])->where('guru_id', $guruId)->get()->map(fn ($jm) => [
+            'id' => $jm->id,
+            'nama_jadwal' => $jm->mataPelajaran->nama_mapel . ' | ' . $jm->kelas->nama_kelas . ' | ' . $jm->hari . ' | ' . substr($jm->jam_mulai, 0, 5) . ' - ' . substr($jm->jam_selesai, 0, 5),
+        ]);
 
         $todaySchedule = JadwalPelajaran::with(['kelas', 'mataPelajaran'])
             ->where('guru_id', $guruId)
@@ -92,6 +79,7 @@ class DashboardController extends Controller
             'totalEvaluasi' => $totalEvaluasi,
             'todaySchedule' => $todaySchedule,
             'adaptiveProgress' => $adaptiveProgress,
+            'jadwalMengajarList' => $jadwalMengajarList
         ]);
     }
 }

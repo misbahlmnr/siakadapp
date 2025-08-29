@@ -13,9 +13,9 @@ export const GlobalConfig = {
                 href: '#',
                 icon: Users,
                 children: [
-                    { title: 'Data Admin', href: route('admin.users.index', 'admin') },
-                    { title: 'Data Guru', href: route('admin.users.index', 'guru') },
-                    { title: 'Data Siswa', href: route('admin.users.index', 'siswa') },
+                    { title: 'Data Admin', href: '/admin/manajemen-user/admin' },
+                    { title: 'Data Guru', href: '/admin/manajemen-user/guru' },
+                    { title: 'Data Siswa', href: '/admin/manajemen-user/siswa' },
                 ],
             },
             {
