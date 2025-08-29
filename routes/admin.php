@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\{AdaptiveRulesController, DashboardController, JadwalPelajaranController, KelasController, LaporanNilaiController, MataPelajaranController, SemesterAjaranController, UserController};
+use App\Http\Controllers\Admin\{AdaptiveRulesController, DashboardController, JadwalPelajaranController, KelasController, LaporanNilaiController, ManajemenGuruMapelController, MataPelajaranController, SemesterAjaranController, UserController};
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')
@@ -62,6 +62,19 @@ Route::prefix('admin')
         Route::prefix('kelas')
             ->name('kelas.')
             ->controller(KelasController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/data', 'get')->name('data');
+                Route::get('/create', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{id}/edit', 'edit')->name('edit');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+            });
+
+        Route::prefix('manajemen-guru-mapel')
+            ->name('manajemen-guru-mapel.')
+            ->controller(ManajemenGuruMapelController::class)
             ->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/data', 'get')->name('data');

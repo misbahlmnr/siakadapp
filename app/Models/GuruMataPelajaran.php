@@ -13,7 +13,7 @@ class GuruMataPelajaran extends Model
         'matpel_id',
     ];
 
-    public function guruProfile()
+    public function guru()
     {
         return $this->belongsTo(GuruProfile::class, 'guru_id');
     }
