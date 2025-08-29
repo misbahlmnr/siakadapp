@@ -22,7 +22,6 @@ onMounted(() => {
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', width: '4%', orderable: false, searchable: false },
             { data: 'nama_mapel', name: 'nama_mapel' },
-            { data: 'guru_pengampu', name: 'guru_pengampu', width: '15%' },
         ],
     });
 });
@@ -49,7 +48,6 @@ onMounted(() => {
                         <tr>
                             <th>No</th>
                             <th>Nama Pelajaran</th>
-                            <th>Guru Pengampu</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>

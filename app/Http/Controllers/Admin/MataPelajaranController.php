@@ -18,7 +18,6 @@ class MataPelajaranController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
-            ->addColumn('guru_pengampu', fn ($row) => $row->guru->user->name ?? 'Belum ada guru')
             ->make(true);
     }
 
