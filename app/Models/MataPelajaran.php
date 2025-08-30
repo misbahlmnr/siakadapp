@@ -25,4 +25,9 @@ class MataPelajaran extends Model
     {
         return $this->hasMany(AdaptiveRules::class);
     }
+
+    public function guruMataPelajaran()
+    {
+        return $this->hasMany(GuruMataPelajaran::class, 'matpel_id');
+    }
 }

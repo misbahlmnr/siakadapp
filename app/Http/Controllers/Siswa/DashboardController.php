@@ -27,22 +27,22 @@ class DashboardController extends Controller
 
         // --- 1. Jadwal Hari Ini
         $hariIni = strtolower(Carbon::now()->locale('id')->dayName); // contoh: senin, selasa
-        $jadwalHariIni = JadwalPelajaran::with('mataPelajaran', 'guru')
+        $jadwalHariIni = JadwalPelajaran::with('guruMatpel.mataPelajaran', 'guruMatpel.guru.user')
             ->where('kelas_id', $siswa->kelas_id)
             ->where('hari', $hariIni)
             ->get()
             ->map(function($j) {
                 return [
                     'id' => $j->id,
-                    'nama_mapel' => $j->mataPelajaran->nama_mapel ?? '-',
-                    'guru' => $j->guru->user->name ?? '-',
+                    'nama_mapel' => $j->guruMatpel->mataPelajaran->nama_mapel ?? '-',
+                    'guru' => $j->guruMatpel->guru->user->name ?? '-',
                     'jam_mulai' => $j->jam_mulai,
                     'jam_selesai' => $j->jam_selesai,
                 ];
             });
 
         // --- 2. Tugas Belum Dikumpulkan
-        $tugasBelum = EvaluasiPembelajaran::with('jadwal.mataPelajaran')
+        $tugasBelum = EvaluasiPembelajaran::with('jadwal.guruMatpel.mataPelajaran')
             ->whereHas('jadwal', function ($q) use ($siswa) {
                 $q->where('kelas_id', $siswa->kelas_id);
             })
@@ -57,7 +57,7 @@ class DashboardController extends Controller
                 return [
                     'id' => $t->id,
                     'judul' => $t->judul,
-                    'nama_mapel' => $t->jadwal->mataPelajaran->nama_mapel ?? '-',
+                    'nama_mapel' => $t->jadwal->guruMatpel->mataPelajaran->nama_mapel ?? '-',
                     'deadline' => $t->waktu_selesai,
                 ];
             })
@@ -70,14 +70,14 @@ class DashboardController extends Controller
             ->get();
 
         // --- 4. Nilai Terakhir
-        $nilaiTerakhir = Nilai::with('evaluasiPembelajaran.jadwal.mataPelajaran')
+        $nilaiTerakhir = Nilai::with('evaluasiPembelajaran.jadwal.guruMatpel.mataPelajaran')
             ->where('siswa_id', $siswa->id)
             ->latest('tanggal_dinilai')
             ->take(5)
             ->get()
             ->map(function($n) {
                 return [
-                    'mapel' => $n->evaluasiPembelajaran->jadwal->mataPelajaran->nama_mapel ?? '-',
+                    'mapel' => $n->evaluasiPembelajaran->jadwal->guruMatpel->mataPelajaran->nama_mapel ?? '-',
                     'judul' => $n->evaluasiPembelajaran->judul ?? '-',
                     'nilai' => $n->nilai,
                     'status' => $n->status,

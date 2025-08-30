@@ -15,11 +15,11 @@ class MateriBelajarController extends Controller
     {
         $siswa = Auth::user()->siswaProfile;
 
-        // Ambil semua mata pelajaran untuk kelas siswa
-        $mataPelajaran = MataPelajaran::whereHas('jadwalPelajaran', function($q) use ($siswa) {
+        // Ambil mata pelajaran untuk kelas siswa dengan semester aktif melalui guru_mata_pelajaran
+        $mataPelajaran = MataPelajaran::whereHas('guruMataPelajaran.jadwalPelajaran', function($q) use ($siswa) {
             $q->where('kelas_id', $siswa->kelas_id)
               ->whereHas('semesterAjaran', fn($s) => $s->where('status_aktif', true));
-        })->with(['jadwalPelajaran' => function($q) use ($siswa) {
+        })->with(['guruMataPelajaran.jadwalPelajaran' => function($q) use ($siswa) {
             $q->where('kelas_id', $siswa->kelas_id)
               ->whereHas('semesterAjaran', fn($s) => $s->where('status_aktif', true))
               ->with('materi');
@@ -33,10 +33,21 @@ class MateriBelajarController extends Controller
     public function show($id)
     {
         // Detail materi pertemuan
-        $materi = MateriPelajaran::with('jadwal.mataPelajaran', 'jadwal.guru.user')->findOrFail($id);
+        $materi = MateriPelajaran::with('jadwal.guruMatpel.mataPelajaran', 'jadwal.guruMatpel.guru.user')->findOrFail($id);
 
         return Inertia::render('siswa/materi-belajar/Show', [
-            'materi' => $materi
+            'materi' => [
+                'id' => $materi->id,
+                'judul_materi' => $materi->judul_materi ?? '-',
+                'pertemuan_ke' => $materi->pertemuan_ke ?? '-',
+                'mata_pelajaran' => $materi->jadwal->guruMatpel->mataPelajaran->nama_mapel ?? '-',
+                'kode_mapel' => $materi->jadwal->guruMatpel->mataPelajaran->kode_mapel ?? '-',
+                'deskripsi' => $materi->deskripsi ?? '-',
+                'file_materi' => $materi->file_materi,
+                'link_materi' => $materi->link_materi,
+                'nama_guru' => $materi->jadwal->guruMatpel->guru->user->name ?? '-',
+                'created_at' => $materi->created_at
+            ]
         ]);
     }
 }
