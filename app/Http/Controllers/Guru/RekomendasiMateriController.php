@@ -22,7 +22,7 @@ class RekomendasiMateriController extends Controller
 
     public function get()
     {
-        $query = RekomendasiMateriManual::with(['siswa.user', 'evaluasiPembelajaran.jadwal.mataPelajaran', 'materi'])
+        $query = RekomendasiMateriManual::with(['siswa.user', 'evaluasiPembelajaran.jadwal.guruMatpel.mataPelajaran', 'materi'])
             ->select('rekomendasi_materi_manual.*');
 
         return DataTables::of($query)
@@ -31,7 +31,7 @@ class RekomendasiMateriController extends Controller
                 return $item->siswa->user->name ?? '-';
             })
             ->addColumn('mata_pelajaran', function($item) {
-                return $item->evaluasiPembelajaran->jadwal->mataPelajaran->nama_mapel ?? '-';
+                return $item->evaluasiPembelajaran->jadwal->guruMatpel->mataPelajaran->nama_mapel ?? '-';
             })
             ->addColumn('nama_materi', function($item) {
                 return $item->materi->judul_materi ?? '-';
@@ -81,7 +81,7 @@ class RekomendasiMateriController extends Controller
     {
         $rekomendasi = RekomendasiMateriManual::with([
             'siswa.user', 
-            'evaluasiPembelajaran.jadwal.mataPelajaran', 
+            'evaluasiPembelajaran.jadwal.guruMatpel.mataPelajaran', 
             'materi'
         ])->findOrFail($id);
 

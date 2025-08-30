@@ -20,20 +20,20 @@ const props = defineProps<{
 
 // Status style config
 const statusConfig: Record<string, { icon: any; label: string; color: string }> = {
-    pending: {
+    belum_dibaca: {
         icon: Clock,
-        label: 'Pending',
+        label: 'Belum dibaca',
         color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
     },
-    diterima: {
+    dibaca: {
         icon: CheckCircle,
-        label: 'Diterima',
-        color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+        label: 'Dibaca',
+        color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
     },
-    ditolak: {
+    selesai: {
         icon: XCircle,
-        label: 'Ditolak',
-        color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+        label: 'Selesai',
+        color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
     },
 };
 </script>
