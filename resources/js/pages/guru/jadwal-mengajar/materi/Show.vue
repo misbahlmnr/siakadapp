@@ -10,9 +10,7 @@ const props = defineProps<{
         nama_mapel: string;
         kelas: string;
     };
-    guru: {
-        nama: string;
-    };
+    nama_guru: string;
     materi: MateriPelajaran;
 }>();
 
@@ -72,7 +70,7 @@ console.log(props.materi);
                 </div>
                 <div>
                     <p class="text-sm text-gray-400">Guru</p>
-                    <p class="font-semibold">{{ props.guru.nama || '-' }}</p>
+                    <p class="font-semibold">{{ props.nama_guru || '-' }}</p>
                 </div>
                 <div>
                     <p class="text-sm text-gray-400">Mata Pelajaran</p>

@@ -56,7 +56,10 @@ const props = defineProps<{
                         variant="outline"
                         @click="
                             router.visit(
-                                route('guru.jadwal-mengajar.evaluasi-pembelajaran.edit', { jadwal_id: props.jadwal_id, id: props.evaluasi.id }),
+                                route('guru.jadwal-mengajar.evaluasi-pembelajaran.edit', {
+                                    jadwal_id: props.jadwal_id,
+                                    evaluasi_id: props.evaluasi.id,
+                                }),
                             )
                         "
                     >

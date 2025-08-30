@@ -19,7 +19,8 @@ class EvaluasiPembelajaranController extends Controller
 {
     public function index(string $jadwal_id)
     {
-        $mapel = JadwalPelajaran::find($jadwal_id)->mataPelajaran;
+        $mapel = JadwalPelajaran::find($jadwal_id)->guruMatpel->mataPelajaran;
+
         return Inertia::render('guru/jadwal-mengajar/evaluasi-pembelajaran/Index', [
             'jadwal_id' => $jadwal_id,
             'nama_mapel' => $mapel->nama_mapel,
@@ -45,10 +46,12 @@ class EvaluasiPembelajaranController extends Controller
 
     public function create(string $jadwal_id)
     {
-        $mapel = JadwalPelajaran::find($jadwal_id)->mataPelajaran;
+        $mapel = JadwalPelajaran::find($jadwal_id)->guruMatpel->mataPelajaran;
+        $guruMatpelId = JadwalPelajaran::find($jadwal_id)->guruMatpel->id;
+
         return Inertia::render('guru/jadwal-mengajar/evaluasi-pembelajaran/Create', [
             'jadwal_id' => $jadwal_id,
-            'guru_id' => Auth::user()->guruProfile->id,
+            'guru_matpel_id' => $guruMatpelId,
             'nama_mapel' => $mapel->nama_mapel,
             'semesterDanTahunAjaranList' => SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
                 'id' => $se->id,
@@ -62,7 +65,7 @@ class EvaluasiPembelajaranController extends Controller
     {
         $data = $request->validated();
         $data['jadwal_id'] = $jadwal_id;
-        $data['guru_id'] = Auth::user()->guruProfile->id;
+        $data['guru_matpel_id'] = JadwalPelajaran::find($jadwal_id)->guruMatpel->id;
 
         if ($request->hasFile('file_soal')) {
             $file = $request->file('file_soal');
@@ -88,7 +91,7 @@ class EvaluasiPembelajaranController extends Controller
                 'link_jawaban' => $pt->link_jawaban ? $pt->link_jawaban : null
             ]);
 
-        return Inertia::render('guru/jadwal-mengajar/evaluasi-pembelajaran/View', [
+        return Inertia::render('guru/jadwal-mengajar/evaluasi-pembelajaran/Show', [
             'jadwal_id' => $jadwal_id,
             'evaluasi' => $evaluasi,
             'pengumpulanTugasList' => $pengumpulanTugas
@@ -98,11 +101,12 @@ class EvaluasiPembelajaranController extends Controller
     public function edit(string $jadwal_id, string $evaluasi_id)
     {
         $evaluasi = EvaluasiPembelajaran::findOrFail($evaluasi_id);
-        $mapel = JadwalPelajaran::find($jadwal_id)->mataPelajaran;
+        $mapel = JadwalPelajaran::find($jadwal_id)->guruMatpel->mataPelajaran;
+        $guruMatpelId = JadwalPelajaran::find($jadwal_id)->guruMatpel->id;
 
         return Inertia::render('guru/jadwal-mengajar/evaluasi-pembelajaran/Edit', [
             'jadwal_id' => $jadwal_id,
-            'guru_id' => Auth::user()->guruProfile->id,
+            'guru_matpel_id' => $guruMatpelId,
             'nama_mapel' => $mapel->nama_mapel,
             'evaluasi' => $evaluasi,
             'semesterDanTahunAjaranList' => SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [

@@ -57,7 +57,7 @@ export interface MatPel {
 export interface MateriPelajaran {
     id: number;
     jadwal_id: number;
-    guru_id: number;
+    guru_matpel_id: number;
     semester_ajaran_id: number;
     pertemuan_ke: number;
     judul_materi: string;

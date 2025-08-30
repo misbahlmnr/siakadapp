@@ -11,13 +11,13 @@ import { ref } from 'vue';
 
 const props = defineProps<{
     jadwal_id: number;
-    guru_id: number;
+    guru_matpel_id: number;
     semesterDanTahunAjaranList: { id: number; semester: string; tahun_ajaran: string }[];
 }>();
 
 type Form = {
     jadwal_id: number | null;
-    guru_id: number | null;
+    guru_matpel_id: number | null;
     semester_ajaran_id: number | null;
     pertemuan_ke: number | string | undefined;
     judul_materi: string;
@@ -28,7 +28,7 @@ type Form = {
 
 const form = useForm<Form>({
     jadwal_id: props.jadwal_id,
-    guru_id: props.guru_id,
+    guru_matpel_id: props.guru_matpel_id,
     semester_ajaran_id: null,
     pertemuan_ke: '',
     judul_materi: '',

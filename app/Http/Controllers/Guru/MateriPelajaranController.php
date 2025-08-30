@@ -14,6 +14,14 @@ use Yajra\DataTables\Facades\DataTables;
 
 class MateriPelajaranController extends Controller
 {
+    public function index(string $jadwal_id)
+    {
+        return Inertia::render('guru/jadwal-mengajar/materi/Index', [
+            'jadwal_id' => $jadwal_id,
+            'nama_mapel' => JadwalPelajaran::find($jadwal_id)->guruMatpel->mataPelajaran->nama_mapel,
+        ]);
+    }
+
     public function get(string $jadwal_id)
     {
         $materi = MateriPelajaran::where('jadwal_id', $jadwal_id)->orderBy('pertemuan_ke', 'asc')->get();
@@ -27,19 +35,13 @@ class MateriPelajaranController extends Controller
             ->make(true);
     }
 
-    public function index(string $jadwal_id)
-    {
-        return Inertia::render('guru/jadwal-mengajar/materi/Index', [
-            'jadwal_id' => $jadwal_id,
-            'nama_mapel' => JadwalPelajaran::find($jadwal_id)->mataPelajaran->nama_mapel,
-        ]);
-    }
-
     public function create(string $jadwal_id)
     {
+        $guruMatpelId = JadwalPelajaran::find($jadwal_id)->guruMatpel->id;
+
         return Inertia::render('guru/jadwal-mengajar/materi/Create', [
             'jadwal_id' => $jadwal_id,
-            'guru_id' => Auth::user()->guruProfile->id,
+            'guru_matpel_id' => $guruMatpelId,
             'semesterDanTahunAjaranList' => SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
                 'id' => $se->id,
                 'semester' => $se->semester,
@@ -80,14 +82,12 @@ class MateriPelajaranController extends Controller
 
     public function show(string $jadwal_id, string $materi_id)
     {
-        return Inertia::render('guru/jadwal-mengajar/materi/View', [
+        return Inertia::render('guru/jadwal-mengajar/materi/Show', [
             'jadwal' => [
-                'nama_mapel' => JadwalPelajaran::find($jadwal_id)->mataPelajaran->nama_mapel,
+                'nama_mapel' => JadwalPelajaran::find($jadwal_id)->guruMatpel->mataPelajaran->nama_mapel,
                 'kelas' => JadwalPelajaran::find($jadwal_id)->kelas->nama_kelas
             ],
-            'guru' => [
-                'nama' => Auth::user()->name,
-            ],
+            'nama_guru' => Auth::user()->name,
             'materi' => MateriPelajaran::with('semesterAjaran')->find($materi_id),
         ]);
     }
@@ -98,7 +98,7 @@ class MateriPelajaranController extends Controller
 
         return Inertia::render('guru/jadwal-mengajar/materi/Edit', [
             'jadwal_id' => $jadwal_id,
-            'guru_id' => $materi->guru_id,
+            'guru_matpel_id' => $materi->guru_matpel_id,
             'materi' => [
                 'id' => $materi->id,
                 'semester_ajaran_id' => $materi->semester_ajaran_id,

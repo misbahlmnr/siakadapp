@@ -4,10 +4,35 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 
+type JadwalProps = {
+    id: number;
+    mata_pelajaran: string;
+    kelas: string;
+    hari: string;
+    jam: string;
+};
+
+type MateriProps = {
+    id: number;
+    pertemuan_ke: number;
+    judul_materi: string;
+    file_materi: string;
+    link_materi: string;
+    created_at: string;
+};
+
+type TugasProps = {
+    id: number;
+    judul: string;
+    deadline: string;
+    file_tugas: string;
+    link_tugas: string;
+};
+
 defineProps<{
-    jadwal: any;
-    materi: Array<any>;
-    tugas: Array<any>;
+    jadwal: JadwalProps;
+    materi: MateriProps[];
+    tugas: TugasProps[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -26,12 +51,9 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="rounded-lg border bg-white p-6 shadow-md dark:border-gray-700 dark:bg-[#121212]">
                 <h1 class="mb-4 text-2xl font-bold">Detail Jadwal Mengajar</h1>
                 <div class="flex flex-col text-gray-700 md:grid-cols-3 dark:text-gray-200">
-                    <div><span class="font-semibold">Mata Pelajaran:</span> {{ jadwal.mata_pelajaran.nama_mapel }}</div>
-                    <div><span class="font-semibold">Kelas:</span> {{ jadwal.kelas.nama_kelas }}</div>
-                    <div>
-                        <span class="font-semibold">Hari & Jam:</span> {{ jadwal.hari }} ({{ jadwal.jam_mulai.slice(0, 5) }} -
-                        {{ jadwal.jam_selesai.slice(0, 5) }})
-                    </div>
+                    <div><span class="font-semibold">Mata Pelajaran:</span> {{ jadwal.mata_pelajaran }}</div>
+                    <div><span class="font-semibold">Kelas:</span> {{ jadwal.kelas }}</div>
+                    <div><span class="font-semibold">Hari & Jam:</span> {{ jadwal.hari }} ({{ jadwal.jam }})</div>
                 </div>
             </div>
 
@@ -43,8 +65,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                         type="button"
                         @click="router.visit(route('guru.jadwal-mengajar.materi.create', { jadwal_id: jadwal.id }))"
                         class="bg-blue-600 text-white hover:bg-blue-600/90"
-                        >Tambah Materi</Button
-                    >
+                        >Tambah Materi
+                    </Button>
                 </div>
                 <div v-if="materi.length">
                     <table class="w-full border-collapse text-left">
@@ -103,25 +125,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 
                                 <!-- Gabungan waktu mulai dan selesai -->
                                 <td class="border p-2">
-                                    {{ new Date(t.waktu_mulai).toLocaleDateString('id-ID') }}
-                                    {{ new Date(t.waktu_mulai).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }}
-                                    -
-                                    <span v-if="t.waktu_selesai">
-                                        {{ new Date(t.waktu_selesai).toLocaleDateString('id-ID') }}
-                                        {{ new Date(t.waktu_selesai).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }}
-                                    </span>
-                                    <span v-else>-</span>
+                                    {{ t.deadline }}
                                 </td>
 
                                 <td class="border p-2">
-                                    <a v-if="t.file_soal" :href="`/storage/${t.file_soal}`" target="_blank" class="text-blue-600 hover:underline">
+                                    <a v-if="t.file_tugas" :href="`/storage/${t.file_tugas}`" target="_blank" class="text-blue-600 hover:underline">
                                         Download
                                     </a>
                                     <span v-else class="text-gray-400 italic">Tidak ada file</span>
                                 </td>
 
                                 <td class="border p-2">
-                                    <a v-if="t.link_soal" :href="t.link_soal" target="_blank" class="text-blue-600 hover:underline">Buka Link</a>
+                                    <a v-if="t.link_tugas" :href="t.link_tugas" target="_blank" class="text-blue-600 hover:underline">Buka Link</a>
                                     <span v-else class="text-gray-400 italic">Tidak ada link</span>
                                 </td>
                             </tr>

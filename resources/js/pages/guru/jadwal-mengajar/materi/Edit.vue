@@ -12,7 +12,7 @@ import { computed } from 'vue';
 
 const props = defineProps<{
     jadwal_id: number;
-    guru_id: number;
+    guru_matpel_id: number;
     materi: MateriPelajaran;
     semesterDanTahunAjaranList: { id: number; semester: string; tahun_ajaran: string }[];
 }>();
@@ -20,7 +20,7 @@ const props = defineProps<{
 // Form
 const form = useForm({
     jadwal_id: props.jadwal_id,
-    guru_id: props.guru_id,
+    guru_matpel_id: props.guru_matpel_id,
     semester_ajaran_id: props.materi?.semester_ajaran_id || null,
     pertemuan_ke: props.materi?.pertemuan_ke || '',
     judul_materi: props.materi?.judul_materi || '',
@@ -54,7 +54,7 @@ const breadcrumbs = [
     { title: 'Beranda', href: route('guru.dashboard') },
     { title: 'Jadwal Mengajar', href: route('guru.jadwal-mengajar.index') },
     { title: 'Materi Pembelajaran', href: route('guru.jadwal-mengajar.materi.index', { jadwal_id: props.jadwal_id }) },
-    { title: 'Edit Materi', href: '#' },
+    { title: 'Edit Materi', href: route('guru.jadwal-mengajar.materi.edit', { jadwal_id: props.jadwal_id, materi_id: props.materi.id }) },
 ];
 </script>
 
