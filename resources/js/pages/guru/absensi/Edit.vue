@@ -8,14 +8,14 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem, Kelas, MatPel } from '@/types';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const props = defineProps<{
     absensi: any;
     kelasOptions: Kelas[];
     mapelOptions: MatPel[];
     siswaOptions: { id: number; nama: string }[];
-    jadwalOptions: any[];
+    jadwalPelajaranOptions: any[];
     semesterDanTahunAjaranList: { id: number; semester: string; tahun_ajaran: string }[];
 }>();
 
@@ -63,46 +63,40 @@ const statusOptions = [
     { label: 'Alfa', value: 'alfa' },
 ];
 
-// Filter jadwal berdasarkan kelas dan mapel yang dipilih
-const filteredJadwalOptions = computed(() => {
-    return props.jadwalOptions.filter((jadwal) => {
-        const matchesKelas = !selectedKelasId.value || jadwal.kelas_id === selectedKelasId.value;
-        const matchesMapel = !selectedMapelId.value || jadwal.matpel_id === selectedMapelId.value;
-        return matchesKelas && matchesMapel;
-    });
-});
-
-// Reset jadwal_id ketika kelas atau mapel berubah
-watch([selectedKelasId, selectedMapelId], () => {
-    form.jadwal_id = null;
-    selectedJadwalLabel.value = 'Pilih Jadwal';
-});
-
-// Inisialisasi data yang sudah ada
 onMounted(() => {
-    // Set nilai default untuk dropdown labels
-    const currentJadwal = props.jadwalOptions.find((j) => j.id === props.absensi.jadwal_id);
-    if (currentJadwal) {
-        selectedKelasId.value = currentJadwal.kelas_id;
-        selectedMapelId.value = currentJadwal.matpel_id;
-        selectedKelasLabel.value = currentJadwal.kelas_nama;
-        selectedMapelLabel.value = currentJadwal.mapel_nama;
-        selectedJadwalLabel.value = `${currentJadwal.kelas_nama} - ${currentJadwal.mapel_nama}`;
+    // Set selected Jadwal label
+    const selectedJadwal = props.jadwalPelajaranOptions.find((j) => j.id === props.absensi.jadwal_id);
+    selectedJadwalLabel.value = selectedJadwal ? selectedJadwal.label : 'Pilih Jadwal';
+
+    // Set selected Siswa label
+    const selectedSiswa = props.siswaOptions.find((s) => s.id === props.absensi.siswa_id);
+    selectedSiswaLabel.value = selectedSiswa ? selectedSiswa.nama : 'Pilih Siswa';
+
+    // Set selected Status label
+    const selectedStatus = statusOptions.find((s) => s.value === props.absensi.status);
+    selectedStatusLabel.value = selectedStatus ? selectedStatus.label : 'Pilih Status';
+
+    // Set selected Semester label
+    const selectedSemester = props.semesterDanTahunAjaranList.find((s) => s.id === props.absensi.semester_ajaran_id);
+    selectedSemesterLabel.value = selectedSemester
+        ? `${selectedSemester.semester} / ${selectedSemester.tahun_ajaran}`
+        : 'Pilih Semester & Tahun Ajaran';
+
+    // Set selected Kelas label based on jadwal's kelas
+    if (selectedJadwal) {
+        // Extract kelas name from jadwal label (format: "mapel | kelas | hari | jam")
+        const parts = selectedJadwal.label.split(' | ');
+        selectedKelasLabel.value = parts.length > 1 ? parts[1] : 'Pilih Kelas';
+    } else {
+        selectedKelasLabel.value = 'Pilih Kelas';
     }
 
-    const currentSiswa = props.siswaOptions.find((s) => s.id === props.absensi.siswa_id);
-    if (currentSiswa) {
-        selectedSiswaLabel.value = currentSiswa.nama;
-    }
-
-    const currentStatus = statusOptions.find((s) => s.value === props.absensi.status);
-    if (currentStatus) {
-        selectedStatusLabel.value = currentStatus.label;
-    }
-
-    const currentSemester = props.semesterDanTahunAjaranList.find((s) => s.id === props.absensi.semester_ajaran_id);
-    if (currentSemester) {
-        selectedSemesterLabel.value = `${currentSemester.semester} / ${currentSemester.tahun_ajaran}`;
+    // Set selected Mapel label based on jadwal's mapel
+    if (selectedJadwal) {
+        const parts = selectedJadwal.label.split(' | ');
+        selectedMapelLabel.value = parts.length > 0 ? parts[0] : 'Pilih Mata Pelajaran';
+    } else {
+        selectedMapelLabel.value = 'Pilih Mata Pelajaran';
     }
 });
 
@@ -118,6 +112,32 @@ const submit = () => {
             <h1 class="text-2xl font-bold">Edit Absensi</h1>
 
             <form class="grid grid-cols-1 gap-4 md:max-w-3xl md:grid-cols-2" @submit.prevent="submit">
+                <!-- Jadwal  -->
+                <div class="flex flex-col gap-3">
+                    <Label for="jadwal_id">Jadwal</Label>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
+                                <span class="truncate text-sm">{{ selectedJadwalLabel }}</span>
+                                <ChevronDown class="h-4 w-4 text-gray-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="max-h-40 min-w-[200px] overflow-auto">
+                            <DropdownMenuItem
+                                v-for="jadwal in jadwalPelajaranOptions"
+                                :key="jadwal.id"
+                                @click="
+                                    form.jadwal_id = jadwal.id;
+                                    selectedJadwalLabel = jadwal.label;
+                                "
+                            >
+                                {{ jadwal.label }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <InputError :message="form.errors.jadwal_id" />
+                </div>
+
                 <!-- Kelas -->
                 <div class="flex flex-col gap-2">
                     <Label>Kelas</Label>
@@ -162,31 +182,6 @@ const submit = () => {
                                     selectedMapelLabel = m.nama_mapel;
                                 "
                                 >{{ m.nama_mapel }}</DropdownMenuItem
-                            >
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <InputError :message="form.errors.jadwal_id" />
-                </div>
-
-                <!-- Jadwal (akan muncul setelah kelas dan mapel dipilih) -->
-                <div v-if="selectedKelasId && selectedMapelId" class="flex flex-col gap-2">
-                    <Label>Jadwal</Label>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger as-child>
-                            <button class="flex w-full justify-between rounded-md border px-3 py-2 text-sm">
-                                {{ selectedJadwalLabel }}
-                                <ChevronDown class="h-4 w-4 text-gray-500" />
-                            </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent class="max-h-40 overflow-auto">
-                            <DropdownMenuItem
-                                v-for="jadwal in filteredJadwalOptions"
-                                :key="jadwal.id"
-                                @click="
-                                    form.jadwal_id = jadwal.id;
-                                    selectedJadwalLabel = `${jadwal.kelas_nama} - ${jadwal.mapel_nama}`;
-                                "
-                                >{{ jadwal.kelas_nama }} - {{ jadwal.mapel_nama }}</DropdownMenuItem
                             >
                         </DropdownMenuContent>
                     </DropdownMenu>

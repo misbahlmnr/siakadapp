@@ -8,13 +8,13 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Kelas, MatPel } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ChevronDown, LoaderCircle } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps<{
     kelasOptions: Kelas[];
     mapelOptions: MatPel[];
     siswaOptions: { id: number; nama: string }[];
-    jadwalOptions: any[];
+    jadwalPelajaranOptions: any[];
     semesterDanTahunAjaranList: { id: number; semester: string; tahun_ajaran: string }[];
 }>();
 
@@ -57,21 +57,6 @@ const statusOptions = [
     { label: 'Alfa', value: 'alfa' },
 ];
 
-// Filter jadwal berdasarkan kelas dan mapel yang dipilih
-const filteredJadwalOptions = computed(() => {
-    return props.jadwalOptions.filter((jadwal) => {
-        const matchesKelas = !selectedKelasId.value || jadwal.kelas_id === selectedKelasId.value;
-        const matchesMapel = !selectedMapelId.value || jadwal.matpel_id === selectedMapelId.value;
-        return matchesKelas && matchesMapel;
-    });
-});
-
-// Reset jadwal_id ketika kelas atau mapel berubah
-watch([selectedKelasId, selectedMapelId], () => {
-    form.jadwal_id = null;
-    selectedJadwalLabel.value = 'Pilih Jadwal';
-});
-
 const submit = () => {
     form.post(route('guru.absensi.store'), {
         preserveScroll: true,
@@ -93,6 +78,32 @@ const submit = () => {
             <h1 class="text-2xl font-bold">Tambah Absensi</h1>
 
             <form class="grid w-full max-w-full grid-cols-1 gap-4 md:max-w-2xl md:grid-cols-2" @submit.prevent="submit">
+                <!-- Jadwal  -->
+                <div class="flex flex-col gap-3">
+                    <Label for="jadwal_id">Jadwal</Label>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
+                                <span class="truncate text-sm">{{ selectedJadwalLabel }}</span>
+                                <ChevronDown class="h-4 w-4 text-gray-500" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="max-h-40 min-w-[200px] overflow-auto">
+                            <DropdownMenuItem
+                                v-for="jadwal in jadwalPelajaranOptions"
+                                :key="jadwal.id"
+                                @click="
+                                    form.jadwal_id = jadwal.id;
+                                    selectedJadwalLabel = jadwal.label;
+                                "
+                            >
+                                {{ jadwal.label }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <InputError :message="form.errors.jadwal_id" />
+                </div>
+
                 <!-- Kelas -->
                 <div class="flex flex-col gap-3">
                     <Label for="kelas">Kelas</Label>
@@ -139,32 +150,6 @@ const submit = () => {
                                 "
                             >
                                 {{ m.nama_mapel }}
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <InputError :message="form.errors.jadwal_id" />
-                </div>
-
-                <!-- Jadwal (akan muncul setelah kelas dan mapel dipilih) -->
-                <div v-if="selectedKelasId && selectedMapelId" class="flex flex-col gap-3">
-                    <Label for="jadwal_id">Jadwal</Label>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger as-child>
-                            <button class="flex w-full items-center justify-between rounded border px-4 py-2" type="button">
-                                <span class="truncate text-sm">{{ selectedJadwalLabel }}</span>
-                                <ChevronDown class="h-4 w-4 text-gray-500" />
-                            </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent class="max-h-40 min-w-[200px] overflow-auto">
-                            <DropdownMenuItem
-                                v-for="jadwal in filteredJadwalOptions"
-                                :key="jadwal.id"
-                                @click="
-                                    form.jadwal_id = jadwal.id;
-                                    selectedJadwalLabel = `${jadwal.kelas_nama} - ${jadwal.mapel_nama}`;
-                                "
-                            >
-                                {{ jadwal.kelas_nama }} - {{ jadwal.mapel_nama }}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

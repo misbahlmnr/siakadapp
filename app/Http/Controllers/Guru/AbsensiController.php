@@ -11,6 +11,7 @@ use App\Models\SemesterAjaran;
 use App\Models\SiswaProfile;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -24,11 +25,11 @@ class AbsensiController extends Controller
             ->unique()
             ->values();
 
-        $mapelOptions = JadwalPelajaran::with('mataPelajaran')
-            ->get()
-            ->pluck('mataPelajaran.nama_mapel')
-            ->unique()
-            ->values();
+        $mapelOptions = Auth::user()
+            ->guruProfile
+            ->mataPelajaran()
+            ->orderBy('nama_mapel')
+            ->pluck('nama_mapel');
 
         return inertia('guru/absensi/Index', [
             'kelasOptions' => $kelasOptions,
@@ -49,7 +50,7 @@ class AbsensiController extends Controller
 
         // Filter mapel
         if ($request->mapel) {
-            $query->whereHas('jadwal.mataPelajaran', function ($q) use ($request) {
+            $query->whereHas('jadwal.guruMatpel.mataPelajaran', function ($q) use ($request) {
                 $q->where('nama_mapel', $request->mapel);
             });
         }
@@ -68,7 +69,7 @@ class AbsensiController extends Controller
             ->addIndexColumn()
             ->addColumn('siswa', fn($row) => $row->siswa->user->name ?? '-')
             ->addColumn('kelas', fn($row) => $row->jadwal->kelas->nama_kelas ?? '-')
-            ->addColumn('mata_pelajaran', fn($row) => $row->jadwal->mataPelajaran->nama_mapel ?? '-')
+            ->addColumn('mata_pelajaran', fn($row) => $row->jadwal->guruMatpel->mataPelajaran->nama_mapel ?? '-')
             ->addColumn('tanggal', fn($row) => $row->tanggal ? Carbon::parse($row->tanggal)->translatedFormat('d F Y') : '-')
             ->addColumn('status', fn($row) => '<span class="inline-block p-0.5 px-2 rounded-full text-white text-xs ' . $this->getStatusClass($row->status) . '">' . $row->status . '</span>')
             ->rawColumns(['status'])
@@ -87,8 +88,14 @@ class AbsensiController extends Controller
 
     public function create()
     {
-        // Kelas
+        $guruId = Auth::user()->guruProfile->id;
+
+        $semesterAktif = SemesterAjaran::where('status_aktif', true)->firstOrFail();
+        
+        // Kelas yang terkait dengan jadwal guru di semester aktif
         $kelasOptions = JadwalPelajaran::with('kelas')
+            ->whereHas('guruMatpel', fn ($q) => $q->where('guru_id', $guruId))
+            ->where('semester_ajaran_id', $semesterAktif->id)
             ->get()
             ->map(fn($jp) => [
                 'id' => $jp->kelas->id,
@@ -97,25 +104,46 @@ class AbsensiController extends Controller
             ->unique('id')
             ->values();
 
-        // Mapel
-        $mapelOptions = JadwalPelajaran::with('mataPelajaran')
+        // Mapel yang diajar guru di semester aktif
+        $mapelOptions = JadwalPelajaran::with('guruMatpel.mataPelajaran')
+            ->whereHas('guruMatpel', fn ($q) => $q->where('guru_id', $guruId))
+            ->where('semester_ajaran_id', $semesterAktif->id)
             ->get()
             ->map(fn($jp) => [
-                'id' => $jp->mataPelajaran->id,
-                'nama_mapel' => $jp->mataPelajaran->nama_mapel,
+                'id' => $jp->guruMatpel->mataPelajaran->id,
+                'nama_mapel' => $jp->guruMatpel->mataPelajaran->nama_mapel,
             ])
             ->unique('id')
             ->values();
 
-        // Siswa
-        $siswaOptions = SiswaProfile::with('user')
+        // Siswa hanya dari kelas yang ada jadwal guru ini
+        $siswaOptions = SiswaProfile::whereHas('kelas.jadwalPelajaran', function ($q) use ($guruId, $semesterAktif) {
+            $q->whereHas('guruMatpel', fn ($q) => $q->where('guru_id', $guruId))
+            ->where('semester_ajaran_id', $semesterAktif->id);
+        })
+            ->with(['user', 'kelas'])
             ->get()
             ->map(fn($s) => [
                 'id' => $s->id,
                 'nama' => $s->user->name,
+                'kelas' => $s->kelas->nama_kelas
             ]);
 
-        $semesterDanTahunAjaranList = SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
+        // Jadwal guru di semester aktif
+        $jadwalPelajaranOptions = JadwalPelajaran::with(['kelas', 'guruMatpel.mataPelajaran'])
+            ->whereHas('guruMatpel', fn ($q) => $q->where('guru_id', $guruId))
+            ->where('semester_ajaran_id', $semesterAktif->id)
+            ->get()
+            ->map(fn($jp) => [
+                'id' => $jp->id,
+                'label' => $jp->guruMatpel->mataPelajaran->nama_mapel 
+                . ' | ' . $jp->kelas->nama_kelas 
+                . ' | ' . $jp->hari 
+                . ' | ' . substr($jp->jam_mulai, 0, 5) 
+                . ' - ' . substr($jp->jam_selesai, 0, 5),
+            ]);
+
+        $semesterDanTahunAjaranList = collect([$semesterAktif])->map(fn ($se) => [
             'id' => $se->id,
             'semester' => $se->semester,
             'tahun_ajaran' => $se->tahun_ajaran
@@ -125,6 +153,7 @@ class AbsensiController extends Controller
             'kelasOptions' => $kelasOptions,
             'mapelOptions' => $mapelOptions,
             'siswaOptions' => $siswaOptions,
+            'jadwalPelajaranOptions' => $jadwalPelajaranOptions,
             'semesterDanTahunAjaranList' => $semesterDanTahunAjaranList
         ]);
     }
@@ -139,59 +168,83 @@ class AbsensiController extends Controller
 
     public function show(string $id)
     {
-        $absensi = Absensi::with(['siswa.user', 'jadwal.mataPelajaran', 'jadwal.kelas'])->findOrFail($id);
+        $absensi = Absensi::with(['siswa.user', 'jadwal.guruMatpel.mataPelajaran', 'jadwal.kelas'])->findOrFail($id);
 
         return inertia('guru/absensi/Show', [
-            'absensi' => $absensi,
+            'absensi' => [
+                'id' => $absensi->id,
+                'nama_siswa' => $absensi->siswa->user->name ?? '-',
+                'nis' => $absensi->siswa->nis ?? '-',
+                'kelas' => $absensi->jadwal->kelas->nama_kelas ?? '-',
+                'mata_pelajaran' => $absensi->jadwal->guruMatpel->mataPelajaran->nama_mapel ?? '-',
+                'pertemuan_ke' => $absensi->pertemuan_ke,
+                'tanggal' => $absensi->tanggal,
+                'status' => $absensi->status,
+                'created_at' => $absensi->created_at,
+                'updated_at' => $absensi->updated_at
+            ],
         ]);
     }
 
     public function edit(string $id)
     {
         $absensi = Absensi::findOrFail($id);
+        $guruId = Auth::user()->guruProfile->id;
+
+        $semesterAktif = SemesterAjaran::where('status_aktif', true)->firstOrFail();
         
-        // Kelas options - get unique kelas from jadwal
+        // Kelas yang terkait dengan jadwal guru di semester aktif
         $kelasOptions = JadwalPelajaran::with('kelas')
+            ->whereHas('guruMatpel', fn ($q) => $q->where('guru_id', $guruId))
+            ->where('semester_ajaran_id', $semesterAktif->id)
             ->get()
-            ->pluck('kelas.nama_kelas', 'kelas.id')
-            ->unique()
-            ->map(fn($nama, $id) => [
-                'id' => $id,
-                'nama_kelas' => $nama
+            ->map(fn($jp) => [
+                'id' => $jp->kelas->id,
+                'nama_kelas' => $jp->kelas->nama_kelas,
             ])
+            ->unique('id')
             ->values();
 
-        // Mapel options - get unique mata pelajaran from jadwal
-        $mapelOptions = JadwalPelajaran::with('mataPelajaran')
+        // Mapel yang diajar guru di semester aktif
+        $mapelOptions = JadwalPelajaran::with('guruMatpel.mataPelajaran')
+            ->whereHas('guruMatpel', fn ($q) => $q->where('guru_id', $guruId))
+            ->where('semester_ajaran_id', $semesterAktif->id)
             ->get()
-            ->pluck('mataPelajaran.nama_mapel', 'mataPelajaran.id')
-            ->unique()
-            ->map(fn($nama, $id) => [
-                'id' => $id,
-                'nama_mapel' => $nama
+            ->map(fn($jp) => [
+                'id' => $jp->guruMatpel->mataPelajaran->id,
+                'nama_mapel' => $jp->guruMatpel->mataPelajaran->nama_mapel,
             ])
+            ->unique('id')
             ->values();
 
-        // Siswa options
-        $siswaOptions = SiswaProfile::with('user')
+        // Siswa hanya dari kelas yang ada jadwal guru ini
+        $siswaOptions = SiswaProfile::whereHas('kelas.jadwalPelajaran', function ($q) use ($guruId, $semesterAktif) {
+            $q->whereHas('guruMatpel', fn ($q) => $q->where('guru_id', $guruId))
+            ->where('semester_ajaran_id', $semesterAktif->id);
+        })
+            ->with(['user', 'kelas'])
             ->get()
             ->map(fn($s) => [
                 'id' => $s->id,
                 'nama' => $s->user->name,
+                'kelas' => $s->kelas->nama_kelas
             ]);
 
-        // Jadwal options for frontend to filter
-        $jadwalOptions = JadwalPelajaran::with(['kelas', 'mataPelajaran'])
+        // Jadwal guru di semester aktif
+        $jadwalPelajaranOptions = JadwalPelajaran::with(['kelas', 'guruMatpel.mataPelajaran'])
+            ->whereHas('guruMatpel', fn ($q) => $q->where('guru_id', $guruId))
+            ->where('semester_ajaran_id', $semesterAktif->id)
             ->get()
             ->map(fn($jp) => [
                 'id' => $jp->id,
-                'kelas_id' => $jp->kelas_id,
-                'matpel_id' => $jp->matpel_id,
-                'kelas_nama' => $jp->kelas->nama_kelas,
-                'mapel_nama' => $jp->mataPelajaran->nama_mapel,
+                'label' => $jp->guruMatpel->mataPelajaran->nama_mapel 
+                . ' | ' . $jp->kelas->nama_kelas 
+                . ' | ' . $jp->hari 
+                . ' | ' . substr($jp->jam_mulai, 0, 5) 
+                . ' - ' . substr($jp->jam_selesai, 0, 5),
             ]);
 
-        $semesterDanTahunAjaranList = SemesterAjaran::where('status_aktif', true)->get()->map(fn ($se) => [
+        $semesterDanTahunAjaranList = collect([$semesterAktif])->map(fn ($se) => [
             'id' => $se->id,
             'semester' => $se->semester,
             'tahun_ajaran' => $se->tahun_ajaran
@@ -202,7 +255,7 @@ class AbsensiController extends Controller
             'kelasOptions' => $kelasOptions,
             'mapelOptions' => $mapelOptions,
             'siswaOptions' => $siswaOptions,
-            'jadwalOptions' => $jadwalOptions,
+            'jadwalPelajaranOptions' => $jadwalPelajaranOptions,
             'semesterDanTahunAjaranList' => $semesterDanTahunAjaranList
         ]);
     }

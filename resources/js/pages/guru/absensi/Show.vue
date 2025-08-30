@@ -5,8 +5,21 @@ import { Head, router } from '@inertiajs/vue3';
 import { ArrowLeft, BookOpen, Calendar, CheckCircle, User, XCircle } from 'lucide-vue-next';
 import { defineProps } from 'vue';
 
+type AbsensiProps = {
+    id: number;
+    nama_siswa: string;
+    nis: string;
+    kelas: string;
+    mata_pelajaran: string;
+    pertemuan_ke: number;
+    tanggal: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+};
+
 const props = defineProps<{
-    absensi: any;
+    absensi: AbsensiProps;
 }>();
 
 // Status style config with dark mode
@@ -65,15 +78,15 @@ function formatDate(date: string) {
                     <div class="space-y-4">
                         <div>
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Nama Siswa</p>
-                            <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ props.absensi.siswa?.user?.name || '-' }}</p>
+                            <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ props.absensi.nama_siswa }}</p>
                         </div>
-                        <div v-if="props.absensi.siswa?.nis">
+                        <div v-if="props.absensi.nis">
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">NIS</p>
-                            <p class="text-gray-900 dark:text-gray-200">{{ props.absensi.siswa.nis }}</p>
+                            <p class="text-gray-900 dark:text-gray-200">{{ props.absensi.nis }}</p>
                         </div>
-                        <div v-if="props.absensi.siswa?.kelas">
+                        <div v-if="props.absensi.kelas">
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Kelas</p>
-                            <p class="text-gray-900 dark:text-gray-200">{{ props.absensi.siswa.kelas?.nama_kelas }}</p>
+                            <p class="text-gray-900 dark:text-gray-200">{{ props.absensi.kelas }}</p>
                         </div>
                     </div>
                 </div>
@@ -88,8 +101,8 @@ function formatDate(date: string) {
                         <div>
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Kelas & Mata Pelajaran</p>
                             <p class="text-gray-900 dark:text-gray-200">
-                                {{ props.absensi.jadwal?.kelas?.nama_kelas || '-' }} /
-                                {{ props.absensi.jadwal?.mataPelajaran?.nama_mapel || '-' }}
+                                {{ props.absensi.kelas }} /
+                                {{ props.absensi.mata_pelajaran }}
                             </p>
                         </div>
                         <div>
