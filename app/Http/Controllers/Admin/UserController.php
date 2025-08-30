@@ -16,17 +16,25 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $userRole = $request->route('role');
+        $kelasOptions = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->pluck('nama_kelas');
 
         return inertia("admin/manajemen-user/{$userRole}/Index", [
             'role' => $userRole,
+            'kelasOptions' => $kelasOptions
         ]);
     }
 
-    public function get(string $role)
+    public function get(Request $request, string $role)
     {
         $query = User::where('role', $role)
             ->with($role === 'siswa' ? 'siswaProfile' : 'guruProfile')
             ->orderBy('name');
+
+        if ($role === 'siswa' && $request->filled('kelas')) {
+            $query->whereHas('siswaProfile.kelas', function ($q) use ($request) {
+               $q->where('nama_kelas', $request->kelas); 
+            });
+        }
 
         return DataTables::of($query)
             ->addIndexColumn()
