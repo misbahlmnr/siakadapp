@@ -5,18 +5,24 @@ import { Head, router } from '@inertiajs/vue3';
 import { AlertCircle, ArrowLeft, BookOpen, Calendar, CheckCircle, MessageSquare, Star, User, XCircle } from 'lucide-vue-next';
 import { defineProps } from 'vue';
 
+type NilaiProps = {
+    id: number;
+    nama_siswa: string;
+    nis: string;
+    kelas: string;
+    judul_evaluasi: string;
+    jenis_evaluasi: string;
+    mata_pelajaran: string;
+    nilai: number;
+    status: string;
+    feedback: string;
+    tanggal_dinilai: string;
+    created_at: string;
+    updated_at: string;
+};
+
 const props = defineProps<{
-    nilai: {
-        id: number;
-        siswa: any;
-        evaluasi_pembelajaran: any;
-        nilai: number | string;
-        status: string;
-        feedback: string;
-        tanggal_dinilai: string;
-        created_at: string;
-        updated_at: string;
-    };
+    nilai: NilaiProps;
 }>();
 
 // Status style config
@@ -40,7 +46,7 @@ const statusConfig: Record<string, { icon: any; label: string; color: string }> 
 </script>
 
 <template>
-    <Head :title="`Detail Nilai - ${props.nilai.siswa.nama}`" />
+    <Head :title="`Detail Nilai - ${props.nilai.nama_siswa}`" />
 
     <AppLayout
         :breadcrumbs="[
@@ -77,15 +83,15 @@ const statusConfig: Record<string, { icon: any; label: string; color: string }> 
                     <div class="space-y-4">
                         <div>
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Nama Siswa</p>
-                            <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ props.nilai.siswa.user.name }}</p>
+                            <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ props.nilai.nama_siswa }}</p>
                         </div>
-                        <div v-if="props.nilai.siswa.nis">
+                        <div v-if="props.nilai.nis">
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">NIS</p>
-                            <p class="text-gray-900 dark:text-gray-200">{{ props.nilai.siswa.nis }}</p>
+                            <p class="text-gray-900 dark:text-gray-200">{{ props.nilai.nis }}</p>
                         </div>
-                        <div v-if="props.nilai.siswa.kelas">
+                        <div v-if="props.nilai.kelas">
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Kelas</p>
-                            <p class="text-gray-900 dark:text-gray-200">{{ props.nilai.siswa.kelas }}</p>
+                            <p class="text-gray-900 dark:text-gray-200">{{ props.nilai.kelas }}</p>
                         </div>
                     </div>
                 </div>
@@ -99,16 +105,16 @@ const statusConfig: Record<string, { icon: any; label: string; color: string }> 
                     <div class="space-y-4">
                         <div>
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Judul Evaluasi</p>
-                            <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ props.nilai.evaluasi_pembelajaran.judul }}</p>
+                            <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ props.nilai.judul_evaluasi }}</p>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Jenis Evaluasi</p>
-                            <p class="text-gray-900 capitalize dark:text-gray-200">{{ props.nilai.evaluasi_pembelajaran.jenis }}</p>
+                            <p class="text-gray-900 capitalize dark:text-gray-200">{{ props.nilai.jenis_evaluasi }}</p>
                         </div>
-                        <div v-if="props.nilai.evaluasi_pembelajaran.jadwal.mataPelajaran">
+                        <div v-if="props.nilai.mata_pelajaran">
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Mata Pelajaran</p>
                             <p class="text-gray-900 dark:text-gray-200">
-                                {{ props.nilai.evaluasi_pembelajaran.jadwal.mataPelajaran.nama }}
+                                {{ props.nilai.mata_pelajaran }}
                             </p>
                         </div>
                     </div>

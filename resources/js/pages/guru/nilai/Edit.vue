@@ -26,7 +26,6 @@ const props = defineProps<{
             jenis: string;
         };
     };
-    guru_id: number;
     siswaOptions: any[];
     evaluasiOptions: any[];
 }>();

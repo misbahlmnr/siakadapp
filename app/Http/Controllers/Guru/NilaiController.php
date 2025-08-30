@@ -26,7 +26,9 @@ class NilaiController extends Controller
         $kelasOptions = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->pluck('nama_kelas');
 
         // Ambil semua mapel yang diajar guru ini
-        $mapelOptions = MataPelajaran::where('guru_id', Auth::user()->guruProfile->id)
+        $mapelOptions = $mapelOptions = Auth::user()
+            ->guruProfile
+            ->mataPelajaran()
             ->orderBy('nama_mapel')
             ->pluck('nama_mapel');
 
@@ -48,16 +50,16 @@ class NilaiController extends Controller
         $guruId = Auth::user()->guruProfile->id;
 
         $query = Nilai::with([
-                'siswa',
-                'evaluasiPembelajaran.jadwal.mataPelajaran',
+                'siswa.user',
+                'evaluasiPembelajaran.jadwal.guruMatpel.mataPelajaran',
                 'evaluasiPembelajaran.jadwal.kelas',
             ])
-            ->whereHas('evaluasiPembelajaran.jadwal', function ($q) use ($guruId, $request) {
+            ->whereHas('evaluasiPembelajaran.jadwal.guruMatpel', function ($q) use ($guruId, $request) {
                 $q->where('guru_id', $guruId);
 
                 // Filter Kelas
                 if ($request->kelas) {
-                    $q->whereHas('kelas', function ($q2) use ($request) {
+                    $q->whereHas('jadwal.kelas', function ($q2) use ($request) {
                         $q2->where('nama_kelas', $request->kelas);
                     });
                 }
@@ -90,7 +92,7 @@ class NilaiController extends Controller
                 return $row->evaluasiPembelajaran->jadwal->kelas->nama_kelas ?? '-';
             })
             ->addColumn('mata_pelajaran', function ($row) {
-                return $row->evaluasiPembelajaran->jadwal->mataPelajaran->nama_mapel ?? '-';
+                return $row->evaluasiPembelajaran->jadwal->guruMatpel->mataPelajaran->nama_mapel ?? '-';
             })
             ->addColumn('evaluasi', function ($row) {
                 return $row->evaluasiPembelajaran->judul ?? '-';
@@ -109,7 +111,7 @@ class NilaiController extends Controller
         $semesterAktif = SemesterAjaran::where('status_aktif', true)->first();
 
         // Ambil daftar siswa berdasarkan kelas yang diasuh guru di semester ini
-        $siswaOptions = SiswaProfile::whereHas('kelas.jadwalPelajaran', function ($q) use ($guruId, $semesterAktif) {
+        $siswaOptions = SiswaProfile::whereHas('kelas.jadwalPelajaran.guruMatpel', function ($q) use ($guruId, $semesterAktif) {
             $q->where('guru_id', $guruId)
             ->where('semester_ajaran_id', $semesterAktif->id);
         })->with('user')->get()->map(fn($s) => [
@@ -119,7 +121,7 @@ class NilaiController extends Controller
         ]);
 
         // Ambil evaluasi yang dibuat guru ini di semester aktif
-        $evaluasiOptions = EvaluasiPembelajaran::whereHas('jadwal', function($q) use ($guruId, $semesterAktif){
+        $evaluasiOptions = EvaluasiPembelajaran::whereHas('jadwal.guruMatpel', function($q) use ($guruId, $semesterAktif){
             $q->where('guru_id', $guruId)
             ->where('semester_ajaran_id', $semesterAktif->id);
         })->get(['id', 'judul', 'jenis']);
@@ -145,7 +147,7 @@ class NilaiController extends Controller
     private function checkAdaptiveRules(Nilai $nilai)
     {
         // Ambil evaluasi pembelajaran untuk mendapatkan mata pelajaran
-        $evaluasi = EvaluasiPembelajaran::with('jadwal.mataPelajaran')->find($nilai->evaluasi_id);
+        $evaluasi = EvaluasiPembelajaran::with('jadwal.guruMatpel.mataPelajaran')->find($nilai->evaluasi_id);
         
         if (!$evaluasi || !$evaluasi->jadwal || !$evaluasi->jadwal->mataPelajaran) {
             return;
@@ -191,9 +193,23 @@ class NilaiController extends Controller
 
     public function show(string $id)
     {
-        $nilai = Nilai::with(['siswa.user', 'evaluasiPembelajaran', 'evaluasiPembelajaran.jadwal.mataPelajaran'])->findOrFail($id);
-        return Inertia::render('guru/nilai/View', [
-            'nilai' => $nilai
+        $nilai = Nilai::with(['siswa.user', 'evaluasiPembelajaran', 'evaluasiPembelajaran.guruMatpel.mataPelajaran'])->findOrFail($id);
+        return Inertia::render('guru/nilai/Show', [
+            'nilai' => [
+                'id' => $nilai->id,
+                'nama_siswa' => $nilai->siswa->user->name ?? '-',
+                'nis' => $nilai->siswa->nis ?? '-',
+                'kelas' => $nilai->siswa->kelas->nama_kelas ?? '-',
+                'judul_evaluasi' => $nilai->evaluasiPembelajaran->judul,
+                'jenis_evaluasi' => $nilai->evaluasiPembelajaran->jenis,
+                'mata_pelajaran' => $nilai->evaluasiPembelajaran->guruMatpel->mataPelajaran->nama_mapel ?? '-',
+                'nilai' => $nilai->nilai,
+                'status' => $nilai->status,
+                'feedback' => $nilai->feedback,
+                'tanggal_dinilai' => $nilai->tanggal_dinilai,
+                'created_at' => $nilai->created_at,
+                'updated_at' => $nilai->updated_at
+            ]
         ]);
     }
 
@@ -208,18 +224,21 @@ class NilaiController extends Controller
         // Ambil semester_ajaran aktif
         $semesterAktif = SemesterAjaran::where('status_aktif', true)->first();
 
-        // Ambil daftar siswa berdasarkan kelas yang diasuh guru di semester ini
-        $siswaOptions = SiswaProfile::whereHas('kelas.jadwalPelajaran', function ($q) use ($guruId, $semesterAktif) {
+        // 🔎 Cari siswa berdasarkan kelas yang ada jadwal 
+        // dimana guru terkait mengajar via guru_mata_pelajaran
+        $siswaOptions = SiswaProfile::whereHas('kelas.jadwalPelajaran.guruMatpel', function ($q) use ($guruId, $semesterAktif) {
             $q->where('guru_id', $guruId)
             ->where('semester_ajaran_id', $semesterAktif->id);
-        })->with('user')->get()->map(fn($s) => [
+        })
+        ->with(['user', 'kelas'])
+        ->get()->map(fn($s) => [
             'id' => $s->id,
             'nama' => $s->user->name ?? '-',
             'kelas' => $s->kelas->nama_kelas,
         ]);
 
-        // Ambil evaluasi yang dibuat guru ini di semester aktif
-        $evaluasiOptions = EvaluasiPembelajaran::whereHas('jadwal', function($q) use ($guruId, $semesterAktif){
+        // 🔎 Ambil evaluasi berdasarkan jadwal yg terhubung ke guru_mata_pelajaran
+        $evaluasiOptions = EvaluasiPembelajaran::whereHas('jadwal.guruMatpel', function($q) use ($guruId, $semesterAktif){
             $q->where('guru_id', $guruId)
             ->where('semester_ajaran_id', $semesterAktif->id);
         })->get(['id', 'judul', 'jenis']);
